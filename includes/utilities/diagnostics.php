@@ -1,4 +1,5 @@
 <?php
+namespace Kognetiks\AISummaries;
 /**
  * Kognetiks AI Summaries for WordPress - Diagnostics - Ver 1.0.0
  *
@@ -12,9 +13,6 @@
 if ( ! defined( 'WPINC' ) ) {
     die();
 }
-
-// Privatize functions to reduce the risk of naming conflicts
-namespace Kognetiks\AISummaries;
 
 // Production Back Trace Function - Revised in Ver 1.0.0
 function prod_trace($message_type = "NOTICE", $message = "No message") {

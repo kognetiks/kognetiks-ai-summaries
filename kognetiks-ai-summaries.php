@@ -1,4 +1,5 @@
 <?php
+namespace Kognetiks\AISummaries;
 /*
  * Plugin Name: Kognetiks AI Summaries
  * Plugin URI:  https://github.com/kognetiks/kognetiks-ai-summaries
@@ -24,9 +25,6 @@
 
 // If this file is called directly, die.
 defined( 'WPINC' ) || die();
-
-// Privatize functions to reduce the risk of naming conflicts
-namespace Kognetiks\AISummaries;
 
 // Plugin version
 global $kognetiks_ai_summaries_version;

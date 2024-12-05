@@ -1,4 +1,5 @@
 <?php
+namespace Kognetiks\AISummaries;
 /**
  * Kognetiks AI Summaries for WordPress - Settings - Ver 1.0.0
  *
@@ -12,8 +13,5 @@
 if ( ! defined( 'WPINC' ) ) {
     die();
 }
-
-// Privatize functions to reduce the risk of naming conflicts
-namespace Kognetiks\AISummaries;
 
 
