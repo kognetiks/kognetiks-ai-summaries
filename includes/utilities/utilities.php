@@ -1,5 +1,4 @@
 <?php
-namespace Kognetiks\AISummaries;
 /**
  * Kognetiks AI Summaries for WordPress - Utilities - Ver 1.0.0
  *

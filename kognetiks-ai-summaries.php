@@ -1,5 +1,4 @@
 <?php
-namespace Kognetiks\AISummaries;
 /*
  * Plugin Name: Kognetiks AI Summaries
  * Plugin URI:  https://github.com/kognetiks/kognetiks-ai-summaries
@@ -49,15 +48,19 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 
 // Include the necessary files - Utilities files
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/diagnostics.php';
 
 // Include the necessary files - Documentation files
 // TBD
 
 // Diagnostics on/off setting can be set in the settings page
 $kognetiks_ai_summaries_diagnostics = esc_attr(get_option('kognetiks_ai_summaries_diagnostics', 'Off'));
+// FIXME - OVERRIDE
+update_option('kognetiks_ai_summaries_diagnostics', 'Error');
+
 
 // Return an AI summary for the page or post
-function generate_ai_summary( $pid )  {
+function ksum_generate_ai_summary( $pid )  {
 
     global $wpdb;
     global $kchat_settings;
@@ -65,7 +68,7 @@ function generate_ai_summary( $pid )  {
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = "ai_summary_lock_{$pid}";
     if ( get_transient( $lock_key ) ) {
-        // back_trace( 'NOTICE', "AI summary generation for Post ID {$pid} is already in progress." );
+        // ksum_back_trace( 'NOTICE', "AI summary generation for Post ID {$pid} is already in progress." );
         return null; // Exit early to prevent duplicate processing
     }
 
@@ -73,18 +76,18 @@ function generate_ai_summary( $pid )  {
     set_transient( $lock_key, true, 30 );
 
     // Diagnostics
-    // back_trace( 'NOTICE', 'Generating AI summary' );
-    // back_trace( 'NOTICE', '$pid: ' . $pid );
+    ksum_back_trace( 'NOTICE', 'Generating AI summary' );
+    ksum_back_trace( 'NOTICE', '$pid: ' . $pid );
 
     // Set the model
-    $kchat_settings = get_option('kchat_settings'); // Assuming this is how you get the settings
+    // $kchat_settings = get_option('kchat_settings'); // Assuming this is how you get the settings
 
     if (isset($kchat_settings['chatbot_chatgpt_model'])) {
         $model = $kchat_settings['chatbot_chatgpt_model'];
     } else {
         $model = null; // or set a default value
     }
-    // back_trace( 'NOTICE', '$model at start of AI summaries: ' . $model );
+    // ksum_back_trace( 'NOTICE', '$model at start of AI summaries: ' . $model );
 
     // Fetch and sanitize the content
     $query = $wpdb->prepare("SELECT post_content, post_modified FROM $wpdb->posts WHERE ID = %d", $pid);
@@ -95,23 +98,23 @@ function generate_ai_summary( $pid )  {
     $post_modified = $row->post_modified;
 
     // Check for an existing AI summary
-    $ai_summary = ai_summary_exists($pid);
+    $ai_summary = ksum_ai_summary_exists($pid);
 
     if ( $ai_summary ) {
 
         // DIAG - Diagnostics - Ver 2.2.1
-        // back_trace( 'NOTICE', 'AI summary exists' );
+        // ksum_back_trace( 'NOTICE', 'AI summary exists' );
 
-        if ( ai_summary_is_stale($pid) ) {
-            // back_trace( 'NOTICE', 'AI summary is stale' );
-            $ai_summary = generate_ai_summary_api($model, $content);
-            update_ai_summary($pid, $ai_summary, $post_modified);
+        if ( ksum_ai_summary_is_stale($pid) ) {
+            // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
+            $ai_summary = ksum_generate_ai_summary_api($model, $content);
+            ksum_update_ai_summary($pid, $ai_summary, $post_modified);
         }
 
     } else {
 
         // DIAG - Diagnostics - Ver 2.2.1
-        // back_trace( 'NOTICE', 'AI summary does not exist' );
+        // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
 
         if ($model == null) {
             if (esc_attr(get_option('chatbot_ai_platform_choice')) == 'OpenAI') {
@@ -125,8 +128,8 @@ function generate_ai_summary( $pid )  {
             }
         }
 
-        $ai_summary = generate_ai_summary_api($model, $content);
-        insert_ai_summary($pid, $ai_summary, $post_modified);
+        $ai_summary = ksum_generate_ai_summary_api($model, $content);
+        ksum_insert_ai_summary($pid, $ai_summary, $post_modified);
 
     }
 
@@ -137,7 +140,7 @@ function generate_ai_summary( $pid )  {
     $ai_summary = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
 
     // DIAG - Diagnostics - Ver 2.2.1
-    // back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
+    // ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
 
     // Release the lock
     delete_transient( $lock_key );
@@ -147,7 +150,7 @@ function generate_ai_summary( $pid )  {
 }
 
 // Generate an AI summary using the appropriate API
-function generate_ai_summary_api( $model, $content ) {
+function ksum_generate_ai_summary_api( $model, $content ) {
 
     $content = htmlspecialchars(strip_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
@@ -181,50 +184,50 @@ function generate_ai_summary_api( $model, $content ) {
 
         case str_starts_with($model, 'gpt'):
 
-            // back_trace( 'NOTICE', 'Calling ChatGPT API');
+            // ksum_back_trace( 'NOTICE', 'Calling ChatGPT API');
             $api_key = esc_attr(get_option('chatbot_chatgpt_api_key'));
-            // back_trace( 'NOTICE', 'Adding special instructions to the content');
+            // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = chatbot_chatgpt_call_api_basic($api_key, $message);
             break;
 
         case str_starts_with($model, 'nvidia'):
 
-            // back_trace( 'NOTICE', 'Calling NVIDIA API');
+            // ksum_back_trace( 'NOTICE', 'Calling NVIDIA API');
             $api_key = esc_attr(get_option('chatbot_nvidia_api_key'));
-            // back_trace( 'NOTICE', 'Adding special instructions to the content');
+            // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = chatbot_nvidia_call_api($api_key, $message);
             break;
 
         case str_starts_with($model, 'anthropic'):
 
-            // back_trace( 'NOTICE', 'Calling Anthropic API');
+            // ksum_back_trace( 'NOTICE', 'Calling Anthropic API');
             $api_key = esc_attr(get_option('chatbot_anthropic_api_key'));
-            // back_trace( 'NOTICE', 'Adding special instructions to the content');
+            // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = chatbot_anthropic_call_api($api_key, $message);
             break;
 
         case str_starts_with($model, 'markov'):
 
-            // back_trace( 'NOTICE', 'Calling Markov Chain API');
-            // back_trace( 'NOTICE', 'No special instructions needed for ');
+            // ksum_back_trace( 'NOTICE', 'Calling Markov Chain API');
+            // ksum_back_trace( 'NOTICE', 'No special instructions needed for ');
             $message = $content;
             $response = chatbot_chatgpt_call_markov_chain_api($message);
             break;
 
         case str_contains($model, 'context-model'):
 
-            // back_trace( 'NOTICE', 'Calling Transformer Model API');
-            // back_trace( 'NOTICE', 'No special instructions needed for ');
+            // ksum_back_trace( 'NOTICE', 'Calling Transformer Model API');
+            // ksum_back_trace( 'NOTICE', 'No special instructions needed for ');
             $message = $content;
             $response = chatbot_chatgpt_call_transformer_model_api($message);
             break;
             
         default:
 
-            // back_trace( 'NOTICE', 'No valid model found for AI summary generation');
+            // ksum_back_trace( 'NOTICE', 'No valid model found for AI summary generation');
             $response = '';
             break;
 
@@ -263,10 +266,10 @@ function generate_ai_summary_api( $model, $content ) {
 }
 
 // Create the ai summary table if it does not exist
-function create_ai_summary_table() {
+function ksum_create_ai_summary_table() {
 
     // DIAG - Diagnostics - Ver 2.2.1
-    // back_trace( 'NOTICE', 'Creating AI summary table' );
+    // ksum_back_trace( 'NOTICE', 'Creating AI summary table' );
 
     global $wpdb;
 
@@ -288,22 +291,22 @@ function create_ai_summary_table() {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // back_trace( 'ERROR', 'Error creating AI summary table' );
+        // ksum_back_trace( 'ERROR', 'Error creating AI summary table' );
     }
 
 }
 
 // Insert an AI summary into the ai summary table
-function insert_ai_summary( $pid, $ai_summary, $post_modified ) {
+function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
 
     // DIAG - Diagnostics - Ver 2.2.1
-    // back_trace( 'NOTICE', 'Inserting AI summary into table' );
+    // ksum_back_trace( 'NOTICE', 'Inserting AI summary into table' );
 
     global $wpdb;
     
     // Create the table if it does not exist
-    create_ai_summary_table();
+    ksum_create_ai_summary_table();
 
     $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
 
@@ -318,16 +321,16 @@ function insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // back_trace( 'ERROR', 'Error inserting AI summary into table' );
+        // ksum_back_trace( 'ERROR', 'Error inserting AI summary into table' );
     }
 
 }
 
 // Check if an AI summary exists for a post
-function ai_summary_exists( $pid ) {
+function ksum_ai_summary_exists( $pid ) {
 
     // DIAG - Diagnostics - Ver 2.2.1
-    // back_trace( 'NOTICE', 'Checking if AI summary exists' );
+    // ksum_back_trace( 'NOTICE', 'Checking if AI summary exists' );
 
     global $wpdb;
 
@@ -343,14 +346,14 @@ function ai_summary_exists( $pid ) {
         $post_modified = $row->post_modified;
 
         // DIAG - Diagnostics - Ver 2.2.1
-        // back_trace( 'NOTICE', 'AI summary exists for $pid: ' . $pid );
+        // ksum_back_trace( 'NOTICE', 'AI summary exists for $pid: ' . $pid );
 
         return $ai_summary;
 
     } else {
 
         // DIAG - Diagnostics - Ver 2.2.1
-        // back_trace( 'NOTICE', 'AI summary does not exist' );
+        // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
         
         return null;
 
@@ -359,10 +362,10 @@ function ai_summary_exists( $pid ) {
 }
 
 // Delete an AI summary from the ai summary table
-function delete_ai_summary( $pid ) {
+function sum_delete_ai_summary( $pid ) {
 
     // DIAG - Diagnostics - Ver 2.2.1
-    // back_trace( 'NOTICE', 'Deleting AI summary from table' );
+    // ksum_back_trace( 'NOTICE', 'Deleting AI summary from table' );
 
     global $wpdb;
 
@@ -375,16 +378,16 @@ function delete_ai_summary( $pid ) {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // back_trace( 'ERROR', 'Error deleting AI summary from table' );
+        // ksum_back_trace( 'ERROR', 'Error deleting AI summary from table' );
     }
 
 }
 
 // Check if an AI summary is stale
-function ai_summary_is_stale( $pid ) {
+function ksum_ai_summary_is_stale( $pid ) {
 
     // DIAG - Diagnostics - Ver 2.2.1
-    // back_trace( 'NOTICE', 'Checking if AI summary is stale' );
+    // ksum_back_trace( 'NOTICE', 'Checking if AI summary is stale' );
 
     global $wpdb;
 
@@ -409,14 +412,14 @@ function ai_summary_is_stale( $pid ) {
     if ( strtotime($ai_post_modified) < strtotime($post_modified) ) {
 
         // DIAG - Diagnostics - Ver 2.2.1
-        // back_trace( 'NOTICE', 'AI summary is stale' );
+        // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
 
         return true;
 
     } else {
 
         // DIAG - Diagnostics - Ver 2.2.1
-        // back_trace( 'NOTICE', 'AI summary is not stale' );
+        // ksum_back_trace( 'NOTICE', 'AI summary is not stale' );
 
         return false;
 
@@ -425,10 +428,10 @@ function ai_summary_is_stale( $pid ) {
 }
 
 // Update an AI summary in the ai summary table
-function update_ai_summary( $pid, $ai_summary, $post_modified ) {
+function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // DIAG - Diagnostics - Ver 2.2.1
-    // back_trace( 'NOTICE', 'Updating AI summary in table' );
+    // ksum_back_trace( 'NOTICE', 'Updating AI summary in table' );
 
     global $wpdb;
 
@@ -447,13 +450,13 @@ function update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // back_trace( 'ERROR', 'Error updating AI summary in table' );
+        // ksum_back_trace( 'ERROR', 'Error updating AI summary in table' );
     }
 
 }
 
 // Function to replace the excerpt with AI summary
-function replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
+function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // Check if AI summaries are enabled
     $enabled = esc_attr(get_option( 'kognetiks_ai_summaries_enabled', 'No' ));
@@ -479,7 +482,7 @@ function replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
     }
 
     // Attempt to generate or retrieve the AI summary
-    $ai_summary = generate_ai_summary( $post->ID ); // Replace with your actual function
+    $ai_summary = ksum_generate_ai_summary( $post->ID ); // Replace with your actual function
 
     // If AI summary exists, use it
     if ( ! empty( $ai_summary ) ) {
@@ -519,5 +522,5 @@ function replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
 }
 // Hook the function into 'get_the_excerpt' filter
-add_filter( 'get_the_excerpt', 'replace_excerpt_with_ai_summary', 10, 2 );
+add_filter( 'get_the_excerpt', 'ksum_replace_excerpt_with_ai_summary', 10, 2 );
 
