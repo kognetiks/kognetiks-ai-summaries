@@ -50,6 +50,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/deactivate.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/links.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/notices.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/restore.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/upgrade.php';

@@ -43,11 +43,11 @@ function ksum_settings_page_html() {
     $ksum_settings_json = wp_json_encode($ksum_settings);
     $escaped_ksum_settings_json = esc_js($ksum_settings_json);
     // FIXME - DO I NEED THIS - IF SO FOR WHAT
-    wp_add_inline_script('ksum-local', 'if (typeof ksum_settings === "undefined") { var ksum_settings = ' . $escaped_ksum_settings_json . '; } else { ksum_settings = ' . $escaped_ksum_settings_json . '; }', 'before');
+    // wp_add_inline_script('ksum-local', 'if (typeof ksum_settings === "undefined") { var ksum_settings = ' . $escaped_ksum_settings_json . '; } else { ksum_settings = ' . $escaped_ksum_settings_json . '; }', 'before');
     
     // Localize the settings
     // FIXME - DO I NEED THIS - IF SO FOR WHAT
-    ksum_localize();
+    // ksum_localize();
 
     $active_tab = $_GET['tab'] ?? 'general';
    
@@ -84,15 +84,13 @@ function ksum_settings_page_html() {
             <a href="?page=kognetiks-ai-summaries&tab=general" class="nav-tab <?php echo $active_tab == 'general' ? 'nav-tab-active' : ''; ?>">General</a>
             <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'OpenAI') { ?><a href="?page=kognetiks-ai-summaries&tab=api_chatgpt" class="nav-tab <?php echo $active_tab == 'api_chatgpt' ? 'nav-tab-active' : ''; ?>">API/ChatGPT</a> <?php } ?>
             <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'NVIDIA') { ?><a href="?page=kognetiks-ai-summaries&tab=api_nvidia" class="nav-tab <?php echo $active_tab == 'api_nvidia' ? 'nav-tab-active' : ''; ?>">API/NVIDIA</a> <?php } ?>
-            <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'Markov Chain') { ?><a href="?page=kognetiks-ai-summaries&tab=api_markov" class="nav-tab <?php echo $active_tab == 'api_markov' ? 'nav-tab-active' : ''; ?>">API/Markov</a> <?php } ?>
-            <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'Transformer') { ?><a href="?page=kognetiks-ai-summaries&tab=api_transformer" class="nav-tab <?php echo $active_tab == 'api_transformer' ? 'nav-tab-active' : ''; ?>">API/Transformer</a> <?php } ?>
-            <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'OpenAI') { ?><a href="?page=kognetiks-ai-summaries&tab=gpt_assistants" class="nav-tab <?php echo $active_tab == 'gpt_assistants' ? 'nav-tab-active' : ''; ?>">GPT Assistants</a>  <?php } ?>
+            <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'Anthropic') { ?><a href="?page=kognetiks-ai-summaries&tab=api_anthropic" class="nav-tab <?php echo $active_tab == 'api_anthropic' ? 'nav-tab-active' : ''; ?>">API/Anthropic</a> <?php } ?>
             <a href="?page=kognetiks-ai-summaries&tab=ai_summaries" class="nav-tab <?php echo $active_tab == 'ai_summaries' ? 'nav-tab-active' : ''; ?>">AI Summaries</a>
             <a href="?page=kognetiks-ai-summaries&tab=diagnostics" class="nav-tab <?php echo $active_tab == 'diagnostics' ? 'nav-tab-active' : ''; ?>">Messages</a>
             <a href="?page=kognetiks-ai-summaries&tab=support" class="nav-tab <?php echo $active_tab == 'support' ? 'nav-tab-active' : ''; ?>">Support</a>
        </h2>
 
-       <form id="chatgpt-settings-form" action="options.php" method="post">
+       <form id="ksum-settings-form" action="options.php" method="post">
             <?php
 
             $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));

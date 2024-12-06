@@ -1,48 +1,22 @@
-# Wordpress - ignore core, configuration, examples, uploads and logs.
-# https://github.com/github/gitignore/blob/main/WordPress.gitignore
+# Default ignored files
+/shelf/
+/workspace.xml
 
-# Core
-#
-# Note: if you want to stage/commit WP core files
-# you can delete this whole section/until Configuration.
-/wp-admin/
-/wp-content/index.php
-/wp-content/languages
-/wp-content/plugins/index.php
-/wp-content/themes/index.php
-/wp-includes/
-/index.php
-/license.txt
-/readme.html
-/wp-*.php
-/xmlrpc.php
+# Editor-based HTTP Client requests
 
-# Configuration
-wp-config.php
+/httpRequests/
 
-# Example themes
-/wp-content/themes/twenty*/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+.idea/
+debug/
+package.json
 
-# Example plugin
-/wp-content/plugins/hello.php
+# Ignore all files in the results folder
+logs/*
 
-# Uploads
-/wp-content/uploads/
+# Allow tracking of only the index.php file in the results folder
+!logs/index.php
 
-# Log files
-*.log
-
-# htaccess
-/.htaccess
-
-# All plugins
-#
-# Note: If you wish to whitelist plugins,
-# uncomment the next line
-#/wp-content/plugins
-
-# All themes
-#
-# Note: If you wish to whitelist themes,
-# uncomment the next line
-#/wp-content/themes
+# Ignore specific files
