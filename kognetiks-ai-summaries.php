@@ -26,16 +26,16 @@
 defined( 'WPINC' ) || die();
 
 // Plugin version
-global $kognetiks_ai_summaries_version;
-$kognetiks_ai_summaries_version = '1.0.0';
+global $ksum_summaries_version;
+$ksum_summaries_version = '1.0.0';
 
 // Plugin directory path
-global $kognetiks_ai_summaries_dir_path;
-$kognetiks_ai_summaries_dir_path = plugin_dir_path( __FILE__ );
+global $ksum_summaries_dir_path;
+$ksum_summaries_dir_path = plugin_dir_path( __FILE__ );
 
 // Plugin directory URL
-global $kognetiks_ai_summaries_dir_url;
-$kognetiks_ai_summaries_dir_url = plugin_dir_url( __FILE__ );
+global $ksum_summaries_dir_url;
+$ksum_summaries_dir_url = plugin_dir_url( __FILE__ );
 
 // Declare globals
 global $wpdb;
@@ -47,23 +47,36 @@ global $wpdb;
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 
 // Include the necessary files - Utilities files
-require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/deactivate.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/diagnostics.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/links.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/restore.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/upgrade.php';
 
 // Include the necessary files - Documentation files
 // TBD
 
+// Settings and Deactivation
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'ksum_plugin_action_links');
+
 // Diagnostics on/off setting can be set in the settings page
-$kognetiks_ai_summaries_diagnostics = esc_attr(get_option('kognetiks_ai_summaries_diagnostics', 'Off'));
+$ksum_summaries_diagnostics = esc_attr(get_option('ksum_summaries_diagnostics', 'Off'));
 // FIXME - OVERRIDE
-update_option('kognetiks_ai_summaries_diagnostics', 'Error');
+update_option('ksum_summaries_diagnostics', 'Error');
+
+// Activation, deactivation, and uninstall functions
+register_activation_hook(__FILE__, 'ksum_activate');
+register_deactivation_hook(__FILE__, 'ksum_deactivate');
+register_uninstall_hook(__FILE__, 'ksum_uninstall');
+add_action('upgrader_process_complete', 'ksum_upgrade_completed', 10, 2);
 
 
 // Return an AI summary for the page or post
 function ksum_generate_ai_summary( $pid )  {
 
     global $wpdb;
-    global $kchat_settings;
+    global $ksum_settings;
 
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = "ai_summary_lock_{$pid}";
@@ -80,10 +93,10 @@ function ksum_generate_ai_summary( $pid )  {
     ksum_back_trace( 'NOTICE', '$pid: ' . $pid );
 
     // Set the model
-    // $kchat_settings = get_option('kchat_settings'); // Assuming this is how you get the settings
+    // $ksum_settings = get_option('ksum_settings'); // Assuming this is how you get the settings
 
-    if (isset($kchat_settings['chatbot_chatgpt_model'])) {
-        $model = $kchat_settings['chatbot_chatgpt_model'];
+    if (isset($ksum_settings['chatbot_chatgpt_model'])) {
+        $model = $ksum_settings['chatbot_chatgpt_model'];
     } else {
         $model = null; // or set a default value
     }
@@ -117,14 +130,15 @@ function ksum_generate_ai_summary( $pid )  {
         // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
 
         if ($model == null) {
-            if (esc_attr(get_option('chatbot_ai_platform_choice')) == 'OpenAI') {
+            if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI') {
                 $model = esc_attr(get_option('chatbot_chatgpt_model_choice', 'gpt-3.5-turbo'));
-            } else if (esc_attr(get_option('chatbot_ai_platform_choice')) == 'NVIDIA') {
+            } else if (esc_attr(get_option('ksum_ai_platform_choice')) == 'NVIDIA') {
                 $model = esc_attr(get_option('chatbot_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
             } else if (esc_attr(get_option('chatbot_ai_platform_choing')) == 'Anthropic') {
                 $model = esc_attr(get_option('chatbot_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
             } else {
                 $model = null; // No model selected
+                ksum_prod_trace('ERROR', 'No valid model found for AI summary generation');
             }
         }
 
@@ -134,7 +148,7 @@ function ksum_generate_ai_summary( $pid )  {
     }
 
     // Get the desired excerpt length from options
-    $ai_summary_length = intval( get_option( 'kognetiks_ai_summaries_length', 55 ) );
+    $ai_summary_length = intval( get_option( 'ksum_summaries_length', 55 ) );
 
     // Trim the AI summary to the specified length
     $ai_summary = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
@@ -164,9 +178,9 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     // Belt & Supenders - Ensure a model is selected
     if ($model == null) {
 
-        if (esc_attr(get_option('chatbot_ai_platform_choice')) == 'OpenAI') {
+        if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI') {
             $model = esc_attr(get_option('chatbot_chatgpt_model_choice', 'gpt-3.5-turbo'));
-        } else if (esc_attr(get_option('chatbot_ai_platform_choice')) == 'NVIDIA') {
+        } else if (esc_attr(get_option('ksum_ai_platform_choice')) == 'NVIDIA') {
             $model = esc_attr(get_option('chatbot_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
         } else if (esc_attr(get_option('chatbot_ai_platform_choing')) == 'Anthropic') {
             $model = esc_attr(get_option('chatbot_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
@@ -177,7 +191,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     }
 
     // Update the model in settings
-    $kchat_settings['model'] = $model;
+    $ksum_settings['model'] = $model;
 
     // Call the appropriate API based on the model
     switch (true) {
@@ -273,7 +287,7 @@ function ksum_create_ai_summary_table() {
 
     global $wpdb;
 
-    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $table_name = $wpdb->prefix . 'ksum_summaries';
 
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -308,7 +322,7 @@ function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
     // Create the table if it does not exist
     ksum_create_ai_summary_table();
 
-    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $table_name = $wpdb->prefix . 'ksum_summaries';
 
     $wpdb->insert(
         $table_name,
@@ -334,7 +348,7 @@ function ksum_ai_summary_exists( $pid ) {
 
     global $wpdb;
 
-    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $table_name = $wpdb->prefix . 'ksum_summaries';
 
     $query = $wpdb->prepare("SELECT ai_summary, post_modified FROM $table_name WHERE post_id = %d", $pid);
 
@@ -362,14 +376,14 @@ function ksum_ai_summary_exists( $pid ) {
 }
 
 // Delete an AI summary from the ai summary table
-function sum_delete_ai_summary( $pid ) {
+function ksum_delete_ai_summary( $pid ) {
 
     // DIAG - Diagnostics - Ver 2.2.1
     // ksum_back_trace( 'NOTICE', 'Deleting AI summary from table' );
 
     global $wpdb;
 
-    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $table_name = $wpdb->prefix . 'ksum_summaries';
 
     $wpdb->delete(
         $table_name,
@@ -391,7 +405,7 @@ function ksum_ai_summary_is_stale( $pid ) {
 
     global $wpdb;
 
-    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $table_name = $wpdb->prefix . 'ksum_summaries';
 
     // Fetch post_modified from ai_summaries table
     $query = $wpdb->prepare("SELECT post_modified FROM $table_name WHERE post_id = %d", $pid);
@@ -435,7 +449,7 @@ function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     global $wpdb;
 
-    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $table_name = $wpdb->prefix . 'ksum_summaries';
 
     $wpdb->query(
         $wpdb->prepare(
@@ -459,7 +473,7 @@ function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // Check if AI summaries are enabled
-    $enabled = esc_attr(get_option( 'kognetiks_ai_summaries_enabled', 'No' ));
+    $enabled = esc_attr(get_option( 'ksum_summaries_enabled', 'No' ));
     $enabled = 'Yes';
     if ( 'Yes' !== $enabled ) {
         return $excerpt; // Return the default excerpt
@@ -488,7 +502,7 @@ function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
     if ( ! empty( $ai_summary ) ) {
 
         // Get the desired excerpt length from options
-        $ai_summary_length = intval( get_option( 'kognetiks_ai_summaries_length', 55 ) );
+        $ai_summary_length = intval( get_option( 'ksum_summaries_length', 55 ) );
 
         // Trim the AI summary to the specified length
         $excerpt = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
