@@ -56,7 +56,7 @@ function ksum_uninstall(){
 
         // Delete AI Summaries options
         ksum_back_trace( 'NOTICE', 'Deleting Plugin One-off options');
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE 'ksum'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE 'ksum%'");
 
         // Delete AI Summaries tables
         ksum_back_trace( 'NOTICE', 'Deleting tables');

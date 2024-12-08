@@ -13,7 +13,7 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Production Back Trace Function - Revised in Ver 1.0.0
+// Production Back Trace Function - Ver 1.0.0
 function ksum_prod_trace($message_type = "NOTICE", $message = "No message") {
 
     // Trace production messages to the error log
@@ -21,7 +21,7 @@ function ksum_prod_trace($message_type = "NOTICE", $message = "No message") {
 
 }
 
-// Back Trace Function - Revised in Ver 1.0.0
+// Back Trace Function - Ver 1.0.0
 function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
 
     // Usage Instructions
@@ -46,17 +46,17 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
     // ksum_back_trace( 'SUCCESS', 'Some message');
 
     // Check if diagnostics is On
-    $ksum_summaries_diagnostics = esc_attr(get_option('ksum_summaries_diagnostics', 'Off'));
+    $ksum_diagnostics = esc_attr(get_option('ksum_diagnostics', 'Off'));
 
-    $ksum_summaries_diagnostics = esc_attr(get_option('ksum_summaries_diagnostics', 'Error'));
-    if ('Off' === $ksum_summaries_diagnostics) {
+    $ksum_diagnostics = esc_attr(get_option('ksum_diagnostics', 'Error'));
+    if ('Off' === $ksum_diagnostics) {
         return;
     }
 
     // Belt and suspenders - make sure the value is either Off or Error
-    if ('On' === $ksum_summaries_diagnostics) {
-        $ksum_summaries_diagnostics = 'Error';
-        update_option('ksum_summaries_diagnostics', $ksum_summaries_diagnostics);
+    if ('On' === $ksum_diagnostics) {
+        $ksum_diagnostics = 'Error';
+        update_option('ksum_diagnostics', $ksum_diagnostics);
     }
 
     $backtrace = debug_backtrace();
@@ -92,35 +92,99 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
     // Message Type: Indicating whether the log is an error, warning, notice, or success message.
     // Prefix the message with [ERROR], [WARNING], [NOTICE], or [SUCCESS].
     // Check for other levels and print messages accordingly
-    if ('Error' === $ksum_summaries_diagnostics) {
+    if ('Error' === $ksum_diagnostics) {
         // Print all types of messages
         error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-        chatbot_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
-    } elseif (in_array($ksum_summaries_diagnostics, ['Success', 'Failure'])) {
+        ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+    } elseif (in_array($ksum_diagnostics, ['Success', 'Failure'])) {
         // Print only SUCCESS and FAILURE messages
         if (in_array($message_type, ['SUCCESS', 'FAILURE'])) {
             error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            chatbot_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
-    } elseif ('Warning' === $ksum_summaries_diagnostics) {
+    } elseif ('Warning' === $ksum_diagnostics) {
         // Print only ERROR and WARNING messages
         if (in_array($message_type, ['ERROR', 'WARNING'])) {
             error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            chatbot_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
-    } elseif ('Notice' === $ksum_summaries_diagnostics) {
+    } elseif ('Notice' === $ksum_diagnostics) {
         // Print ERROR, WARNING, and NOTICE messages
         if (in_array($message_type, ['ERROR', 'WARNING', 'NOTICE'])) {
             error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            chatbot_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
-    } elseif ('Debug' === $ksum_summaries_diagnostics) {
+    } elseif ('Debug' === $ksum_diagnostics) {
         // Print all types of messages
         error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-        chatbot_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+        ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
     } else {
         // Exit if none of the conditions are met
         return;
     }
 
 }
+
+// Log Chatbot Errors to the Server - Ver 1.0.0
+function ksum_error_log($message) {
+
+    global $ksum_plugin_dir_path;
+
+    $chatbot_logs_dir = $ksum_plugin_dir_path . 'logs/';
+
+    // Ensure the directory and index file exist
+    create_directory_and_index_file($chatbot_logs_dir);
+
+    // Get the current date to create a daily log file
+    $current_date = date('Y-m-d');
+    
+    $log_file = $chatbot_logs_dir . 'ksum-error-log-' . $current_date . '.log';
+
+    // Append the error message to the log file
+    file_put_contents($log_file, $message . PHP_EOL, FILE_APPEND | LOCK_EX);
+
+}
+
+// Log Chatbot Errors to the Server - Ver 1.0.0
+function log_ksum_error() {
+
+    global $ksum_plugin_dir_path;
+    
+    if (isset($_POST['error_message'])) {
+        $error_message = sanitize_text_field($_POST['error_message']);
+        $chatbot_logs_dir = $ksum_plugin_dir_path . 'logs/';
+
+        // Ensure the directory and index file exist
+        create_directory_and_index_file($chatbot_logs_dir);
+
+        // Get the current date to create a daily log file
+        $current_date = date('Y-m-d');
+
+        $log_file = $chatbot_logs_dir . 'ksum-error-log-' . $current_date . '.log';
+
+        // Get additional info
+        $session_id = session_id();
+        $user_id = get_current_user_id();
+        $ip_address = $_SERVER['REMOTE_ADDR'];
+        $date_time = date('Y-m-d H:i:s');
+
+        // Construct the log message
+        $log_message = sprintf(
+            "[Chatbot] [ERROR] [%s] [Session ID: %s] [User ID: %s] [IP Address: %s] [%s] [%s]",
+            $date_time,
+            $session_id ? $session_id : 'N/A',
+            $user_id ? $user_id : 'N/A',
+            $ip_address,
+            $error_message,
+            PHP_EOL
+        );
+
+        // Append the error message to the log file
+        file_put_contents($log_file, $log_message, FILE_APPEND | LOCK_EX);
+    }
+    wp_die(); // this is required to terminate immediately and return a proper response
+}
+
+// Register AJAX actions
+add_action('wp_ajax_log_ksum_error', 'log_ksum_error');
+add_action('wp_ajax_nopriv_log_ksum_error', 'log_ksum_error');

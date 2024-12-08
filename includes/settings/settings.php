@@ -28,7 +28,7 @@ function ksum_menu_page() {
 }
 add_action('admin_menu', 'ksum_menu_page');
 
-// Settings page HTML - Ver 1.3.0
+// Settings page HTML - Ver 1.0.0
 function ksum_settings_page_html() {
     
     if (!current_user_can('manage_options')) {

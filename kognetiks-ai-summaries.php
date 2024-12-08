@@ -26,25 +26,28 @@
 defined( 'WPINC' ) || die();
 
 // Plugin version
-global $ksum_summaries_version;
-$ksum_summaries_version = '1.0.0';
+global $ksum_version;
+$ksum_version = '1.0.0';
 
 // Plugin directory path
-global $ksum_summaries_dir_path;
-$ksum_summaries_dir_path = plugin_dir_path( __FILE__ );
+global $ksum_plugin_dir_path;
+$ksum_plugin_dir_path = plugin_dir_path( __FILE__ );
 
 // Plugin directory URL
-global $ksum_summaries_dir_url;
-$ksum_summaries_dir_url = plugin_dir_url( __FILE__ );
+global $ksum_plugin_dir_url;
+$ksum_plugin_dir_url = plugin_dir_url( __FILE__ );
 
 // Declare globals
 global $wpdb;
+global $ksum_ai_summaries_table_name;
+$ksum_ai_summaries_table_name = 'kognetiks_ai_summaries';
 
 // Include the necessary files - Main files
 // TBD
 
 // Include the necessary files - Settings files
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 
 // Include the necessary files - Utilities files
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/deactivate.php';
@@ -62,9 +65,9 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/upgrade.php';
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'ksum_plugin_action_links');
 
 // Diagnostics on/off setting can be set in the settings page
-$ksum_summaries_diagnostics = esc_attr(get_option('ksum_summaries_diagnostics', 'Off'));
+$ksum_diagnostics = esc_attr(get_option('ksum_diagnostics', 'Off'));
 // FIXME - OVERRIDE
-update_option('ksum_summaries_diagnostics', 'Error');
+update_option('ksum_diagnostics', 'Error');
 
 // Activation, deactivation, and uninstall functions
 register_activation_hook(__FILE__, 'ksum_activate');
@@ -78,6 +81,7 @@ function ksum_generate_ai_summary( $pid )  {
 
     global $wpdb;
     global $ksum_settings;
+    global $ksum_ai_summaries_table_name;
 
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = "ai_summary_lock_{$pid}";
@@ -116,8 +120,8 @@ function ksum_generate_ai_summary( $pid )  {
 
     if ( $ai_summary ) {
 
-        // DIAG - Diagnostics - Ver 2.2.1
-        // ksum_back_trace( 'NOTICE', 'AI summary exists' );
+        // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'AI summary exists' );
 
         if ( ksum_ai_summary_is_stale($pid) ) {
             // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
@@ -127,8 +131,8 @@ function ksum_generate_ai_summary( $pid )  {
 
     } else {
 
-        // DIAG - Diagnostics - Ver 2.2.1
-        // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
+        // DIAG - Diagnostics
+        ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
 
         if ($model == null) {
             if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI') {
@@ -149,13 +153,13 @@ function ksum_generate_ai_summary( $pid )  {
     }
 
     // Get the desired excerpt length from options
-    $ai_summary_length = intval( get_option( 'ksum_summaries_length', 55 ) );
+    $ai_summary_length = intval( get_option( 'ksum_length', 55 ) );
 
     // Trim the AI summary to the specified length
     $ai_summary = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
 
-    // DIAG - Diagnostics - Ver 2.2.1
-    // ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
 
     // Release the lock
     delete_transient( $lock_key );
@@ -166,6 +170,8 @@ function ksum_generate_ai_summary( $pid )  {
 
 // Generate an AI summary using the appropriate API
 function ksum_generate_ai_summary_api( $model, $content ) {
+
+    global $ksum_ai_summaries_table_name;
 
     $content = htmlspecialchars(strip_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
@@ -283,12 +289,13 @@ function ksum_generate_ai_summary_api( $model, $content ) {
 // Create the ai summary table if it does not exist
 function ksum_create_ai_summary_table() {
 
-    // DIAG - Diagnostics - Ver 2.2.1
-    // ksum_back_trace( 'NOTICE', 'Creating AI summary table' );
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'Creating AI summary table' );
 
     global $wpdb;
+    global $ksum_ai_summaries_table_name;
 
-    $table_name = $wpdb->prefix . 'ksum_summaries';
+    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -315,15 +322,16 @@ function ksum_create_ai_summary_table() {
 function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
 
-    // DIAG - Diagnostics - Ver 2.2.1
-    // ksum_back_trace( 'NOTICE', 'Inserting AI summary into table' );
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'Inserting AI summary into table' );
 
     global $wpdb;
+    global $ksum_ai_summaries_table_name;
     
     // Create the table if it does not exist
     ksum_create_ai_summary_table();
 
-    $table_name = $wpdb->prefix . 'ksum_summaries';
+    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     $wpdb->insert(
         $table_name,
@@ -344,12 +352,13 @@ function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 // Check if an AI summary exists for a post
 function ksum_ai_summary_exists( $pid ) {
 
-    // DIAG - Diagnostics - Ver 2.2.1
-    // ksum_back_trace( 'NOTICE', 'Checking if AI summary exists' );
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'Checking if AI summary exists' );
 
     global $wpdb;
+    global $ksum_ai_summaries_table_name;
 
-    $table_name = $wpdb->prefix . 'ksum_summaries';
+    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     $query = $wpdb->prepare("SELECT ai_summary, post_modified FROM $table_name WHERE post_id = %d", $pid);
 
@@ -360,15 +369,15 @@ function ksum_ai_summary_exists( $pid ) {
         $ai_summary = $row->ai_summary;
         $post_modified = $row->post_modified;
 
-        // DIAG - Diagnostics - Ver 2.2.1
-        // ksum_back_trace( 'NOTICE', 'AI summary exists for $pid: ' . $pid );
+        // DIAG - Diagnostics
+        ksum_back_trace( 'NOTICE', 'AI summary exists for $pid: ' . $pid );
 
         return $ai_summary;
 
     } else {
 
-        // DIAG - Diagnostics - Ver 2.2.1
-        // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
+        // DIAG - Diagnostics
+        ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
         
         return null;
 
@@ -379,12 +388,13 @@ function ksum_ai_summary_exists( $pid ) {
 // Delete an AI summary from the ai summary table
 function ksum_delete_ai_summary( $pid ) {
 
-    // DIAG - Diagnostics - Ver 2.2.1
-    // ksum_back_trace( 'NOTICE', 'Deleting AI summary from table' );
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'Deleting AI summary from table' );
 
     global $wpdb;
+    global $ksum_ai_summaries_table_name;
 
-    $table_name = $wpdb->prefix . 'ksum_summaries';
+    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     $wpdb->delete(
         $table_name,
@@ -401,12 +411,13 @@ function ksum_delete_ai_summary( $pid ) {
 // Check if an AI summary is stale
 function ksum_ai_summary_is_stale( $pid ) {
 
-    // DIAG - Diagnostics - Ver 2.2.1
-    // ksum_back_trace( 'NOTICE', 'Checking if AI summary is stale' );
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'Checking if AI summary is stale' );
 
     global $wpdb;
+    global $ksum_ai_summaries_table_name;
 
-    $table_name = $wpdb->prefix . 'ksum_summaries';
+    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     // Fetch post_modified from ai_summaries table
     $query = $wpdb->prepare("SELECT post_modified FROM $table_name WHERE post_id = %d", $pid);
@@ -426,15 +437,15 @@ function ksum_ai_summary_is_stale( $pid ) {
     // Compare the dates
     if ( strtotime($ai_post_modified) < strtotime($post_modified) ) {
 
-        // DIAG - Diagnostics - Ver 2.2.1
-        // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
+        // DIAG - Diagnostics
+        ksum_back_trace( 'NOTICE', 'AI summary is stale' );
 
         return true;
 
     } else {
 
-        // DIAG - Diagnostics - Ver 2.2.1
-        // ksum_back_trace( 'NOTICE', 'AI summary is not stale' );
+        // DIAG - Diagnostics
+        ksum_back_trace( 'NOTICE', 'AI summary is not stale' );
 
         return false;
 
@@ -445,12 +456,13 @@ function ksum_ai_summary_is_stale( $pid ) {
 // Update an AI summary in the ai summary table
 function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
-    // DIAG - Diagnostics - Ver 2.2.1
-    // ksum_back_trace( 'NOTICE', 'Updating AI summary in table' );
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'Updating AI summary in table' );
 
     global $wpdb;
+    global $ksum_ai_summaries_table_name;
 
-    $table_name = $wpdb->prefix . 'ksum_summaries';
+    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     $wpdb->query(
         $wpdb->prepare(
@@ -474,7 +486,7 @@ function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // Check if AI summaries are enabled
-    $enabled = esc_attr(get_option( 'ksum_summaries_enabled', 'No' ));
+    $enabled = esc_attr(get_option( 'ksum_enabled', 'No' ));
     $enabled = 'Yes';
     if ( 'Yes' !== $enabled ) {
         return $excerpt; // Return the default excerpt
@@ -503,7 +515,7 @@ function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
     if ( ! empty( $ai_summary ) ) {
 
         // Get the desired excerpt length from options
-        $ai_summary_length = intval( get_option( 'ksum_summaries_length', 55 ) );
+        $ai_summary_length = intval( get_option( 'ksum_length', 55 ) );
 
         // Trim the AI summary to the specified length
         $excerpt = wp_trim_words( $ai_summary, $ai_summary_length, '...' );

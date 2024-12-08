@@ -15,6 +15,8 @@ Effortlessly add artificial intelligent (AI) summaries of your posts and pages.
 
 **Transform Your WordPress Site with the Kognetiks AI Summaries for WordPress Plugin**
 
+With AI Summaries, your content - whether it’s pages, posts, or other published resources - can be automatically summarized by your selected AI Engine, delivering concise, insightful responses to your site visitors.
+
 == Installation ==
 
 **Installing the Kognetiks AI Summaries for WordPress Plugin on Your Site**
