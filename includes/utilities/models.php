@@ -184,3 +184,54 @@ function ksum_nvidia_get_models() {
     return $models;
 
 }
+
+// Base URL for OpenAI API calls
+function ksum_get_openai_api_base_url() {
+
+    return esc_attr(get_option('ksum_openai_base_url', 'https://api.openai.com/v1'));
+
+}
+
+// Base URL for NVIDIA API calls 
+function ksum_get_nvidia_api_base_url() {
+
+    return esc_attr(get_option('ksum_nvidia_base_url', 'https://integrate.api.nvidia.com/v1'));
+
+}
+
+// Base URL for Anthropic API calls
+function ksum_get_anthropic_api_base_url() {
+
+    // FIXME - WHAT IS THE CRRECT URL
+    return esc_attr(get_option('ksum_anthropic_base_url', 'https://api.anthropic.com/v1'));
+
+}
+
+// Function to get the URL for the completions API
+function ksum_get_chat_completions_api_url() {
+
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
+
+    switch ($ksum_ai_platform_choice) {
+        case 'OpenAI':
+            // DIAG - Diagnostics
+            ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: OpenAI API' );
+            return ksum_get_openai_api_base_url() . "/chat/completions";
+            break;
+        case 'NVIDIA':
+            // DIAG - Diagnostics
+            ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: NVIDIA API' );
+            return ksum_get_nvidia_api_base_url() . "/chat/completions";
+            break;
+        case 'Anthropic':
+            // DIAG - Diagnostics
+            ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: Anthropic API' );
+            return ksum_get_anthropic_api_base_url() . "/chat/completions";
+            break;
+        default:
+            // DIAG - Diagnostics
+            ksum_prod_trace( 'ERROR', 'Missing AI platform choice' );
+            break;
+    }
+
+}

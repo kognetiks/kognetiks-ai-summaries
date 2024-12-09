@@ -96,6 +96,9 @@ function ksum_settings_page_html() {
 
             if ($active_tab == 'general') {
 
+                // DIAG - Diagnostics
+                ksum_back_trace( 'NOTICE', 'General Settings' );
+
                 settings_fields('ksum_settings');
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
@@ -103,7 +106,7 @@ function ksum_settings_page_html() {
                 echo '</div>';
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('chatbot_ai_engine_settings');
+                do_settings_sections('ksum_ai_engine_settings');
                 echo '</div>';
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
@@ -112,20 +115,23 @@ function ksum_settings_page_html() {
 
             } elseif ($active_tab == 'api_openai' && $ksum_ai_platform_choice == 'OpenAI') {
 
-                settings_fields('ksum_api_openai');
+                // DIAG - Diagnostics
+                ksum_back_trace( 'NOTICE', 'API/OpenAI Settings' );
+
+                settings_fields('ksum_api_openai_settings');
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_model_settings_general');
+                do_settings_sections('ksum_api_openai_settings_section_section');
                 echo '</div>';
 
                 // API Settings
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_api_openai_general');
+                do_settings_sections('ksum_api_openai_advanced_settings_section');
                 echo '</div>';
 
                 // Advanced Settings
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_api_openai_advanced');
+                do_settings_sections('ksum_api_openai_advanced_settings_section');
                 echo '</div>';
 
             } elseif ($active_tab == 'api_nvidia' && $ksum_ai_platform_choice == 'NVIDIA') {

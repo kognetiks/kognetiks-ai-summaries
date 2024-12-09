@@ -14,7 +14,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // API/OpenAI Settings section callback
-function api_openai_settings_section_callback($args) {
+function ksum_api_openai_settings_section_callback($args) {
     ?>
     <p>Configure the default settings for the plugin to use OpenAI.  Start by adding your API key then selecting your choices below.</p>
     <p>More information about OpenAI models and their capability can be found at <a href="https://platform.openai.com/docs/models/overview" target="_blank">https://platform.openai.com/docs/models/overview</a>.</p>
@@ -37,10 +37,8 @@ function ksum_openai_api_key_callback($args) {
     <?php
 }
 
-// OpenAI Models
+// OpenAI model choice
 // https://platform.openai.com/docs/models
-
-// OpenAI Model choice
 function openai_model_choice_callback($args) {
   
     // Get the saved openai_model_choice value or default to "chatgpt-4o-latest"
@@ -80,3 +78,123 @@ function openai_model_choice_callback($args) {
 
 }
 
+// Set ksum_temperature
+// https://platform.openai.com/docs/assistants/how-it-works/temperature
+function ksum_temperature_callback($args) {
+    $temperature = esc_attr(get_option('ksum_temperature', 0.50));
+    ?>
+    <select id="ksum_temperature" name="ksum_temperature">
+        <?php
+        for ($i = 0.01; $i <= 2.01; $i += 0.01) {
+            echo '<option value="' . $i . '" ' . selected($temperature, (string)$i) . '>' . esc_html($i) . '</option>';
+        }
+        ?>
+    </select>
+    <?php
+}
+
+// Set ksum_top_p
+// https://platform.openai.com/docs/assistants/how-it-works/top-p
+function ksum_top_p_callback($args) {
+    $top_p = esc_attr(get_option('ksum_top_p', 1.00));
+    ?>
+    <select id="ksum_top_p" name="ksum_top_p">
+        <?php
+        for ($i = 0.01; $i <= 1.01; $i += 0.01) {
+            echo '<option value="' . $i . '" ' . selected($top_p, (string)$i) . '>' . esc_html($i) . '</option>';
+        }
+        ?>
+    </select>
+    <?php
+}
+
+// Base URL for the OpenAI API
+function ksum_openai_base_url_callback($args) {
+    $ksum_openai_base_url = esc_attr(get_option('ksum_openai_base_url', ksum_get_openai_api_base_url()));
+    ?>
+    <input type="text" id="ksum_openai_base_url" name="ksum_openai_base_url" value="<?php echo esc_attr( $ksum_openai_base_url ); ?>" class="regular-text">
+    <?php
+}
+
+// Register the OpenAI API settings
+function ksum_api_openai_settings_init() {
+
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'ksum_api_openai_settings_init');
+
+    // Add the settings section
+    add_settings_section(
+        'ksum_api_openai_settings_section',
+        'API/OpenAI Settings',
+        'ksum_api_openai_settings_section_callback',
+        'ksum_api_openai_settings'
+    );
+
+    // OpenAI API Key and Model settings
+
+    register_setting('ksum_api_openai_settings', 'ksum_openai_api_key');
+    register_setting('ksum_api_openai_settings', 'ksum_openai_model_choice');
+
+    add_settings_section(
+        'ksum_api_openai_advanced_settings_section',
+        'API/OpenAI Settings',
+        'ksum_api_openai_settings_section_callback',
+        'ksum_api_openai_settings'
+    );
+
+    add_settings_field(
+        'ksum_openai_api_key',
+        'OpenAI API Key',
+        'ksum_openai_api_key_callback',
+        'ksum_api_openai_settings',
+        'ksum_api_openai_settings_section'
+    );
+
+    add_settings_field(
+        'ksum_openai_model_choice',
+        'OpenAI Model Choice',
+        'openai_model_choice_callback',
+        'ksum_api_openai_settings',
+        'ksum_api_openai_settings_section'
+    );
+
+    // Advanced OpenAI API settings
+
+    register_setting('ksum_api_openai_settings', 'ksum_temperature');
+    register_setting('ksum_api_openai_settings', 'ksum_top_p');
+    register_setting('ksum_api_openai_settings', 'ksum_openai_base_url');
+
+    // Add the settings section
+    add_settings_section(
+        'ksum_api_openai_advanced_settings_section',
+        'API/OpenAI Advanced Settings',
+        'ksum_api_openai_advanced_settings_section_callback',
+        'ksum_api_openai_settings'
+    );
+
+    add_settings_field(
+        'ksum_temperature',
+        'Temperature',
+        'ksum_temperature_callback',
+        'ksum_api_openai_settings',
+        'ksum_api_openai_advanced_settings_section'
+    );
+
+    add_settings_field(
+        'ksum_top_p',
+        'Top P',
+        'ksum_top_p_callback',
+        'ksum_api_openai_settings',
+        'ksum_api_openai_advanced_settings_section'
+    );
+
+    add_settings_field(
+        'ksum_openai_base_url',
+        'OpenAI Base URL',
+        'ksum_openai_base_url_callback',
+        'ksum_api_openai_settings',
+        'ksum_api_openai_advanced_settings_section'
+    );
+
+}
+add_action('admin_init', 'ksum_api_openai_settings_init');

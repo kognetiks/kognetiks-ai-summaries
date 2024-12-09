@@ -31,7 +31,7 @@ function ksum_engine_section_callback($args) {
     // DIAG - Diagnostics - Ver 2.1.8
     back_trace( 'NOTICE', 'ksum_engine_section_callback');
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_plotform_choice', 'OpenAI'));
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
     ?>
     <p>Configure the AI Platform for the Chatbot plugin. The default will be one of <?php echo $ksum_ai_platform_choice ?>'s AI models; assumes you have or will provide a valid API key.</p>
@@ -40,33 +40,33 @@ function ksum_engine_section_callback($args) {
 }
 
 // AI Platform Choice - Ver 2.1.8
-function ksum_ai_plotform_choice_callback($args) {
+function ksum_ai_platform_choice_callback($args) {
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_plotform_choice', 'OpenAI'));
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
     if (empty($ksum_ai_platform_choice) || $ksum_ai_platform_choice == 'OpenAI') {
 
         $ksum_ai_platform_choice = 'OpenAI';
-        update_option('ksum_ai_plotform_choice', 'OpenAI');
+        update_option('ksum_ai_platform_choice', 'OpenAI');
     } else if ($ksum_ai_platform_choice == 'NVIDIA') {
 
         $ksum_ai_platform_choice = 'NVIDIA';
-        update_option('ksum_ai_plotform_choice', 'NVIDIA');
+        update_option('ksum_ai_platform_choice', 'NVIDIA');
 
     } else if ($ksum_ai_platform_choice == 'Anthropic') {
 
         $ksum_ai_platform_choice = 'Anthropic';
-        update_option('ksum_ai_plotform_choice', 'Anthropic');
+        update_option('ksum_ai_platform_choice', 'Anthropic');
 
     } else {
 
         $ksum_ai_platform_choice = 'OpenAI';
-        update_option('ksum_ai_plotform_choice', 'OpenAI');
+        update_option('ksum_ai_platform_choice', 'OpenAI');
 
     }
 
     ?>
-    <select id="ksum_ai_plotform_choice" name="ksum_ai_plotform_choice">
+    <select id="ksum_ai_platform_choice" name="ksum_ai_platform_choice">
         <option value="OpenAI" <?php selected( $ksum_ai_platform_choice, 'OpenAI' ); ?>><?php echo esc_html( 'OpenAI' ); ?></option>
         <option value="NVIDIA" <?php selected( $ksum_ai_platform_choice, 'NVIDIA' ); ?>><?php echo esc_html( 'NVIDIA' ); ?></option>
         <!-- <option value="Anthropic" <?php selected( $ksum_ai_platform_choice, 'Anthropic' ); ?>><?php echo esc_html( 'Anthropic' ); ?></option> -->
@@ -92,20 +92,20 @@ function ksum_additional_selections_section_callback($args) {
 function ksum_additional_selections_callback($args) {
 
     if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI' && esc_attr(get_option('ksum_openai_api_key')) == '') {
-        $ksum_enabled = 'Off';
+        $ksum_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('ksum_ai_platform_choice')) == 'NVIDIA' && esc_attr(get_option('ksum_nvidia_api_key')) == '') {
-        $ksum_enabled = 'Off';
+        $ksum_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('ksum_ai_platform_choice')) == 'Anthropic' && esc_attr(get_option('ksum_anthropic_api_key')) == '') {
-        $ksum_enabled = 'Off';
+        $ksum_ai_summaries_enabled = 'Off';
    } else {
-        $ksum_enabled = 'Off';
+        $ksum_ai_summaries_enabled = 'Off';
     }
 
-    $ksum_enabled = esc_attr(get_option('ksum_enabled', 'Off'));
+    $ksum_ai_summaries_enabled = esc_attr(get_option('ksum_ai_summaries_enabled', 'Off'));
     ?>
-    <select id="ksum_enabled" name="ksum_enabled">
-        <option value="On" <?php selected( $ksum_enabled, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
-        <option value="Off" <?php selected( $ksum_enabled, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
+    <select id="ksum_ai_summaries_enabled" name="ksum_ai_summaries_enabled">
+        <option value="On" <?php selected( $ksum_ai_summaries_enabled, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
+        <option value="Off" <?php selected( $ksum_ai_summaries_enabled, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
     </select>
     <?php    
 }
@@ -126,6 +126,9 @@ function ksum_ai_summaries_length_callback() {
 // Register the general settings
 function ksum_general_settings_init() {
 
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', 'ksum_general_settings_init');
+
     add_settings_section(
         'ksum_general_settings_section',
         'General Settings',
@@ -135,41 +138,43 @@ function ksum_general_settings_init() {
 
     // Platform selection
 
-    register_setting('ksum_settings', 'ksum_ai_plotform_choice');
+    register_setting('ksum_general_settings', 'ksum_ai_platform_choice');
 
     // General Settings - AI Platform Selection
     add_settings_section(
         'ksum_engine_section',
         'AI Platform Selection',
         'ksum_engine_section_callback',
-        'ksum_engine_settings'
+        'ksum_ai_engine_settings'
     );
 
     add_settings_field(
-        'ksum_ai_plotform_choice',
+        'ksum_ai_platform_choice',
         'AI Platform Choice',
-        'ksum_ai_plotform_choice_callback',
-        'ksum_engine_settings',
+        'ksum_ai_platform_choice_callback',
+        'ksum_general_settings',
         'ksum_engine_section'
     );
 
-    // Enable/Disable AI Summaries
+    // Additional Settings
 
-    register_setting('ksum_settings', 'ksum_additional_selections');
+    register_setting('ksum_general_settings', 'ksum_ai_summaries_enabled');
+    register_setting('ksum_general_settings', 'ksum_ai_summaries_length');
+
 
     // AI Enabled Section Selection
     add_settings_section(
         'ksum_additional_selections_section',
-        'Additioanl Selections',
+        'Additional Selections',
         'ksum_additional_selections_section_callback',
         'ksum_additional_selections_settings'
     );
 
     add_settings_field(
-        'ksum_additional_selections',
+        'ksum_ai_summaries_enabled',
         'Turn AI Summaries On/Off',
         'ksum_additional_selections_callback',
-        'ksum_additional_selections_settings',
+        'ksum_general_settings',
         'ksum_additional_selections_section'
     );
 
@@ -177,7 +182,7 @@ function ksum_general_settings_init() {
         'ksum_ai_summaries_length',
         'AI Summaries Length (Words)',
         'ksum_ai_summaries_length_callback',
-        'ksum_additional_selections_settings',
+        'ksum_general_settings',
         'ksum_additional_selections_section'
     );
 

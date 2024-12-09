@@ -46,7 +46,7 @@ $ksum_ai_summaries_table_name = 'kognetiks_ai_summaries';
 // TBD
 
 // Include the necessary files - Settings files
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/ai-platform.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-openai.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
@@ -458,7 +458,7 @@ function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // Check if AI summaries are enabled
-    $enabled = esc_attr(get_option( 'ksum_enabled', 'Off' ));
+    $enabled = esc_attr(get_option( 'ksum_ai_summaries_enabled', 'Off' ));
     $enabled = 'Off';
     if ( 'Off' !== $enabled ) {
         // DIAG - Diagnostics
