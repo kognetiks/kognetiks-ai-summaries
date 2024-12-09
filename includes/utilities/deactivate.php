@@ -32,7 +32,7 @@ function ksum_admin_notices() {
         echo '<div class="notice notice-warning is-dismissible">
             <p><strong>Kognetiks AI Summaries:</strong> Remember to set your data deletion preferences in the plugin settings if you plan to uninstall the plugin.</p>
         </div>';
-        update_option('ksum_delete_data', 'no');
+        update_option('ksum_delete_data', 'No');
 
     }
 
@@ -47,12 +47,12 @@ function ksum_uninstall(){
     ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL STARTED');
 
     // Ask if the data should be removed, if not return
-    if (get_option('ksum_delete_data') != 'yes') {
+    if (get_option('ksum_delete_data') != 'Yes') {
         return;
     }
 
     // Check for a setting that specifies whether to delete data
-    if (get_option('ksum_delete_data') == 'yes') {
+    if (get_option('ksum_delete_data') == 'Yes') {
 
         // Delete AI Summaries options
         ksum_back_trace( 'NOTICE', 'Deleting Plugin One-off options');

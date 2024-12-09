@@ -99,7 +99,7 @@ function ksum_settings_page_html() {
                 // DIAG - Diagnostics
                 ksum_back_trace( 'NOTICE', 'General Settings' );
 
-                settings_fields('ksum_settings');
+                settings_fields('ksum_general_settings');
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
                 do_settings_sections('ksum_general_settings');
@@ -118,15 +118,15 @@ function ksum_settings_page_html() {
                 // DIAG - Diagnostics
                 ksum_back_trace( 'NOTICE', 'API/OpenAI Settings' );
 
-                settings_fields('ksum_api_openai_settings');
+                settings_fields('ksum_api_openai_model');
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_api_openai_settings_section_section');
+                do_settings_sections('ksum_api_openai_settings_section');
                 echo '</div>';
 
                 // API Settings
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_api_openai_advanced_settings_section');
+                do_settings_sections('ksum_api_nvidia_model_settings_section');
                 echo '</div>';
 
                 // Advanced Settings

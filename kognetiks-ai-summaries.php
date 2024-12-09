@@ -46,6 +46,8 @@ $ksum_ai_summaries_table_name = 'kognetiks_ai_summaries';
 // TBD
 
 // Include the necessary files - Settings files
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-anthropic.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-openai.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';

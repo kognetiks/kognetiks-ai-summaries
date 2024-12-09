@@ -140,7 +140,6 @@ function ksum_general_settings_init() {
 
     register_setting('ksum_general_settings', 'ksum_ai_platform_choice');
 
-    // General Settings - AI Platform Selection
     add_settings_section(
         'ksum_engine_section',
         'AI Platform Selection',
@@ -152,7 +151,7 @@ function ksum_general_settings_init() {
         'ksum_ai_platform_choice',
         'AI Platform Choice',
         'ksum_ai_platform_choice_callback',
-        'ksum_general_settings',
+        'ksum_ai_engine_settings',
         'ksum_engine_section'
     );
 
@@ -174,7 +173,7 @@ function ksum_general_settings_init() {
         'ksum_ai_summaries_enabled',
         'Turn AI Summaries On/Off',
         'ksum_additional_selections_callback',
-        'ksum_general_settings',
+        'ksum_additional_selections_settings',
         'ksum_additional_selections_section'
     );
 
@@ -182,7 +181,7 @@ function ksum_general_settings_init() {
         'ksum_ai_summaries_length',
         'AI Summaries Length (Words)',
         'ksum_ai_summaries_length_callback',
-        'ksum_general_settings',
+        'ksum_additional_selections_settings',
         'ksum_additional_selections_section'
     );
 
