@@ -46,6 +46,9 @@ $ksum_ai_summaries_table_name = 'kognetiks_ai_summaries';
 // TBD
 
 // Include the necessary files - Settings files
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/ai-platform.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 
@@ -53,10 +56,11 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/deactivate.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/links.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/models.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/notices.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/restore.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/upgrade.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
 
 // Include the necessary files - Documentation files
 // TBD
@@ -179,76 +183,44 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     // Prepare special instructions if needed
     $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in as few words as possible: ";
 
-    // Retrieve the API key if needed
-    $api_key = '';
-
-    // Belt & Supenders - Ensure a model is selected
-    if ($model == null) {
-
-        if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI') {
-            $model = esc_attr(get_option('chatbot_chatgpt_model_choice', 'gpt-3.5-turbo'));
-        } else if (esc_attr(get_option('ksum_ai_platform_choice')) == 'NVIDIA') {
-            $model = esc_attr(get_option('chatbot_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
-        } else if (esc_attr(get_option('chatbot_ai_platform_choing')) == 'Anthropic') {
-            $model = esc_attr(get_option('chatbot_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
-        } else {
-            $model = null; // No model selected
-        }
-
-    }
-
     // Update the model in settings
     $ksum_settings['model'] = $model;
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
 
     // Call the appropriate API based on the model
     switch (true) {
 
-        case str_starts_with($model, 'gpt'):
+        case str_starts_with($ksum_ai_platform_choice, 'OpenAI'):
 
-            // ksum_back_trace( 'NOTICE', 'Calling ChatGPT API');
-            $api_key = esc_attr(get_option('chatbot_chatgpt_api_key'));
+            // ksum_back_trace( 'NOTICE', 'Calling OpenAI API');
+            $api_key = esc_attr(get_option('ksum_openai_api_key'));
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = chatbot_chatgpt_call_api_basic($api_key, $message);
             break;
 
-        case str_starts_with($model, 'nvidia'):
+        case str_starts_with($ksum_ai_platform_choice, 'NVIDIA'):
 
             // ksum_back_trace( 'NOTICE', 'Calling NVIDIA API');
-            $api_key = esc_attr(get_option('chatbot_nvidia_api_key'));
+            $api_key = esc_attr(get_option('ksum_nvidia_api_key'));
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = chatbot_nvidia_call_api($api_key, $message);
             break;
 
-        case str_starts_with($model, 'anthropic'):
+        case str_starts_with($ksum_ai_platform_choice, 'Anthropic'):
 
             // ksum_back_trace( 'NOTICE', 'Calling Anthropic API');
-            $api_key = esc_attr(get_option('chatbot_anthropic_api_key'));
+            $api_key = esc_attr(get_option('ksum_anthropic_api_key'));
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = chatbot_anthropic_call_api($api_key, $message);
             break;
-
-        case str_starts_with($model, 'markov'):
-
-            // ksum_back_trace( 'NOTICE', 'Calling Markov Chain API');
-            // ksum_back_trace( 'NOTICE', 'No special instructions needed for ');
-            $message = $content;
-            $response = chatbot_chatgpt_call_markov_chain_api($message);
-            break;
-
-        case str_contains($model, 'context-model'):
-
-            // ksum_back_trace( 'NOTICE', 'Calling Transformer Model API');
-            // ksum_back_trace( 'NOTICE', 'No special instructions needed for ');
-            $message = $content;
-            $response = chatbot_chatgpt_call_transformer_model_api($message);
-            break;
             
         default:
 
-            // ksum_back_trace( 'NOTICE', 'No valid model found for AI summary generation');
+            // DIAG - Diagnostics
+            ksum_back_trace( 'NOTICE', 'No valid platform selected for for AI summary generation');
             $response = '';
             break;
 
@@ -313,7 +285,7 @@ function ksum_create_ai_summary_table() {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // ksum_back_trace( 'ERROR', 'Error creating AI summary table' );
+        ksum_prod_trace( 'ERROR', 'Error creating AI summary table' );
     }
 
 }
@@ -344,7 +316,7 @@ function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // ksum_back_trace( 'ERROR', 'Error inserting AI summary into table' );
+        ksum_prod_trace( 'ERROR', 'Error inserting AI summary into table' );
     }
 
 }
@@ -403,7 +375,7 @@ function ksum_delete_ai_summary( $pid ) {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // ksum_back_trace( 'ERROR', 'Error deleting AI summary from table' );
+        ksum_prod_trace( 'ERROR', 'Error deleting AI summary from table' );
     }
 
 }
@@ -477,7 +449,7 @@ function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-        // ksum_back_trace( 'ERROR', 'Error updating AI summary in table' );
+        ksum_prod_trace( 'ERROR', 'Error updating AI summary in table' );
     }
 
 }
@@ -486,10 +458,15 @@ function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // Check if AI summaries are enabled
-    $enabled = esc_attr(get_option( 'ksum_enabled', 'No' ));
-    $enabled = 'Yes';
-    if ( 'Yes' !== $enabled ) {
+    $enabled = esc_attr(get_option( 'ksum_enabled', 'Off' ));
+    $enabled = 'Off';
+    if ( 'Off' !== $enabled ) {
+        // DIAG - Diagnostics
+        ksum_back_trace( 'NOTICE', 'AI summaries are DIABLED' );
         return $excerpt; // Return the default excerpt
+    } else {
+        // DIAG - Diagnostics
+        ksum_back_trace( 'NOTICE', 'AI summaries are ENABLED' );
     }
 
     // Get the global post if not provided
