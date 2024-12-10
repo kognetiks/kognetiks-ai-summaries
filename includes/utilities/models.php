@@ -25,12 +25,18 @@ function ksum_openai_get_models() {
     $default_model_list = '';
     $default_model_list = array(
         array(
-            'id' => 'chatgpt-4o-latest',
-            'object' => 'model',
-            'created' => 0,
-            'owned_by' => 'system'
+            [id] => 'chatgpt-4o-latest',
+            [object] => 'model',
+            [created] => '1723515131',
+            [owned_by] => 'system',
         ),
+
     );
+
+    // See if the option exists, if not then create it and set the default
+    if (get_option('ksum_openai_model_choice') === false) {
+        update_option('ksum_openai_model_choice', 'chatgpt-4o-latest');
+    }
 
     // Check if the API key is empty
     if (empty($api_key)) {
@@ -118,7 +124,7 @@ function ksum_nvidia_get_models() {
 
     // See if the option exists, if not then create it and set the default
     if (get_option('ksum_nvidia_model_choice') === false) {
-        update_option('ksum_nvidia_model_choice', 'nvidia/llama-3_1-nemotron-70b-instruct');
+        update_option('ksum_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct');
     }
 
     // Check if the API key is empty

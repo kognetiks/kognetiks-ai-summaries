@@ -49,6 +49,7 @@ $ksum_ai_summaries_table_name = 'kognetiks_ai_summaries';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-anthropic.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-openai.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-test.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
@@ -163,6 +164,11 @@ function ksum_generate_ai_summary( $pid )  {
 
     // Trim the AI summary to the specified length
     $ai_summary = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
+
+    // Trim the AI summary if it starts with 'Summary: '
+    if ( str_starts_with($ai_summary, 'Summary: ') ) {
+        $ai_summary = substr($ai_summary, 9);
+    }
 
     // DIAG - Diagnostics
     ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
