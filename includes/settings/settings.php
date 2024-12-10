@@ -118,39 +118,39 @@ function ksum_settings_page_html() {
                 // DIAG - Diagnostics
                 ksum_back_trace( 'NOTICE', 'API/OpenAI Settings' );
 
-                settings_fields('ksum_api_openai_model');
+                settings_fields('ksum_openai_settings');
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_api_openai_settings_section');
+                do_settings_sections('ksum_api_openai_general_settings');
                 echo '</div>';
 
                 // API Settings
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_api_nvidia_model_settings_section');
+                do_settings_sections('ksum_openai_model_settings');
                 echo '</div>';
 
                 // Advanced Settings
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_api_openai_advanced_settings_section');
+                do_settings_sections('ksum_openai_advanced_settings');
                 echo '</div>';
 
             } elseif ($active_tab == 'api_nvidia' && $ksum_ai_platform_choice == 'NVIDIA') {
 
-                settings_fields('chatbot_nvidia_api_model');
+                settings_fields('ksum_nvidia_settings');
 
                 // NVIDIA API Settings
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('chatbot_nvidia_model_settings_general');
+                do_settings_sections('ksum_api_nvidia_general_settings');
                 echo '</div>';
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('chatbot_nvidia_api_model_general');
+                do_settings_sections('ksum_nvidia_model_settings');
                 echo '</div>';
 
                 // Advanced Settings
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('chatbot_nvidia_api_model_advanced');
+                do_settings_sections('ksum_nvidia_advanced_settings');
                 echo '</div>';
 
             } elseif ($active_tab == 'reporting') {
