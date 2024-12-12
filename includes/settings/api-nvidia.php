@@ -92,6 +92,22 @@ function ksum_nvidia_advanced_settings_section_callback($args) {
     <?php
 }
 
+// Max Tokens choice
+function ksum_nvidia_max_tokens_callback($args) {
+    // Get the saved ksum_openai_max_tokens_setting or default to 500
+    $max_tokens = esc_attr(get_option('ksum_nvidia_max_tokens_setting', '500'));
+    // Allow for a range of tokens between 100 and 4096 in 100-step increments
+    ?>
+    <select id="ksum_nvidia_max_tokens_setting" name="ksum_nvidia_max_tokens_setting">
+        <?php
+        for ($i=100; $i<=4000; $i+=100) {
+            echo '<option value="' . esc_attr($i) . '" ' . selected($max_tokens, (string)$i, false) . '>' . esc_html($i) . '</option>';
+        }
+        ?>
+    </select>
+    <?php
+}
+
 // Set ksum_nvidia_temperature
 function ksum_nvidia_temperature_callback($args) {
     $temperature = esc_attr(get_option('ksum_nvidia_temperature', 0.50));
@@ -172,6 +188,7 @@ function ksum_nvidia_settings_init() {
 
     // Advanced NVIDIA API settings
 
+    register_setting('ksum_nvidia_settings', 'ksum_nvidia_max_tokens');
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_temperature');
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_top_p');
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_base_url');
@@ -182,6 +199,14 @@ function ksum_nvidia_settings_init() {
         'API/NVIDIA Advanced Settings',
         'ksum_nvidia_advanced_settings_section_callback',
         'ksum_nvidia_advanced_settings'
+    );
+
+    add_settings_field(
+        'ksum_nvidia_max_tokens',
+        'Max Tokens',
+        'ksum_nvidia_max_tokens_callback',
+        'ksum_nvidia_advanced_settings',
+        'ksum_nvidia_advanced_settings_section'
     );
 
     add_settings_field(
@@ -210,5 +235,3 @@ function ksum_nvidia_settings_init() {
 
 }
 add_action('admin_init', 'ksum_nvidia_settings_init');
-
-

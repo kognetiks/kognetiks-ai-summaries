@@ -164,7 +164,7 @@ function ksum_general_settings_init() {
     // AI Enabled Section Selection
     add_settings_section(
         'ksum_additional_selections_section',
-        'Additional Selections',
+        'AI Summary Settings',
         'ksum_additional_selections_section_callback',
         'ksum_additional_selections_settings'
     );

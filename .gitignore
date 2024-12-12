@@ -12,6 +12,7 @@
 .idea/
 debug/
 package.json
+composer.json
 
 # Ignore all files in the results folder
 logs/*

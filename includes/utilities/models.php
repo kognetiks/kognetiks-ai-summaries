@@ -25,10 +25,10 @@ function ksum_openai_get_models() {
     $default_model_list = '';
     $default_model_list = array(
         array(
-            [id] => 'chatgpt-4o-latest',
-            [object] => 'model',
-            [created] => '1723515131',
-            [owned_by] => 'system',
+            'id' => 'chatgpt-4o-latest',
+            'object' => 'model',
+            'created' => '1723515131',
+            'owned_by' => 'system',
         ),
 
     );
@@ -219,25 +219,34 @@ function ksum_get_chat_completions_api_url() {
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
 
     switch ($ksum_ai_platform_choice) {
+
         case 'OpenAI':
+
             // DIAG - Diagnostics
             ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: OpenAI API' );
             return ksum_get_openai_api_base_url() . "/chat/completions";
             break;
+
         case 'NVIDIA':
+
             // DIAG - Diagnostics
             ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: NVIDIA API' );
             return ksum_get_nvidia_api_base_url() . "/chat/completions";
             break;
+
         case 'Anthropic':
+
             // DIAG - Diagnostics
             ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: Anthropic API' );
             return ksum_get_anthropic_api_base_url() . "/chat/completions";
             break;
+
         default:
+
             // DIAG - Diagnostics
             ksum_prod_trace( 'ERROR', 'Missing AI platform choice' );
             break;
+            
     }
 
 }

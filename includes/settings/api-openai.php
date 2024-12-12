@@ -22,7 +22,7 @@ function ksum_openai_general_settings_callback($args) {
     <p>Configure the default settings for the plugin OpenAI for AI Summary generation.  Start by adding your API key then selecting your choices below.</p>
     <p>More information about OpenAI models and their capability can be found at <a href="https://platform.openai.com/docs/models/overview" target="_blank">https://platform.openai.com/docs/models/overview</a>.</p>
     <p><b><i>Don't forget to click </i><code>Save Settings</code><i> to save any changes your might make.</i></b></p>
-    <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the API/OpenAI Settings and additional documentation please click <a href="?page=chatbot-chatgpt&tab=support&dir=api-chatgpt-settings&file=api-chatgpt-model-settings.md">here</a>.</b></p>
+    <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the API/OpenAI Settings and additional documentation please click <a href="?page=kognetiks-ai-summariest&tab=support&dir=api-chatgpt-settings&file=api-chatgpt-model-settings.md">here</a>.</b></p>
     <?php
 }
 
@@ -86,6 +86,22 @@ function ksum_openai_model_choice_callback($args) {
 function ksum_openai_advanced_settings_section_callback($args) {
     ?>
     <p>Configure the advanced settings for the plugin. These settings are optional and can be used to fine-tune the plugin's behavior.</p>
+    <?php
+}
+
+// Max Tokens choice
+function ksum_openai_max_tokens_callback($args) {
+    // Get the saved ksum_openai_max_tokens_setting or default to 500
+    $max_tokens = esc_attr(get_option('ksum_openai_max_tokens_setting', '500'));
+    // Allow for a range of tokens between 100 and 4096 in 100-step increments
+    ?>
+    <select id="ksum_openai_max_tokens_setting" name="ksum_openai_max_tokens_setting">
+        <?php
+        for ($i=100; $i<=4000; $i+=100) {
+            echo '<option value="' . esc_attr($i) . '" ' . selected($max_tokens, (string)$i, false) . '>' . esc_html($i) . '</option>';
+        }
+        ?>
+    </select>
     <?php
 }
 
@@ -171,6 +187,7 @@ function ksum_openai_settings_init() {
 
     // Advanced OpenAI API settings
 
+    register_setting('ksum_openai_settings', 'ksum_openai_max_tokens');
     register_setting('ksum_openai_settings', 'ksum_openai_temperature');
     register_setting('ksum_openai_settings', 'ksum_openai_top_p');
     register_setting('ksum_openai_settings', 'ksum_openai_base_url');
@@ -181,6 +198,14 @@ function ksum_openai_settings_init() {
         'API/OpenAI Advanced Settings',
         'ksum_openai_advanced_settings_section_callback',
         'ksum_openai_advanced_settings'
+    );
+
+    add_settings_field(
+        'ksum_openai_max_tokens',
+        'Max Tokens',
+        'ksum_openai_max_tokens_callback',
+        'ksum_openai_advanced_settings',
+        'ksum_openai_advanced_settings_section'
     );
 
     add_settings_field(
