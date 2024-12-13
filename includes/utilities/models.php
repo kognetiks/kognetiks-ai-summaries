@@ -96,7 +96,7 @@ function ksum_openai_get_models() {
     }
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE' , '$models: ' . print_r($models, true));
+    // ksum_back_trace( 'NOTICE' , '$models: ' . print_r($models, true));
 
     // Return the list of models
     return $models;
@@ -184,32 +184,123 @@ function ksum_nvidia_get_models() {
     }
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE' , '$models: ' . print_r($models, true));
+    // ksum_back_trace( 'NOTICE' , '$models: ' . print_r($models, true));
 
     // Return the list of models
     return $models;
 
 }
 
-// Base URL for OpenAI API calls
-function ksum_get_openai_api_base_url() {
+// Function to get the Model names from Anthropic API
+function ksum_anthropic_get_models() {
 
-    return esc_attr(get_option('ksum_openai_base_url', 'https://api.openai.com/v1'));
+    // https://docs.anthropic.com/en/api/messages-examples
+    // https://docs.anthropic.com/en/docs/models-overview
+    // https://docs.anthropic.com/en/docs/about-claude/models
+
+    // Default model list
+    $default_model_list = '';
+    $default_model_list = array(
+        array(
+            'id' => 'claude-3-5-sonnet-latest',
+            'object' => 'model',
+            'created' => 20241022,
+            'owned_by' => 'anthropic'
+        ),
+        array(
+            'id' => 'claude-3-5-haiku-latest',
+            'object' => 'model',
+            'created' => 20241022,
+            'owned_by' => 'anthropic'
+        ),
+        array(
+            'id' => 'claude-3-opus-latest',
+            'object' => 'model',
+            'created' => 20240229,
+            'owned_by' => 'anthropic'
+        ),
+        array(
+            'id' => 'claude-3-sonnet-20240229',
+            'object' => 'model',
+            'created' => 20240229,
+            'owned_by' => 'anthropic'
+        ),
+        array(
+            'id' => 'claude-3-haiku-20240307',
+            'object' => 'model',
+            'created' => 20240307,
+            'owned_by' => 'anthropic'
+        )
+    );
+
+    // FIXME - Anthropic API does not have an endpoint for models
+    // Call the API to get the models
+
+    // Decode the JSON response
+    // $data = json_decode($response, true);
+
+    // FIXME - Force an error since there is no api endpoint for models
+    $data = array('error' => array('message' => 'No models endpoint available'));
+
+    // Check for API errors
+    if (isset($data['error'])) {
+        // return "Error: " . $data['error']['message'];
+        // On 1st install needs an API key
+        // So return a short list of the base models until an API key is entered
+        return $default_model_list;
+    }
+
+    // Extract the models from the response
+    if (isset($data['data']) && !is_null($data['data'])) {
+        $models = $data['data'];
+    } else {
+        // Handle the case where 'data' is not set or is null
+        $models = []; // Empty array
+        ksum_prod_trace( 'WARNING', 'Data key is not set or is null in the \$data array.');
+    }
+
+    // Ensure $models is an array
+    if (!is_array($models)) {
+        return $default_model_list;
+    } else {
+        // Sort the models by name
+        usort($models, function($a, $b) {
+            return $a['id'] <=> $b['id'];
+        });
+    }
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE' , '$models: ' . print_r($models, true));
+
+    // Return the list of models
+    return $models;
 
 }
 
-// Base URL for NVIDIA API calls 
-function ksum_get_nvidia_api_base_url() {
+// Base URL for API Calls
+function ksum_get_api_base_url() {
 
-    return esc_attr(get_option('ksum_nvidia_base_url', 'https://integrate.api.nvidia.com/v1'));
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
 
-}
+    switch ($ksum_ai_platform_choice) {
 
-// Base URL for Anthropic API calls
-function ksum_get_anthropic_api_base_url() {
+        case 'OpenAI':
+            return esc_attr(get_option('ksum_openai_base_url', 'https://api.openai.com/v1'));
+            break;
 
-    // FIXME - WHAT IS THE CRRECT URL
-    return esc_attr(get_option('ksum_anthropic_base_url', 'https://api.anthropic.com/v1'));
+        case 'NVIDIA':
+            return esc_attr(get_option('ksum_nvidia_base_url', 'https://integrate.api.nvidia.com/v1'));
+            break;
+
+        case 'Anthropic':
+            return esc_attr(get_option('ksum_anthropic_base_url', 'https://api.anthropic.com/v1'));
+            break;
+
+        default:
+            ksum_prod_trace( 'ERROR', 'Missing AI platform choice' );
+            break;
+            
+    }
 
 }
 
@@ -224,21 +315,21 @@ function ksum_get_chat_completions_api_url() {
 
             // DIAG - Diagnostics
             ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: OpenAI API' );
-            return ksum_get_openai_api_base_url() . "/chat/completions";
+            return ksum_get_api_base_url() . "/chat/completions";
             break;
 
         case 'NVIDIA':
 
             // DIAG - Diagnostics
             ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: NVIDIA API' );
-            return ksum_get_nvidia_api_base_url() . "/chat/completions";
+            return ksum_get_api_base_url() . "/chat/completions";
             break;
 
         case 'Anthropic':
 
             // DIAG - Diagnostics
             ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: Anthropic API' );
-            return ksum_get_anthropic_api_base_url() . "/chat/completions";
+            return ksum_get_api_base_url() . "/messages";
             break;
 
         default:

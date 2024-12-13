@@ -52,7 +52,7 @@ function ksum_openai_model_choice_callback($args) {
     $models = ksum_openai_get_models();
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
+    // ksum_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
 
     // Limit the models to chat models
     $models = array_filter($models, function($model) {
@@ -92,10 +92,10 @@ function ksum_openai_advanced_settings_section_callback($args) {
 // Max Tokens choice
 function ksum_openai_max_tokens_callback($args) {
     // Get the saved ksum_openai_max_tokens_setting or default to 500
-    $max_tokens = esc_attr(get_option('ksum_openai_max_tokens_setting', '500'));
+    $max_tokens = esc_attr(get_option('ksum_openai_max_tokens', '500'));
     // Allow for a range of tokens between 100 and 4096 in 100-step increments
     ?>
-    <select id="ksum_openai_max_tokens_setting" name="ksum_openai_max_tokens_setting">
+    <select id="ksum_openai_max_tokens" name="ksum_openai_max_tokens">
         <?php
         for ($i=100; $i<=4000; $i+=100) {
             echo '<option value="' . esc_attr($i) . '" ' . selected($max_tokens, (string)$i, false) . '>' . esc_html($i) . '</option>';
@@ -137,7 +137,7 @@ function ksum_openai_top_p_callback($args) {
 
 // Base URL for the OpenAI API
 function ksum_openai_base_url_callback($args) {
-    $ksum_openai_base_url = esc_attr(get_option('ksum_openai_base_url', ksum_get_openai_api_base_url()));
+    $ksum_openai_base_url = esc_attr(get_option('ksum_openai_base_url', ksum_get_api_base_url()));
     ?>
     <input type="text" id="ksum_openai_base_url" name="ksum_openai_base_url" value="<?php echo esc_attr( $ksum_openai_base_url ); ?>" class="regular-text">
     <?php
@@ -234,5 +234,3 @@ function ksum_openai_settings_init() {
 
 }
 add_action('admin_init', 'ksum_openai_settings_init');
-
-

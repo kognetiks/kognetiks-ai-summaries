@@ -32,7 +32,7 @@ function ksum_openai_api_call($api_key, $message) {
     $model = esc_attr(get_option('ksum_openai_model_choice', 'chatgpt-4o-latest'));
  
     // Max tokens - Ver 1.4.2
-    $max_tokens = intval(esc_attr(get_option('ksum_max_tokens_setting', '500')));
+    $max_tokens = intval(esc_attr(get_option('ksum_openai_max_tokens_setting', '500')));
 
     // Conversation Context - Ver 1.6.1
     $context = esc_attr(get_option('ksum_openai_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));

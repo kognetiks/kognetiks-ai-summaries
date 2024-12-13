@@ -69,7 +69,7 @@ function ksum_ai_platform_choice_callback($args) {
     <select id="ksum_ai_platform_choice" name="ksum_ai_platform_choice">
         <option value="OpenAI" <?php selected( $ksum_ai_platform_choice, 'OpenAI' ); ?>><?php echo esc_html( 'OpenAI' ); ?></option>
         <option value="NVIDIA" <?php selected( $ksum_ai_platform_choice, 'NVIDIA' ); ?>><?php echo esc_html( 'NVIDIA' ); ?></option>
-        <!-- <option value="Anthropic" <?php selected( $ksum_ai_platform_choice, 'Anthropic' ); ?>><?php echo esc_html( 'Anthropic' ); ?></option> -->
+        <option value="Anthropic" <?php selected( $ksum_ai_platform_choice, 'Anthropic' ); ?>><?php echo esc_html( 'Anthropic' ); ?></option>
     </select>
     <?php
 

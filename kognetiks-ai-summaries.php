@@ -43,17 +43,17 @@ global $ksum_ai_summaries_table_name;
 $ksum_ai_summaries_table_name = 'kognetiks_ai_summaries';
 
 // Include the necessary files - Main files
-require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/api-anthropic.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/api-nvidia.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/api-openai.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/nvidia-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/openai-api.php';
 
 // Include the necessary files - Settings files
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-anthropic.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-nvidia.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-openai.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-test.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-status.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-anthropic.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 

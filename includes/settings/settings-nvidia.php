@@ -55,7 +55,7 @@ function ksum_nvidia_model_choice_callback($args) {
     $models = ksum_nvidia_get_models();
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
+    // ksum_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
 
     // Limit the models to chat models
     $models = array_filter($models, function($model) {
@@ -95,10 +95,10 @@ function ksum_nvidia_advanced_settings_section_callback($args) {
 // Max Tokens choice
 function ksum_nvidia_max_tokens_callback($args) {
     // Get the saved ksum_openai_max_tokens_setting or default to 500
-    $max_tokens = esc_attr(get_option('ksum_nvidia_max_tokens_setting', '500'));
+    $max_tokens = esc_attr(get_option('ksum_nvidia_max_tokens', '500'));
     // Allow for a range of tokens between 100 and 4096 in 100-step increments
     ?>
-    <select id="ksum_nvidia_max_tokens_setting" name="ksum_nvidia_max_tokens_setting">
+    <select id="ksum_nvidia_max_tokens" name="ksum_nvidia_max_tokens">
         <?php
         for ($i=100; $i<=4000; $i+=100) {
             echo '<option value="' . esc_attr($i) . '" ' . selected($max_tokens, (string)$i, false) . '>' . esc_html($i) . '</option>';
@@ -138,7 +138,7 @@ function ksum_nvidia_top_p_callback($args) {
 
 // Base URL for the NVIDIA API
 function ksum_nvidia_base_url_callback($args) {
-    $ksum_nvidia_base_url = esc_attr(get_option('ksum_nvidia_base_url', ksum_get_nvidia_api_base_url()));
+    $ksum_nvidia_base_url = esc_attr(get_option('ksum_nvidia_base_url', ksum_get_api_base_url()));
     ?>
     <input type="text" id="ksum_nvidia_base_url" name="ksum_nvidia_base_url" value="<?php echo esc_attr( $ksum_nvidia_base_url ); ?>" class="regular-text">
     <?php

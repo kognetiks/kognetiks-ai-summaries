@@ -153,6 +153,26 @@ function ksum_settings_page_html() {
                 do_settings_sections('ksum_nvidia_advanced_settings');
                 echo '</div>';
 
+            } elseif ($active_tab == 'api_anthropic' && $ksum_ai_platform_choice == 'Anthropic') {
+
+                settings_fields('ksum_anthropic_settings');
+
+                // NVIDIA API Settings
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('ksum_api_anthropic_general_settings');
+                echo '</div>';
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('ksum_anthropic_model_settings');
+                echo '</div>';
+
+                // Advanced Settings
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('ksum_anthropic_advanced_settings');
+                echo '</div>';
+
+
             } elseif ($active_tab == 'reporting') {
 
                 settings_fields('ksum_reporting');
