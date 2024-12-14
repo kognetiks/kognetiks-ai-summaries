@@ -198,8 +198,10 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     $content = htmlspecialchars(strip_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
 
+    $word_count = esc_attr(get_option('ksum_ai_summaries_length', 55));
+
     // Prepare special instructions if needed
-    $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in as few words as possible: ";
+    $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or few words: ";
 
     // Update the model in settings
     $ksum_settings['model'] = $model;
@@ -232,7 +234,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
             $api_key = esc_attr(get_option('ksum_anthropic_api_key'));
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
-            $response = ksum_anthropic_call_api($api_key, $message);
+            $response = ksum_anthropic_api_call($api_key, $message);
             break;
             
         default:

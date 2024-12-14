@@ -63,7 +63,7 @@ function ksum_anthropic_api_call($api_key, $message) {
     // Set the body
     $body = array(
         'model' => $model,
-        'max_tokens' => 500,
+        'max_tokens' => $max_tokens,
         'messages' => array(
             array(
                 'role' => 'user',
