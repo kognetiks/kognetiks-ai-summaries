@@ -17,85 +17,78 @@ if ( ! defined( 'WPINC' ) ) {
 function ksum_anthropic_api_call($api_key, $message) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_anthropic_api_call');
+    ksum_back_trace('NOTICE', 'ksum_anthropic_api_call');
 
     global $errorResponses;
 
-    // The current ChatGPT API URL endpoint for chatgpt-4o-latest
-    // $api_url = ' https://api.anthropic.com/v1/messages';
-    // Set the API endpoint
+    // API URL
     $api_url = ksum_get_chat_completions_api_url();
 
-    // Set the headers
+    // Headers
     $headers = array(
         'x-api-key' => $api_key,
         'anthropic-version' => '2023-06-01',
-        'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json',
     );
 
-    // Select the OpenAI Model
-    // Get the saved model from the settings or default to "chatgpt-4o-latest"
-    $model = esc_attr(get_option('ksum_anthropic_model_choice', 'chatgpt-4o-latest'));
+    // Options
+    $model = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+    $max_tokens = intval(esc_attr(get_option('ksum_anthropic_max_tokens_setting', 500)));
+    $context = sanitize_text_field(esc_attr(get_option('ksum_anthropic_conversation_context', 'Default context.')));
+    $temperature = floatval(esc_attr(get_option('ksum_anthropic_temperature', 0.5)));
+    $top_p = floatval(esc_attr(get_option('ksum_anthropic_top_p', 1.0)));
+    $timeout = intval(esc_attr(get_option('ksum_anthropic_timeout_setting', 240)));
 
-    // FIXME - OVERRIDE MODEL
-    $model = 'claude-3-5-sonnet-20240620';
- 
-    // Max tokens - Ver 1.4.2
-    $max_tokens = intval(esc_attr(get_option('ksum_anthropic_max_tokens_setting', '500')));
-
-    // Conversation Context - Ver 1.6.1
-    $context = esc_attr(get_option('ksum_anthropic_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
-
-    // Temperature - Ver 2.1.8
-    $temperature = floatval(esc_attr(get_option('ksum_anthropic_temperature', '0.5')));
-
-    // Top P - Ver 2.1.8
-    $top_p = floatval(esc_attr(get_option('ksum_anthropic_top_p', '1.0')));
-
-    // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Model: ' . $model);
-    ksum_back_trace( 'NOTICE', 'Max Tokens: ' . $max_tokens);
-    ksum_back_trace( 'NOTICE', 'Context: ' . $context);
-    ksum_back_trace( 'NOTICE', 'Temperature: ' . $temperature);
-    ksum_back_trace( 'NOTICE', 'Top P: ' . $top_p);
-    ksum_back_trace( 'NOTICE', 'Message: ' . $message);
-    
-    // Set the body
-    $body = array(
+    // Body
+    $body = json_encode(array(
         'model' => $model,
         'max_tokens' => $max_tokens,
         'messages' => array(
             array(
                 'role' => 'user',
-                'content' => $message
-            )
-        )
-    );
-
-    // Encode the body
-    $body = json_encode($body);
-
-    // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'URL: ' . $api_url);
-    ksum_back_trace( 'NOTICE', 'Headers: ' . print_r($headers, true));
-    ksum_back_trace( 'NOTICE', 'Body: ' . $body);
-
-    // Call the API
-    $response = wp_remote_post($api_url, array(
-        'headers' => $headers,
-        'body' => $body
+                'content' => $message,
+            ),
+        ),
     ));
 
-    // Get the response body
-    $response_body = wp_remote_retrieve_body($response);
+    // API Call
+    $response = wp_remote_post($api_url, array(
+        'headers' => $headers,
+        'body'    => $body,
+        'timeout' => $timeout,
+    ));
 
-    // Decode the response body
-    $response_body = json_decode($response_body, true);
+    // Handle WP Error
+    if (is_wp_error($response)) {
 
+        // DIAG - Diagnostics
+        ksum_prod_trace('ERROR', 'Error: ' . $response->get_error_message());
+        return isset($errorResponses['api_error']) ? $errorResponses['api_error'] : 'An API error occurred.';
+
+    }
+
+    // Retrieve and Decode Response
+    $response_body = json_decode(wp_remote_retrieve_body($response), true);
+
+    // Handle API Errors
+    if (isset($response_body['error'])) {
+
+        // DIAG - Diagnostics
+        ksum_prod_trace('ERROR', 'Error: Type: ' . $response_body['error']['type'] . ' Message: ' . $response_body['error']['message']);
+        return isset($errorResponses['api_error']) ? $errorResponses['api_error'] : 'An error occurred.';
+
+    }
+
+    // Extract Response
+    if (!empty($response_body['content'][0]['text'])) {
+
+        return $response_body['content'][0]['text'];
+
+    }
+
+    // Fallback Response
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Response: ' . print_r($response_body, true));
+    ksum_prod_trace('ERROR', 'No valid response received from API.');
+    return 'No response received.';
 
-    // Return the response
-    return $response_body;
-    
 }

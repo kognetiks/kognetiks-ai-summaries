@@ -35,7 +35,7 @@ function ksum_admin_notice() {
     }
 
     // Check if notice is already dismissed
-    $ksum_status = get_option('ksum_results');
+    $ksum_status = esc_attr(get_option('ksum_results'));
     if ($ksum_status) {
         // Check if notice is already dismissed
         $dismiss_url = wp_nonce_url(

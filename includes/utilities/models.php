@@ -34,7 +34,7 @@ function ksum_openai_get_models() {
     );
 
     // See if the option exists, if not then create it and set the default
-    if (get_option('ksum_openai_model_choice') === false) {
+    if (esc_attr(get_option('ksum_openai_model_choice')) === false) {
         update_option('ksum_openai_model_choice', 'chatgpt-4o-latest');
     }
 
@@ -123,7 +123,7 @@ function ksum_nvidia_get_models() {
     );
 
     // See if the option exists, if not then create it and set the default
-    if (get_option('ksum_nvidia_model_choice') === false) {
+    if (esc_attr(get_option('ksum_nvidia_model_choice')) === false) {
         update_option('ksum_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct');
     }
 

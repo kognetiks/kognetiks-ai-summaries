@@ -29,7 +29,7 @@ function ksum_anthropic_general_settings_callback($args) {
 
 // API key field callback
 function ksum_anthropic_api_key_callback($args) {
-    $api_key = get_option('ksum_anthropic_api_key');
+    $api_key = esc_attr(get_option('ksum_anthropic_api_key'));
     ?>
     <input type="password" id="ksum_anthropic_api_key" name="ksum_anthropic_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
     <?php
@@ -76,7 +76,7 @@ function ksum_anthropic_model_choice_callback($args) {
         ?>
         <select id="ksum_anthropic_model_choice" name="ksum_anthropic_model_choice">
             <?php foreach ($models as $model): ?>
-                <option value="<?php echo esc_attr($model['id']); ?>" <?php selected(get_option('ksum_anthropic_model_choice'), $model['id']); ?>><?php echo esc_html($model['id']); ?></option>
+                <option value="<?php echo esc_attr($model['id']); ?>" <?php selected(esc_attr(get_option('ksum_anthropic_model_choice')), $model['id']); ?>><?php echo esc_html($model['id']); ?></option>
             <?php endforeach; ?>
             ?>
         </select>

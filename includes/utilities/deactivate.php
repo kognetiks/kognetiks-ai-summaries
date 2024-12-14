@@ -47,12 +47,12 @@ function ksum_uninstall(){
     ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL STARTED');
 
     // Ask if the data should be removed, if not return
-    if (get_option('ksum_delete_data') != 'Yes') {
+    if (esc_attr(get_option('ksum_delete_data')) != 'Yes') {
         return;
     }
 
     // Check for a setting that specifies whether to delete data
-    if (get_option('ksum_delete_data') == 'Yes') {
+    if (esc_attr(get_option('ksum_delete_data')) == 'Yes') {
 
         // Delete AI Summaries options
         ksum_back_trace( 'NOTICE', 'Deleting Plugin One-off options');

@@ -111,7 +111,7 @@ function ksum_additional_selections_callback($args) {
 }
 
 function ksum_ai_summaries_length_callback() {
-    $value = get_option('ksum_ai_summaries_length', 55);
+    $value = esc_attr(get_option('ksum_ai_summaries_length', 55));
     ?>
     <select id="ksum_ai_summaries_length" name="ksum_ai_summaries_length">
         <?php
@@ -126,7 +126,7 @@ function ksum_ai_summaries_length_callback() {
 // Integration with Kognetiks Chatbot for WordPress Plugin
 // Adds the option to include AI summaries in enhanced responses with Knowledge Navigator responses
 function ksum_enhanced_response_include_ai_summary_callback() {
-    $value = get_option('chatbot_chatgpt_enhanced_response_include_ai_summary', 'No');
+    $value = esc_attr(get_option('chatbot_chatgpt_enhanced_response_include_ai_summary', 'No'));
     ?>
     <select id="chatbot_chatgpt_enhanced_response_include_ai_summary" name="chatbot_chatgpt_enhanced_response_include_ai_summary">
         <option value="No" <?php selected( $value, 'No' ); ?>><?php echo esc_html( 'No' ); ?></option>

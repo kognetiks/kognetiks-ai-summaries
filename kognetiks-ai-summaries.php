@@ -93,9 +93,14 @@ function ksum_generate_ai_summary( $pid )  {
 
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = "ai_summary_lock_{$pid}";
+
     if ( get_transient( $lock_key ) ) {
+
+        // DIAG - Diagnostics
         // ksum_back_trace( 'NOTICE', "AI summary generation for Post ID {$pid} is already in progress." );
+
         return null; // Exit early to prevent duplicate processing
+
     }
 
     // Set a transient lock with a timeout of 30 seconds
@@ -105,17 +110,7 @@ function ksum_generate_ai_summary( $pid )  {
     ksum_back_trace( 'NOTICE', 'Generating AI summary' );
     ksum_back_trace( 'NOTICE', '$pid: ' . $pid );
 
-    // Set the model
-    // $ksum_settings = get_option('ksum_settings'); // Assuming this is how you get the settings
-
-    if (isset($ksum_settings['chatbot_chatgpt_model'])) {
-        $model = $ksum_settings['chatbot_chatgpt_model'];
-    } else {
-        $model = null; // or set a default value
-    }
-    // ksum_back_trace( 'NOTICE', '$model at start of AI summaries: ' . $model );
-
-    // Fetch and sanitize the content
+     // Fetch and sanitize the content
     $query = $wpdb->prepare("SELECT post_content, post_modified FROM $wpdb->posts WHERE ID = %d", $pid);
 
     $row = $wpdb->get_row($query);
@@ -123,61 +118,88 @@ function ksum_generate_ai_summary( $pid )  {
     $content = $row->post_content;
     $post_modified = $row->post_modified;
 
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
+
+    switch ($ksum_ai_platform_choice) {
+
+        case 'OpenAI':
+
+            $model = esc_attr(get_option('chatbot_chatgpt_model_choice', 'chatgpt-4o-latest'));
+            break;
+
+        case 'NVIDIA':
+
+            $model = esc_attr(get_option('chatbot_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
+            break;
+
+        case 'Anthropic':
+
+            $model = esc_attr(get_option('chatbot_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+            break;
+
+        default:
+
+            $model = null; // No model selected
+            ksum_prod_trace('ERROR', 'No valid model found for AI summary generation');
+            return;
+
+    }
+
+    
     // Check for an existing AI summary
     $ai_summary = ksum_ai_summary_exists($pid);
+    
+    // Handle a generation error from earlier summarization
+    if ($ai_summary == 'An API error occurred.') {
+        // Try to generate a new AI summary
+        $ai_summary = false;
+    }
 
-    if ( $ai_summary ) {
+    switch ($ai_summary) {
 
-        // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'AI summary exists' );
+        case null:
 
-        if ( ksum_ai_summary_is_stale($pid) ) {
-            // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
+            // DIAG - Diagnostics
+            ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
+
             $ai_summary = ksum_generate_ai_summary_api($model, $content);
-            ksum_update_ai_summary($pid, $ai_summary, $post_modified);
-        }
+            ksum_insert_ai_summary($pid, $ai_summary, $post_modified);
 
-    } else {
+            break;
 
-        // DIAG - Diagnostics
-        ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
+        default:
 
-        if ($model == null) {
-            if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI') {
+            // DIAG - Diagnostics
+            ksum_back_trace( 'NOTICE', 'AI summary exists' );
 
-                $model = esc_attr(get_option('chatbot_chatgpt_model_choice', 'chatgpt-4o-latest'));
-
-            } else if (esc_attr(get_option('ksum_ai_platform_choice')) == 'NVIDIA') {
-
-                $model = esc_attr(get_option('chatbot_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
-
-            } else if (esc_attr(get_option('chatbot_ai_platform_choing')) == 'Anthropic') {
-
-                $model = esc_attr(get_option('chatbot_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
-
-            } else {
-
-                $model = null; // No model selected
-                ksum_prod_trace('ERROR', 'No valid model found for AI summary generation');
-
+            if ( ksum_ai_summary_is_stale($pid) ) {
+                // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
+                $ai_summary = ksum_generate_ai_summary_api($model, $content);
+                ksum_update_ai_summary($pid, $ai_summary, $post_modified);
             }
 
-        }
-
-        $ai_summary = ksum_generate_ai_summary_api($model, $content);
-        ksum_insert_ai_summary($pid, $ai_summary, $post_modified);
+            break;
 
     }
 
     // Get the desired excerpt length from options
-    $ai_summary_length = intval( get_option( 'ksum_length', 55 ) );
+    $ai_summary_length = intval( esc_attr( get_option( 'ksum_ai_summaries_length', 55 ) ) );
 
     // Trim the AI summary to the specified length
     $ai_summary = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
 
-    // Trim the AI summary if it starts with 'Summary: '
-    if ( str_starts_with($ai_summary, 'Summary: ') ) {
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
+
+    // Trim the AI summary if it starts with 'Summary:' or 'Here's a 55-word summary:'
+    if ( strpos($ai_summary, 'Summary: ') === 0 ) {
+
         $ai_summary = substr($ai_summary, 9);
+
+    } elseif ( strpos($ai_summary, "Here's a 55-word summary: ") === 0 ) {
+
+        $ai_summary = substr($ai_summary, 26);
+
     }
 
     // DIAG - Diagnostics
@@ -217,6 +239,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = ksum_openai_api_call($api_key, $message);
+
             break;
 
         case str_starts_with($ksum_ai_platform_choice, 'NVIDIA'):
@@ -226,6 +249,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = ksum_nvidia_call_api($api_key, $message);
+
             break;
 
         case str_starts_with($ksum_ai_platform_choice, 'Anthropic'):
@@ -235,6 +259,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = ksum_anthropic_api_call($api_key, $message);
+
             break;
             
         default:
@@ -242,9 +267,13 @@ function ksum_generate_ai_summary_api( $model, $content ) {
             // DIAG - Diagnostics
             ksum_back_trace( 'NOTICE', 'No valid platform selected for for AI summary generation');
             $response = '';
+
             break;
 
     }
+
+    // DIAG - Diagnostics
+    ksum_back_trace( 'NOTICE', '$response: ' . print_r($response, true));
 
     // REMOVE ANY HTML
     $response = strip_tags($response);
@@ -312,37 +341,50 @@ function ksum_create_ai_summary_table() {
 
 }
 
-// Insert an AI summary into the AI summary table
+// Insert or update an AI summary in the AI summary table
 function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Inserting AI summary into table' );
+    ksum_back_trace( 'NOTICE', 'Inserting or updating AI summary into table' );
 
     global $wpdb;
     global $ksum_ai_summaries_table_name;
-    
+
     // Create the table if it does not exist
     ksum_create_ai_summary_table();
 
     $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
-    $wpdb->insert(
-        $table_name,
-        array(
-            'post_id' => $pid,
-            'ai_summary' => $ai_summary,
-            'post_modified' => $post_modified
-        )
+    // Prepare SQL to handle existing rows
+    $sql = $wpdb->prepare(
+        "INSERT INTO $table_name (post_id, ai_summary, post_modified)
+        VALUES (%d, %s, %s)
+        ON DUPLICATE KEY UPDATE
+        ai_summary = VALUES(ai_summary),
+        post_modified = VALUES(post_modified)",
+        $pid,
+        $ai_summary,
+        $post_modified
     );
+
+    // Execute the query
+    $result = $wpdb->query( $sql );
 
     // Handle any errors
     if ( $wpdb->last_error ) {
 
-        ksum_prod_trace( 'ERROR', 'Error inserting AI summary into table' );
+        ksum_prod_trace( 'ERROR', 'Error inserting or updating AI summary: ' . $wpdb->last_error );
+
+    } else {
+
+        ksum_back_trace( 'NOTICE', 'AI summary successfully inserted or updated.' );
 
     }
 
+    return $result; // Return result for further processing if needed
+
 }
+
 
 // Check if an AI summary exists for a post
 function ksum_ai_summary_exists( $pid ) {
@@ -523,7 +565,7 @@ function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
     if ( ! empty( $ai_summary ) ) {
 
         // Get the desired excerpt length from options
-        $ai_summary_length = intval( get_option( 'ksum_length', 55 ) );
+        $ai_summary_length = intval( esc_attr( get_option( 'ksum_length', 55 ) ) );
 
         // Trim the AI summary to the specified length
         $excerpt = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
