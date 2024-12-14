@@ -34,7 +34,7 @@ function ksum_anthropic_api_call($api_key, $message) {
     // Options
     $model = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
     $max_tokens = intval(esc_attr(get_option('ksum_anthropic_max_tokens_setting', 500)));
-    $context = sanitize_text_field(esc_attr(get_option('ksum_anthropic_conversation_context', 'Default context.')));
+    $context = sanitize_text_field(esc_attr(get_option('ksum_anthropic_conversation_context', '')));
     $temperature = floatval(esc_attr(get_option('ksum_anthropic_temperature', 0.5)));
     $top_p = floatval(esc_attr(get_option('ksum_anthropic_top_p', 1.0)));
     $timeout = intval(esc_attr(get_option('ksum_anthropic_timeout_setting', 240)));
