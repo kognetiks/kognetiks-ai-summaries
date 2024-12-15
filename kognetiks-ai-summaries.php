@@ -559,7 +559,7 @@ function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
     }
 
     // Attempt to generate or retrieve the AI summary
-    $ai_summary = ksum_generate_ai_summary( $post->ID ); // Replace with your actual function
+    $ai_summary = ksum_generate_ai_summary( $post->ID );
 
     // If AI summary exists, use it
     if ( ! empty( $ai_summary ) ) {
