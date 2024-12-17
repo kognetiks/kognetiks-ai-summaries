@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Simplified Settings Links
+ * Kognetiks AI Summaries - Simplified Settings Links
  *
  * This file contains the code for deactivating and/or deleting the plugin.
  * 
@@ -28,7 +28,7 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'ksum_plugin_a
 function ksum_plugin_row_meta( $links, $file ) {
 
     if ( plugin_basename( __FILE__ ) == $file ) {
-        $deactivate_link = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( plugin_basename( __FILE__ ) ), 'deactivate-plugin_' . plugin_basename( __FILE__ ) ) . '">' . __( 'Deactivate', 'chatbot-chatgpt' ) . '</a>';
+        $deactivate_link = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( plugin_basename( __FILE__ ) ), 'deactivate-plugin_' . plugin_basename( __FILE__ ) ) . '">' . __( 'Deactivate', 'kognetiks-ai-summaries' ) . '</a>';
         $links[] = $deactivate_link;
     }
     return $links;

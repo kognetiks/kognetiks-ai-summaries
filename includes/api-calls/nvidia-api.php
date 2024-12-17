@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - NVIDIA API - Ver 1.0.0
+ * Kognetiks AI Summaries - NVIDIA API - Ver 1.0.0
  *
  * This file contains the code for the NVIDIA API calls.
  *

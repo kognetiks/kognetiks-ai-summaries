@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Settings - API/Model Status
+ * Kognetiks AI Summaries - Settings - API/Model Status
  *
  * This file contains the code for the checking the API status.
  *
@@ -36,28 +36,15 @@ function ksum_test_api_status() {
             // Call the API to test the connection
             $updated_status = ksum_openai_api_call($api_key, $test_message);
 
+            ksum_back_trace('NOTICE', 'API Response: ' . print_r($updated_status, true));
+
             // Check for API-specific errors
-            //
-            // https://platform.openai.com/docs/guides/error-codes/api-errors
-            //
-            $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
-
-            if (isset($response_body['error'])) {
-
-                $error_type = $response_body['error']['type'] ?? 'Unknown';
-                $error_message = $response_body['error']['message'] ?? 'No additional information.';
-                $updated_status = 'API Error Type: ' . $error_type . ' Message: ' . $error_message;
-
-            } elseif (!empty($response_body['choices'])) {
-
-                $updated_status = 'Success: Connection to the ' . $ksum_ai_platform_choice . ' API was successful!';
-                // back_trace( 'SUCCESS', 'API Status: ' . $updated_status);
-
+            // if $response start  with "Error" then it is an error
+            if (strpos($response, 'An error occurred.') === 0) {
+                $updated_status = 'Error: Unexpected response format from the ' . $ksum_ai_platform_choice . ' API. Please check Settings for a valid API key or your ' . $ksum_ai_platform_choice . ' account for additional information.';
             } else {
-
-                $updated_status = 'Error: Unable to fetch response from the ' . $ksum_ai_platform_choice . ' API. Please check Settings for a valid API key or your ' . $ksum_ai_platform_choice . ' account for additional information.';
-                // back_trace( 'ERROR', 'API Status: ' . $updated_status);
-                
+                $updated_status = 'Success: Connection to the ' . $ksum_ai_platform_choice . ' API was successful!';
+                ksum_back_trace('SUCCESS', 'API Status: ' . $updated_status);
             }
 
             update_option('ksum_api_status', $updated_status);
@@ -75,22 +62,15 @@ function ksum_test_api_status() {
             // Call the API to test the connection
             $updated_status = ksum_nvidia_api_call($api_key, $test_message);
 
-            if (isset($response_body['error'])) {
+            ksum_back_trace('NOTICE', 'API Response: ' . print_r($updated_status, true));
 
-                $error_type = $response_body['error']['type'] ?? 'Unknown';
-                $error_message = $response_body['error']['message'] ?? 'No additional information.';
-                $updated_status = 'API Error Type: ' . $error_type . ' Message: ' . $error_message;
-
-            } elseif (!empty($response_body['choices'])) {
-
-                $updated_status = 'Success: Connection to the ' . $ksum_ai_platform_choice . ' API was successful!';
-                // back_trace( 'SUCCESS', 'API Status: ' . $updated_status);
-
+            // Check for API-specific errors
+            // if $response start  with "Error" then it is an error
+            if (strpos($response, 'An error occurred.') === 0) {
+                $updated_status = 'Error: Unexpected response format from the ' . $ksum_ai_platform_choice . ' API. Please check Settings for a valid API key or your ' . $ksum_ai_platform_choice . ' account for additional information.';
             } else {
-
-                $updated_status = 'Error: Unable to fetch response from the ' . $ksum_ai_platform_choice . ' API. Please check Settings for a valid API key or your ' . $ksum_ai_platform_choice . ' account for additional information.';
-                // back_trace( 'ERROR', 'API Status: ' . $updated_status);
-                
+                $updated_status = 'Success: Connection to the ' . $ksum_ai_platform_choice . ' API was successful!';
+                ksum_back_trace('SUCCESS', 'API Status: ' . $updated_status);
             }
 
             update_option('ksum_api_status', $updated_status);
@@ -106,24 +86,17 @@ function ksum_test_api_status() {
             $model = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
             
             // Call the API to test the connection
-            $response_body = ksum_anthropic_api_call($api_key, $test_message);
-            
-            if (isset($response_body['error'])) {
-                // Handle error response
-                $error_type = $response_body['error']['type'] ?? 'Unknown';
-                $error_message = $response_body['error']['message'] ?? 'No additional information.';
-                $updated_status = 'API Error Type: ' . $error_type . ' Message: ' . $error_message;
-                back_trace('ERROR', 'API Status: ' . $updated_status);
-            
-            } elseif (isset($response_body['content']) && is_array($response_body['content'])) {
-                // Handle successful response
-                $updated_status = 'Success: Connection to the ' . $ksum_ai_platform_choice . ' API was successful!';
-                back_trace('SUCCESS', 'API Status: ' . $updated_status);
-            
-            } else {
-                // Handle unexpected response structure
+            $response = ksum_anthropic_api_call($api_key, $test_message);
+
+            ksum_back_trace('NOTICE', 'API Response: ' . $response);
+
+            // Check for API-specific errors
+            // if $response start  with "Error" then it is an error
+            if (strpos($response, 'An error occurred.') === 0) {
                 $updated_status = 'Error: Unexpected response format from the ' . $ksum_ai_platform_choice . ' API. Please check Settings for a valid API key or your ' . $ksum_ai_platform_choice . ' account for additional information.';
-                back_trace('ERROR', 'API Status: ' . $updated_status);
+            } else {
+                $updated_status = 'Success: Connection to the ' . $ksum_ai_platform_choice . ' API was successful!';
+                ksum_back_trace('SUCCESS', 'API Status: ' . $updated_status);
             }
             
             update_option('ksum_api_status', $updated_status);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - OpenAI API - Ver 1.0.0
+ * Kognetiks AI Summaries - OpenAI API - Ver 1.0.0
  *
  * This file contains the code for the OpenAI API calls.
  *
@@ -59,7 +59,7 @@ function ksum_openai_api_call($api_key, $message) {
 
     $args = array(
         'headers' => $headers,
-        'body' => json_encode($body),
+        'body' => wp_json_encode($body),
         'method' => 'POST',
         'data_format' => 'body',
         'timeout' => $timeout, // Increase the timeout values to 15 seconds to wait just a bit longer for a response from the engine

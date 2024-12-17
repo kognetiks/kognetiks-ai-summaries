@@ -1,12 +1,16 @@
-# **Kognetiks AI Summaries for WordPress** Plugin Documentation
+# **Kognetiks AI Summaries** Plugin Documentation
 
-**Kognetiks AI Summaries for WordPress** is a powerful plugin designed to simplify the creation of engaging, AI-generated excerpts for your pages, posts, and other published content.  Harness the power of artificial intelligence to automatically craft concise, insightful summaries using your preferred AI engine.  These polished excerpts seamlessly enhance your site, offering visitors clear and impactful content wherever excerpts are displayed.
+**Kognetiks AI Summaries** is a powerful plugin designed to simplify the creation of engaging, AI-generated excerpts for your pages, posts, and other published content.  Harness the power of artificial intelligence to automatically craft concise, insightful summaries using your preferred AI engine.  These polished excerpts seamlessly enhance your site, offering visitors clear and impactful content wherever excerpts are displayed.
 
-Use the AI platform of your choice - like those from OpenAI, NVIDIA, Anthropic and others - to create your summaries.
+The **Kognetiks AI Summaries** is powered by OpenAI, NVIDIA, Anthropic or other AI platforms tp be announced, via their APIs and Models to bring artificial intelligence to life within your WordPress website.
 
-The **Kognetiks Chatbot for WordPress** is powered by OpenAI, NVIDIA, Anthropic or other AI platforms, via their APIs and Models to bring artificial intelligence to life within your WordPress website.
+**Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly. You can obtain an API key by signing up with one of the vendors below:
 
-**Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly. You can obtain an API key by signing up at https://platform.openai.com/account/api-keys or https://build.nvidia.com/nim.
+- [OpenAI](https://platform.openai.com/account/api-keys)
+
+- [NVIDIA](https://build.nvidia.com/nim)
+
+- [Anthropic](https://console.anthropic.com)
 
 ### Kognetiks AI Summaries 🎉
 
@@ -18,13 +22,15 @@ With AI Summaries, your content - whether it’s pages, posts, or other resource
 - **Improved Search Results**: Replace traditional excerpts with AI summaries for a more dynamic search experience.  
 - **Customizable Summary Length**: Set the word count for summaries, from bite-sized insights to detailed overviews.
 
-This update makes your chatbot smarter, faster, and more engaging, while ensuring that visitors quickly grasp the key takeaways from your content.
+This update makes your site excerpts smarter and more engaging, while ensuring that visitors quickly grasp the key takeaways from your content.
 
-Start using AI Summaries today and take your chatbot experience to the next level! 🚀
+Start using AI Summaries today and take your site excerpts to the next level! 🚀
 
 ## Documentation
 
-TBW
+What's new in Version 1.0.0
+
+- It's a new plugin!!!
 
 ## Quick Start
 
@@ -40,37 +46,17 @@ TBW
 
 - [General](settings/settings.md)
 
-- [API/ChatGPT Settings](api-chatgpt-settings/api-chatgpt-model-settings.md)
+- [API/OpenAI Settings](api-settings/api-openai-settings.md)
 
-- [API/NVIDIA Settings](api-nvidia-settings/api-nvidia-model-settings.md)
+- [API/NVIDIA Settings](api-settings/api-nvidia-settings.md)
 
-- [Assistants](assistants/manage-assistants.md)
+- [API/Anthropic Settings](api-settings/api-anthropic-settings.md)
 
-- [AI Summaries Settings](ai-summaries/ai-summaries.md)
-
-- [Avatars](avatars/avatars.md)
-
-- [Appearance](appearance/appearance.md)
-
-- [Buttons](buttons/buttons.md)
-
-- [Knowledge Navigator](knowledge-navigator/knowledge-navigator.md)
-
-- [Analysis](analysis/analysis.md)
-
-- [Reporting](reporting/reporting.md)
-
-- [Messages](messages/messages.md)
-
-- [Tools](tools/tools.md)
+- [Diagnostics](diagnostics/diagnostics.md)
 
 ## Support
 
-- [How the Kognetiks Chatbot Works](support/how-it-works.md)
-
-- [Chatbots and Assistants](support/chatbots-and-assistants.md)
-
-- [Conversation Logging and History](support/conversation-logging-and-history.md)
+- [How the Kognetiks AI Summaries Plugin Works](support/how-it-works.md)
 
 - [API Key Safety and Security](support/api-key-safety-and-security.md)
 
@@ -86,7 +72,7 @@ While AI-powered applications strive for accuracy, they can sometimes make mista
 
 ## Disclaimer
 
-OpenAI, ChatGPT, and their respective trademarks are registered trademarks of OpenAI. NVIDIA, NIM, and their respective trademarks are registered trademarks of NVIDIA. Anthropic, Claude, and their respective trademarks are registered trademarks of Anthropic. Kognetiks is an independent entity and is neither affiliated with, endorsed by, nor sponsored by OpenAI, NVIDIA, Anthropic, or other entitity.
+WordPress is a registered trademark owned by the WordPress Foundation. OpenAI, ChatGPT, and their respective trademarks are registered trademarks of OpenAI. NVIDIA, NIM, and their respective trademarks are registered trademarks of NVIDIA. Anthropic, Claude, and their respective trademarks are registered trademarks of Anthropic. Kognetiks is an independent entity and is neither affiliated with, endorsed by, nor sponsored by OpenAI, NVIDIA, Anthropic, or other entitity.
 
 ---
 

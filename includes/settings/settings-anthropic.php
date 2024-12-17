@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Anthorpic API Settings - Ver 1.0.0
+ * Kognetiks AI Summaries - Anthorpic API Settings - Ver 1.0.0
  *
  * This file contains the code for the Anthropic API settings page.
  * It handles the support settings and other parameters.
@@ -115,7 +115,7 @@ function ksum_anthropic_temperature_callback($args) {
     <select id="ksum_anthropic_temperature" name="ksum_anthropic_temperature">
         <?php
         for ($i = 0.01; $i <= 2.01; $i += 0.01) {
-            echo '<option value="' . $i . '" ' . selected($temperature, (string)$i) . '>' . esc_html($i) . '</option>';
+            echo '<option value="' . esc_attr($i) . '" ' . selected($temperature, (string)$i, false) . '>' . esc_html($i) . '</option>';
         }
         ?>
     </select>
@@ -129,7 +129,7 @@ function ksum_anthropic_top_p_callback($args) {
     <select id="ksum_open_aitop_p" name="ksum_anthropic_top_p">
         <?php
         for ($i = 0.01; $i <= 1.01; $i += 0.01) {
-            echo '<option value="' . $i . '" ' . selected($top_p, (string)$i) . '>' . esc_html($i) . '</option>';
+            echo '<option value="' . esc_attr($i) . '" ' . selected($top_p, (string)$i, false) . '>' . esc_html($i) . '</option>';
         }
         ?>
     </select>

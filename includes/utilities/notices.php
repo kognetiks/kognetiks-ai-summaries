@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Notices
+ * Kognetiks AI Summaries - Notices
  *
  * This file contains the code for handling notices.
  *
@@ -17,7 +17,11 @@ if ( ! defined( 'WPINC' ) ) {
 // General function to display the message
 function ksum_general_admin_notice($message = null) {
     if (!empty($message)) {
-        printf('<div class="%1$s"><p><strong>Kognetiks AI Summaries: </strong>%2$s</p></div>', 'notice notice-error is-dismissible', $message);
+        printf(
+            '<div class="%1$s"><p><strong>Kognetiks AI Summaries: </strong>%2$s</p></div>',
+            esc_attr('notice notice-error is-dismissible'),
+            $message
+        );
         return;
     }
 }
@@ -43,7 +47,7 @@ function ksum_admin_notice() {
             'dismiss_ksum_notice',
             '_ksum_dismiss_nonce'
         );
-        echo '<div class="notice notice-success is-dismissible"><p><strong>Kognetiks AI Summaries:</strong> ' . $ksum_status . ' <a href="' . $dismiss_url . '">Dismiss</a></p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p><strong>Kognetiks AI Summaries:</strong> ' . esc_html($ksum_status) . ' <a href="' . esc_url($dismiss_url) . '">Dismiss</a></p></div>';
     }
 
 }
@@ -53,7 +57,7 @@ add_action('admin_notices', 'ksum_admin_notice');
 
 function dismiss_ksum_notice() {
 
-    if (isset($_GET['dismiss_ksum_notice'])) {
+    if (isset($_GET['dismiss_ksum_notice']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'ksum_dismiss_notice')) {
         delete_option('ksum_status');
     }
 

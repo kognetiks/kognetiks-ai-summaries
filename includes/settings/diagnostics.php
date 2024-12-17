@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Settings - Diagnostics
+ * Kognetiks AI Summaries - Settings - Diagnostics
  *
  * This file contains the code for the Diagnostics settings page.
  * It allows users to configure the reporting and other parameters
@@ -20,7 +20,7 @@ function ksum_diagnostics_overview_section_callback($args) {
         <p>The Diagnostics tab checks the API status and set options for diagnostics and notices.</p>
         <p>You can turn on/off console and error logging (as of Version 1.0.0 most are now commented out).</p>
         <p><b><i>Don't forget to click </i><code>Save Settings</code><i> to save any changes your might make.</i></b></p>
-        <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation on how to use the diagnostics, messages, and additional documentation please click <a href="?page=kognetiks-ai-summaries&tab=support&dir=messages&file=messages.md">here</a>.</b></p>
+        <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation on how to use the diagnostics, messages, and additional documentation please click <a href="?page=kognetiks-ai-summaries&tab=support&dir=diagnostics&file=diagnostics.md">here</a>.</b></p>
     <?php
 }
 
@@ -36,11 +36,11 @@ function ksum_diagnostics_system_settings_section_callback($args) {
     // Get WordPress version
     global $wp_version;
 
-    echo '<p>Kognetiks AI Summaries Version: <b>' . ksum_get_plugin_version() . '</b><br>';
-    echo 'PHP Version: <b>' . $php_version . '</b><br>';
-    echo 'PHP Memory Limit: <b>' . ini_get('memory_limit') . '</b><br>';
-    echo 'WordPress Version: <b>' . $wp_version . '</b><br>';
-    echo 'WordPress Language Code: <b>' . get_locale() . '</b></p>';
+    echo '<p>Kognetiks AI Summaries Version: <b>' . esc_html( ksum_get_plugin_version() ) . '</b><br>';
+    echo 'PHP Version: <b>' . esc_html( $php_version ) . '</b><br>';
+    echo 'PHP Memory Limit: <b>' . esc_html( ini_get('memory_limit') ) . '</b><br>';
+    echo 'WordPress Version: <b>' . esc_html( $wp_version ) . '</b><br>';
+    echo 'WordPress Language Code: <b>' . esc_html( get_locale() ) . '</b></p>';
 
 }
 
@@ -174,7 +174,7 @@ function ksum_diagnostics_settings_init() {
     // Option to set diagnostics on/off
     add_settings_field(
         'ksum_diagnostics',
-        'Chatbot Diagnostics',
+        'Plugin Diagnostics',
         'ksum_diagnostics_setting_callback',
         'ksum_diagnostics',
         'ksum_diagnostics_section'

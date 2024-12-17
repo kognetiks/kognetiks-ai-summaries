@@ -13,7 +13,7 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Set up the Chatbot Main Menu Page - Ver 1.0.0
+// Set up the plugin Main Menu Page - Ver 1.0.0
 function ksum_menu_page() {
 
     add_menu_page(
@@ -35,23 +35,15 @@ function ksum_settings_page_html() {
         return;
     }
 
-    global $ksum_plugin_version;
+    // Verify the nonce for tab navigation
+    if (isset($_GET['ksum_tab_nonce'])) {
+        check_admin_referer('ksum_tab_navigation', 'ksum_tab_nonce');
+    }
 
-    global $ksum_settings;
+    $active_tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'general';
+    $settings_updated = isset($_GET['settings-updated']) ? sanitize_text_field(wp_unslash($_GET['settings-updated'])) : '';
 
-    $ksum_settings['ksum_version'] = $ksum_plugin_version;
-    $ksum_settings_json = wp_json_encode($ksum_settings);
-    $escaped_ksum_settings_json = esc_js($ksum_settings_json);
-    // FIXME - DO I NEED THIS - IF SO FOR WHAT
-    // wp_add_inline_script('ksum-local', 'if (typeof ksum_settings === "undefined") { var ksum_settings = ' . $escaped_ksum_settings_json . '; } else { ksum_settings = ' . $escaped_ksum_settings_json . '; }', 'before');
-    
-    // Localize the settings
-    // FIXME - DO I NEED THIS - IF SO FOR WHAT
-    // ksum_localize();
-
-    $active_tab = $_GET['tab'] ?? 'general';
-   
-    if (isset($_GET['settings-updated']) && $_GET['settings-updated']) {
+    if ($settings_updated) {
         add_settings_error('ksum_messages', 'ksum_message', 'Settings Saved', 'updated');
         settings_errors('ksum_messages');
     }
@@ -80,7 +72,7 @@ function ksum_settings_page_html() {
     <div class="wrap">
         <h1><span class="dashicons dashicons-text"></span> AI Summaries Settings</h1>
 
-       <h2 class="nav-tab-wrapper">
+        <h2 class="nav-tab-wrapper">
             <a href="?page=kognetiks-ai-summaries&tab=general" class="nav-tab <?php echo $active_tab == 'general' ? 'nav-tab-active' : ''; ?>">General</a>
             <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'OpenAI') { ?><a href="?page=kognetiks-ai-summaries&tab=api_openai" class="nav-tab <?php echo $active_tab == 'api_openai' ? 'nav-tab-active' : ''; ?>">API/OpenAI</a> <?php } ?>
             <?php if (esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI')) == 'NVIDIA') { ?><a href="?page=kognetiks-ai-summaries&tab=api_nvidia" class="nav-tab <?php echo $active_tab == 'api_nvidia' ? 'nav-tab-active' : ''; ?>">API/NVIDIA</a> <?php } ?>
@@ -89,8 +81,11 @@ function ksum_settings_page_html() {
             <a href="?page=kognetiks-ai-summaries&tab=support" class="nav-tab <?php echo $active_tab == 'support' ? 'nav-tab-active' : ''; ?>">Support</a>
        </h2>
 
+
        <form id="ksum-settings-form" action="options.php" method="post">
             <?php
+
+            wp_nonce_field('ksum_settings_save', 'ksum_nonce'); // Nonce field
 
             $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 

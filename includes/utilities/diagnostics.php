@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Diagnostics - Ver 1.0.0
+ * Kognetiks AI Summaries - Diagnostics - Ver 1.0.0
  *
  * This file contains the code for the Kognetiks AI Summaries diagnostics.
  * It handles the support settings and other parameters.
@@ -33,8 +33,8 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
     // Uncomment the // ksum_back_trace() function in the file(s) where you want to log messages
     // Or add new // ksum_back_trace() calls to log messages at any point in the code
     //
-    // Go to the Chatbot Settings, then the Messages tab
-    // Set the Chatbot Diagnotics to one of Off, Success, Notice, Failure, Warning, or Error
+    // Go to the Kogentiks AI Summaries Settings, then the Messages tab
+    // Set the Plugin Diagnotics to one of Off, Success, Notice, Failure, Warning, or Error
     //
     // Each level will log messages based on the following criteria (Off will not log any messages)
     // [ERROR], [WARNING], [NOTICE], or [SUCCESS]
@@ -81,7 +81,7 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
 
     // Convert the message to a string if it's an array
     if (is_array($message)) {
-        $message = print_r($message, true); // Return the output as a string
+        $message = wp_debug_backtrace_summary(); // Get a summary of the backtrace for debugging
     }
 
     // Upper case the message type
@@ -125,66 +125,81 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
 
 }
 
-// Log Chatbot Errors to the Server - Ver 1.0.0
+// Log plugin errors to the server - Ver 1.0.0
 function ksum_error_log($message) {
 
+    global $wp_filesystem;
+
     global $ksum_plugin_dir_path;
 
-    $chatbot_logs_dir = $ksum_plugin_dir_path . 'logs/';
+    $ksum_logs_dir = $ksum_plugin_dir_path . 'logs/';
 
     // Ensure the directory and index file exist
-    create_directory_and_index_file($chatbot_logs_dir);
+    create_directory_and_index_file($ksum_logs_dir);
 
     // Get the current date to create a daily log file
-    $current_date = date('Y-m-d');
+    $current_date = gmdate('Y-m-d');
     
-    $log_file = $chatbot_logs_dir . 'ksum-error-log-' . $current_date . '.log';
+    $log_file = $ksum_logs_dir . 'ksum-error-log-' . $current_date . '.log';
 
     // Append the error message to the log file
-    file_put_contents($log_file, $message . PHP_EOL, FILE_APPEND | LOCK_EX);
+    if ( $wp_filesystem ) {
+        $wp_filesystem->put_contents( $log_file, $message . PHP_EOL, FS_CHMOD_FILE );
+    }
 
 }
 
-// Log Chatbot Errors to the Server - Ver 1.0.0
+// Log plugin errors to the server - Ver 1.0.0
 function log_ksum_error() {
+
+    global $wp_filesystem;
 
     global $ksum_plugin_dir_path;
     
-    if (isset($_POST['error_message'])) {
-        $error_message = sanitize_text_field($_POST['error_message']);
-        $chatbot_logs_dir = $ksum_plugin_dir_path . 'logs/';
+    if (isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'ksum_diagnostics_action')) {
 
-        // Ensure the directory and index file exist
-        create_directory_and_index_file($chatbot_logs_dir);
+        if (isset($_POST['error_message'])) {
 
-        // Get the current date to create a daily log file
-        $current_date = date('Y-m-d');
+            $error_message = sanitize_text_field(wp_unslash($_POST['error_message']));
 
-        $log_file = $chatbot_logs_dir . 'ksum-error-log-' . $current_date . '.log';
+            $ksum_logs_dir = $ksum_plugin_dir_path . 'logs/';
 
-        // Get additional info
-        $session_id = session_id();
-        $user_id = get_current_user_id();
-        $ip_address = $_SERVER['REMOTE_ADDR'];
-        $date_time = date('Y-m-d H:i:s');
+            // Ensure the directory and index file exist
+            create_directory_and_index_file($ksum_logs_dir);
 
-        // Construct the log message
-        $log_message = sprintf(
-            "[Chatbot] [ERROR] [%s] [Session ID: %s] [User ID: %s] [IP Address: %s] [%s] [%s]",
-            $date_time,
-            $session_id ? $session_id : 'N/A',
-            $user_id ? $user_id : 'N/A',
-            $ip_address,
-            $error_message,
-            PHP_EOL
-        );
+            // Get the current date to create a daily log file
+            $current_date = gmdate('Y-m-d');
 
-        // Append the error message to the log file
-        file_put_contents($log_file, $log_message, FILE_APPEND | LOCK_EX);
+            $log_file = $ksum_logs_dir . 'ksum-error-log-' . $current_date . '.log';
+
+            // Get additional info
+            $session_id = session_id();
+            $user_id = get_current_user_id();
+             $ip_address = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+            $date_time = gmdate('Y-m-d H:i:s');
+
+            // Construct the log message
+            $log_message = sprintf(
+                "[Kognetiks AI Summaries] [ERROR] [%s] [Session ID: %s] [User ID: %s] [IP Address: %s] [%s] [%s]",
+                $date_time,
+                $session_id ? $session_id : 'N/A',
+                $user_id ? $user_id : 'N/A',
+                $ip_address,
+                $error_message,
+                PHP_EOL
+            );
+
+            if ( $wp_filesystem ) {
+                $wp_filesystem->put_contents( $log_file, $log_message, FS_CHMOD_FILE | LOCK_EX );
+            }
+        
+        }
+
     }
-    wp_die(); // this is required to terminate immediately and return a proper response
-}
 
+    wp_die(); // this is required to terminate immediately and return a proper response
+
+}
 // Register AJAX actions
 add_action('wp_ajax_log_ksum_error', 'log_ksum_error');
 add_action('wp_ajax_nopriv_log_ksum_error', 'log_ksum_error');

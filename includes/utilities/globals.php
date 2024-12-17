@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Globals - Ver 1.0.0
+ * Kognetiks AI Summaries - Globals - Ver 1.0.0
  *
  * This file contains the code for the Kognetiks AI Summaries globals.
  *

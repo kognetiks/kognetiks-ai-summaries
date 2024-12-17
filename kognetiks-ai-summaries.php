@@ -19,15 +19,15 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * 
  * You should have received a copy of the GNU General Public License
- * along with Kognetiks Chatbot for WordPress. If not, see https://www.gnu.org/licenses/gpl-3.0.html.
+ * along with Kognetiks AI Summaries. If not, see https://www.gnu.org/licenses/gpl-3.0.html.
  */
 
 // If this file is called directly, die.
 defined( 'WPINC' ) || die();
 
 // Plugin version
-global $ksum_version;
-$ksum_version = '1.0.0';
+global $ksum_plugin_version;
+$ksum_plugin_version = '1.0.0';
 
 // Plugin directory path
 global $ksum_plugin_dir_path;
@@ -39,8 +39,6 @@ $ksum_plugin_dir_url = plugin_dir_url( __FILE__ );
 
 // Declare globals
 global $wpdb;
-global $ksum_ai_summaries_table_name;
-$ksum_ai_summaries_table_name = 'kognetiks_ai_summaries';
 
 // Include the necessary files - Main files
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
@@ -71,6 +69,15 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
 // Include the necessary files - Documentation files
 // TBD
 
+// Use the WP Filesystem API
+global $wp_filesystem;
+
+if ( ! function_exists( 'WP_Filesystem' ) ) {
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+}
+
+WP_Filesystem();
+
 // Settings and Deactivation
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'ksum_plugin_action_links');
 
@@ -83,13 +90,21 @@ register_deactivation_hook(__FILE__, 'ksum_deactivate');
 register_uninstall_hook(__FILE__, 'ksum_uninstall');
 add_action('upgrader_process_complete', 'ksum_upgrade_completed', 10, 2);
 
+function ksum_enqueue_admin_scripts() {
+
+    global $ksum_plugin_version;
+
+    wp_enqueue_script('jquery'); // Ensure jQuery is enqueued
+    wp_enqueue_script('ksum_admin', plugins_url('assets/js/ksum-admin.js', __FILE__), array('jquery'), $ksum_plugin_version, true);
+
+}
+add_action('admin_enqueue_scripts', 'ksum_enqueue_admin_scripts');
+
 
 // Return an AI summary for the page or post
 function ksum_generate_ai_summary( $pid )  {
 
     global $wpdb;
-    global $ksum_settings;
-    global $ksum_ai_summaries_table_name;
 
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = "ai_summary_lock_{$pid}";
@@ -111,9 +126,9 @@ function ksum_generate_ai_summary( $pid )  {
     ksum_back_trace( 'NOTICE', '$pid: ' . $pid );
 
      // Fetch and sanitize the content
-    $query = $wpdb->prepare("SELECT post_content, post_modified FROM $wpdb->posts WHERE ID = %d", $pid);
-
-    $row = $wpdb->get_row($query);
+    $row = $wpdb->get_row(
+        $wpdb->prepare("SELECT post_content, post_modified FROM {$wpdb->posts} WHERE ID = %d", $pid)
+    );
 
     $content = $row->post_content;
     $post_modified = $row->post_modified;
@@ -124,17 +139,17 @@ function ksum_generate_ai_summary( $pid )  {
 
         case 'OpenAI':
 
-            $model = esc_attr(get_option('chatbot_chatgpt_model_choice', 'chatgpt-4o-latest'));
+            $model = esc_attr(get_option('ksum_chatgpt_model_choice', 'chatgpt-4o-latest'));
             break;
 
         case 'NVIDIA':
 
-            $model = esc_attr(get_option('chatbot_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
+            $model = esc_attr(get_option('ksum_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
             break;
 
         case 'Anthropic':
 
-            $model = esc_attr(get_option('chatbot_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+            $model = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
             break;
 
         default:
@@ -215,9 +230,7 @@ function ksum_generate_ai_summary( $pid )  {
 // Generate an AI summary using the appropriate API
 function ksum_generate_ai_summary_api( $model, $content ) {
 
-    global $ksum_ai_summaries_table_name;
-
-    $content = htmlspecialchars(strip_tags($content), ENT_QUOTES, 'UTF-8');
+    $content = htmlspecialchars(wp_strip_all_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
 
     $word_count = esc_attr(get_option('ksum_ai_summaries_length', 55));
@@ -225,8 +238,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     // Prepare special instructions if needed
     $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or few words: ";
 
-    // Update the model in settings
-    $ksum_settings['model'] = $model;
+    // Update the platform choice
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
 
     // Call the appropriate API based on the model
@@ -273,10 +285,10 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     }
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', '$response: ' . print_r($response, true));
+    // ksum_back_trace( 'NOTICE', '$response: ' . print_r($response, true));
 
     // REMOVE ANY HTML
-    $response = strip_tags($response);
+    $response = wp_strip_all_tags($response);
 
     // REMOVE MARKDOWN LINKS
     $response = preg_replace('/\[(.*?)\]\((.*?)\)/', '$1', $response);
@@ -314,13 +326,10 @@ function ksum_create_ai_summary_table() {
     ksum_back_trace( 'NOTICE', 'Creating AI summary table' );
 
     global $wpdb;
-    global $ksum_ai_summaries_table_name;
-
-    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     $charset_collate = $wpdb->get_charset_collate();
 
-    $sql = "CREATE TABLE $table_name (
+    $sql = "CREATE TABLE {$wpdb->prefix}kognetiks_ai_summaries (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         post_id mediumint(9) NOT NULL,
         ai_summary text NOT NULL,
@@ -334,9 +343,7 @@ function ksum_create_ai_summary_table() {
 
     // Handle any errors
     if ( $wpdb->last_error ) {
-
         ksum_prod_trace( 'ERROR', 'Error creating AI summary table' );
-
     }
 
 }
@@ -348,27 +355,21 @@ function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
     ksum_back_trace( 'NOTICE', 'Inserting or updating AI summary into table' );
 
     global $wpdb;
-    global $ksum_ai_summaries_table_name;
 
     // Create the table if it does not exist
     ksum_create_ai_summary_table();
-
-    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
-
+    
     // Prepare SQL to handle existing rows
-    $sql = $wpdb->prepare(
-        "INSERT INTO $table_name (post_id, ai_summary, post_modified)
-        VALUES (%d, %s, %s)
-        ON DUPLICATE KEY UPDATE
-        ai_summary = VALUES(ai_summary),
-        post_modified = VALUES(post_modified)",
-        $pid,
-        $ai_summary,
-        $post_modified
+    $result = $wpdb->query($wpdb->prepare(
+        "INSERT INTO {$wpdb->prefix}kognetiks_ai_summaries (post_id, ai_summary, post_modified)
+         VALUES (%d, %s, %s)
+         ON DUPLICATE KEY UPDATE
+         ai_summary = VALUES(ai_summary),
+         post_modified = VALUES(post_modified)",
+        $pid, $ai_summary, $post_modified
+        )
     );
 
-    // Execute the query
-    $result = $wpdb->query( $sql );
 
     // Handle any errors
     if ( $wpdb->last_error ) {
@@ -393,13 +394,13 @@ function ksum_ai_summary_exists( $pid ) {
     ksum_back_trace( 'NOTICE', 'Checking if AI summary exists' );
 
     global $wpdb;
-    global $ksum_ai_summaries_table_name;
-
-    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
-
-    $query = $wpdb->prepare("SELECT ai_summary, post_modified FROM $table_name WHERE post_id = %d", $pid);
-
-    $row = $wpdb->get_row($query);
+   
+    // Fetch ai_summary and post_modified from ai_summaries table
+    $row = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT ai_summary, post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", $pid
+            )
+        );
 
     if ( $row ) {
 
@@ -429,12 +430,9 @@ function ksum_delete_ai_summary( $pid ) {
     ksum_back_trace( 'NOTICE', 'Deleting AI summary from table' );
 
     global $wpdb;
-    global $ksum_ai_summaries_table_name;
-
-    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
 
     $wpdb->delete(
-        $table_name,
+        "{$wpdb->prefix}kognetiks_ai_summaries",
         array( 'post_id' => $pid )
     );
 
@@ -454,13 +452,14 @@ function ksum_ai_summary_is_stale( $pid ) {
     ksum_back_trace( 'NOTICE', 'Checking if AI summary is stale' );
 
     global $wpdb;
-    global $ksum_ai_summaries_table_name;
-
-    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
-
+           
     // Fetch post_modified from ai_summaries table
-    $query = $wpdb->prepare("SELECT post_modified FROM $table_name WHERE post_id = %d", $pid);
-    $row = $wpdb->get_row($query);
+    $row = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", $pid
+        )
+    );
+
     if ( ! $row ) {
         // AI summary doesn't exist; it's stale by default
         return true;
@@ -469,8 +468,9 @@ function ksum_ai_summary_is_stale( $pid ) {
     $ai_post_modified = $row->post_modified;
 
     // Fetch post_modified from posts table
-    $query = $wpdb->prepare("SELECT post_modified FROM $wpdb->posts WHERE ID = %d", $pid);
-    $row = $wpdb->get_row($query);
+    $row = $wpdb->get_row(
+        $wpdb->prepare("SELECT post_modified FROM {$wpdb->posts} WHERE ID = %d", $pid)
+    );
     $post_modified = $row->post_modified;
 
     // Compare the dates
@@ -499,26 +499,22 @@ function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
     ksum_back_trace( 'NOTICE', 'Updating AI summary in table' );
 
     global $wpdb;
-    global $ksum_ai_summaries_table_name;
-
-    $table_name = $wpdb->prefix . $ksum_ai_summaries_table_name;
-
+    
+    // Prepare and execute the query
     $wpdb->query(
         $wpdb->prepare(
-            "INSERT INTO $table_name (post_id, ai_summary, post_modified) 
-             VALUES (%d, %s, %s) 
-             ON DUPLICATE KEY UPDATE 
-             ai_summary = VALUES(ai_summary), 
-             post_modified = VALUES(post_modified)",
+            "INSERT INTO {$wpdb->prefix}kognetiks_ai_summaries (post_id, ai_summary, post_modified) 
+            VALUES (%d, %s, %s) 
+            ON DUPLICATE KEY UPDATE 
+            ai_summary = VALUES(ai_summary), 
+            post_modified = VALUES(post_modified)",
             $pid, $ai_summary, $post_modified
         )
     );
-
+    
     // Handle any errors
     if ( $wpdb->last_error ) {
-
         ksum_prod_trace( 'ERROR', 'Error updating AI summary in table' );
-
     }
 
 }
@@ -555,7 +551,7 @@ function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // Check if the post is password protected
     if ( post_password_required( $post ) ) {
-        return __( 'There is no excerpt because this is a protected post.' );
+        return 'There is no excerpt because this is a protected post.';
     }
 
     // Attempt to generate or retrieve the AI summary

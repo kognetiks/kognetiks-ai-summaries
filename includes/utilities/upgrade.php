@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Activate and Upgrade the Plugin
+ * Kognetiks AI Summaries - Activate and Upgrade the Plugin
  *
  * This file contains the code for activating and upgrading the plugin.
  * It should run when the plugin is activated or updated.
@@ -25,8 +25,13 @@ function ksum_activate() {
     // Handle unexpect output during activation
     $unexpected_output = ob_get_clean();
     if (!empty($unexpected_output)) {
-        // Log or handle unexpected output
-        error_log('Unexpected output during plugin activation: ' . $unexpected_output);
+        // Handle unexpected output
+        if (!empty($unexpected_output)) {
+            $error_message = 'Unexpected output during plugin activation: ' . esc_html($unexpected_output);
+            add_action('admin_notices', function() use ($error_message) {
+                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($error_message) . '</p></div>';
+            });
+        }
     }
 
     // DIAG - Log the activation

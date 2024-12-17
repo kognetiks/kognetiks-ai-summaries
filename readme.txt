@@ -1,4 +1,4 @@
-=== Kogentiks AI Summaries for WordPress ===
+=== Kognetiks AI Summaries ===
 Contributors: Kogentiks
 Tags: AI, Excerpts, Search
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
@@ -13,13 +13,13 @@ Effortlessly add artificial intelligent (AI) summaries of your posts and pages.
 
 == Description ==
 
-**Transform Your WordPress Site with the Kognetiks AI Summaries for WordPress Plugin**
+**Transform Your WordPress Site with the Kognetiks AI Summaries Plugin**
 
 With AI Summaries, your content - whether it’s pages, posts, or other published resources - can be automatically summarized by your selected AI Engine, delivering concise, insightful responses to your site visitors.
 
 == Installation ==
 
-**Installing the Kognetiks AI Summaries for WordPress Plugin on Your Site**
+**Installing the Kognetiks AI Summaries Plugin on Your Site**
 
 1. **Plugin Upload**
    - Begin by downloading the 'kogentiks-ai-summaries' plugin folder.
@@ -65,7 +65,7 @@ With the Kognetiks Chatbot installed, you're now equipped to offer a more dynami
 
 == Disclaimer ==
 
-OpenAI, ChatGPT, and their respective trademarks are registered trademarks of OpenAI. NVIDIA, NIM, and their respective trademarks are registered trademarks of NVIDIA. Anthropic, Claude, and their respective trademarks are registered trademarks of Anthropic. Kognetiks is an independent entity and is neither affiliated with, endorsed by, nor sponsored by OpenAI, NVIDIA, or Anthropic.
+WordPress is a registered trademark owned by the WordPress Foundation. OpenAI, ChatGPT, and their respective trademarks are registered trademarks of OpenAI. NVIDIA, NIM, and their respective trademarks are registered trademarks of NVIDIA. Anthropic, Claude, and their respective trademarks are registered trademarks of Anthropic. Kognetiks is an independent entity and is neither affiliated with, endorsed by, nor sponsored by OpenAI, NVIDIA, or Anthropic.
 
 == Screenshots ==
 

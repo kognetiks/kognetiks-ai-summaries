@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Settings - General page
+ * Kognetiks AI Summaries - Settings - General page
  *
  * This file contains the code for the AI summaries general settings page.
  * It handles the setup settings and other parameters.
@@ -34,7 +34,7 @@ function ksum_engine_section_callback($args) {
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
     ?>
-    <p>Configure the AI Platform for the Chatbot plugin. The default will be one of <?php echo $ksum_ai_platform_choice ?>'s AI models; assumes you have or will provide a valid API key.</p>
+    <p>Configure the AI Platform for the plugin. The default will be one of <?php echo esc_html( $ksum_ai_platform_choice ) ?>'s AI models; assumes you have or will provide a valid API key.</p>
     <?php
 
 }

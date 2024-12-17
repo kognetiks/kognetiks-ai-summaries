@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Deactivate and/or Delete the Plugin
+ * Kognetiks AI Summaries - Deactivate and/or Delete the Plugin
  *
  * This file contains the code for deactivating and/or deleting the plugin.
  * 
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function ksum_deactivate() {
 
     if (empty(esc_attr(get_option('ksum_delete_data')))) {      
-        chatbot_chatgpt_admin_notices();
+        ksum_admin_notices();
     }
 
 }
@@ -56,15 +56,39 @@ function ksum_uninstall(){
 
         // Delete AI Summaries options
         ksum_back_trace( 'NOTICE', 'Deleting Plugin One-off options');
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE 'ksum%'");
+        // Execute the query
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE %s",
+                'ksum%'
+            )
+        );      
+        // Clear the cache for the deleted options
+        wp_cache_flush();
 
         // Delete AI Summaries tables
         ksum_back_trace( 'NOTICE', 'Deleting tables');
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}ksum_ai_summaries");
+        // Execute the query
+        $wpdb->query(
+            $wpdb->prepare(
+                "DROP TABLE IF EXISTS %s",
+                $wpdb->prefix . 'ksum_ai_summaries'
+            )
+        );
+        // Clear the cache for the deleted table
+        wp_cache_flush();
 
         // Delete transients
         ksum_back_trace( 'NOTICE', 'Deleting transients');
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '_transient_ksum%' OR option_name LIKE '_transient_timeout_ksum%'");
+        // Execute the query
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE %s OR option_name LIKE %s",
+                '_transient_ksum%', '_transient_timeout_ksum%'
+            )
+        );
+        // Clear the cache for the deleted options
+        wp_cache_flush();
 
         // Delete any scheduled cron events
         ksum_back_trace( 'NOTICE', 'Deleting cron events');

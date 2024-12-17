@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Anthropic API - Ver 1.0.0
+ * Kognetiks AI Summaries - Anthropic API - Ver 1.0.0
  *
  * This file contains the code for the Anthropic API calls.
  *
@@ -40,7 +40,7 @@ function ksum_anthropic_api_call($api_key, $message) {
     $timeout = intval(esc_attr(get_option('ksum_anthropic_timeout_setting', 240)));
 
     // Body
-    $body = json_encode(array(
+    $body = wp_json_encode(array(
         'model' => $model,
         'max_tokens' => $max_tokens,
         'messages' => array(

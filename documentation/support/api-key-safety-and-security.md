@@ -1,6 +1,6 @@
-# Overview of API Key Safety and Security Settings for Kognetiks Chatbot
+# Overview of API Key Safety and Security Settings for Kognetiks AI Summaries
 
-The API Key Safety and Security settings are crucial for ensuring that your OpenAI API keys are protected against misuse and unauthorized access. Proper management of these keys is vital for maintaining the security and integrity of your chatbot and the associated data. This high-level overview will guide you through the essential security practices. Detailed instructions and recommendations will be provided in the subsections.
+The API Key Safety and Security settings are crucial for ensuring that your OpenAI API keys are protected against misuse and unauthorized access. Proper management of these keys is vital for maintaining the security and integrity of your plugin and the associated data. This high-level overview will guide you through the essential security practices. Detailed instructions and recommendations will be provided in the subsections.
 
 ---
 

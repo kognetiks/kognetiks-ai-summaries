@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Restore Default Settings the Plugin
+ * Kognetiks AI Summaries - Restore Default Settings the Plugin
  *
  * This file contains the code for restoring the default settings for the plugin.
  *
