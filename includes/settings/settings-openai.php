@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 // API/OpenAI Settings section callback
 function ksum_openai_general_settings_callback($args) {
 
-    ksum_back_trace( 'NOTICE', 'ksum_openai_general_settings_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_general_settings_callback');
     
     ?>
     <p>Configure the default settings for the plugin OpenAI for AI Summary generation.  Start by adding your API key then selecting your choices below.</p>
@@ -147,7 +147,7 @@ function ksum_openai_base_url_callback($args) {
 function ksum_openai_settings_init() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_openai_settings_init');
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_settings_init');
 
     // Add the settings section
     add_settings_section(

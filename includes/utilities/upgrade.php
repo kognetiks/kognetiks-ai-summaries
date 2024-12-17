@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function ksum_activate() {
 
     // DIAG - Log the activation
-    ksum_back_trace( 'NOTICE', 'Plugin activation started');
+    // ksum_back_trace( 'NOTICE', 'Plugin activation started');
 
     // Logic to run during activation
     ksum_upgrade();
@@ -35,7 +35,7 @@ function ksum_activate() {
     }
 
     // DIAG - Log the activation
-    ksum_back_trace( 'NOTICE', 'Plugin activation completed');
+    // ksum_back_trace( 'NOTICE', 'Plugin activation completed');
 
     return;
 
@@ -45,7 +45,7 @@ function ksum_activate() {
 function ksum_upgrade_completed($upgrader_object, $options) {
 
     // DIAG - Log the activation
-    ksum_back_trace( 'NOTICE', 'Plugin upgrade completed started');
+    // ksum_back_trace( 'NOTICE', 'Plugin upgrade completed started');
 
     if ($options['action'] == 'update' && $options['type'] == 'plugin') {
         if (isset($options['plugins']) && is_array($options['plugins'])) {
@@ -58,12 +58,12 @@ function ksum_upgrade_completed($upgrader_object, $options) {
             }
         } else {
             // DIAG - Log the warning
-            ksum_back_trace( 'WARNING', '"plugins" key is not set or not an array');
+            // ksum_back_trace( 'WARNING', '"plugins" key is not set or not an array');
         }
     }
 
     // DIAG - Log the activation
-    ksum_back_trace( 'NOTICE', 'Plugin upgrade completed finished');
+    // ksum_back_trace( 'NOTICE', 'Plugin upgrade completed finished');
 
     return;
 

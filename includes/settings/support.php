@@ -107,16 +107,16 @@ function ksum_validate_documentation($dir, $file) {
     }
 
     // Diagnostics
-    ksum_back_trace( 'NOTICE', '$valid_directories: ' . print_r($valid_directories, true));
-    ksum_back_trace( 'NOTICE', '$valid_files: ' . print_r($valid_files, true));
+    // ksum_back_trace( 'NOTICE', '$valid_directories: ' . print_r($valid_directories, true));
+    // ksum_back_trace( 'NOTICE', '$valid_files: ' . print_r($valid_files, true));
 
     if (!empty($valid_directories) && !empty($valid_files) && !empty($dir) && !empty($file)) {
         // If the $dir and $file are found in the list of $valid_directories and $valid_files, return true
         if (in_array($dir, $valid_directories) && in_array($file, $valid_files[$dir])) {
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'ksum_validate_documentation: $dir: '. $dir );
-            ksum_back_trace( 'NOTICE', 'ksum_validate_documentation: $file: '. $file );
+            // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation: $dir: '. $dir );
+            // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation: $file: '. $file );
 
             // Return true if the directory and file are valid
             return true;
@@ -163,7 +163,7 @@ function ksum_support_section_callback() {
     }
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', '$docLocation: '. $docLocation );
+    // ksum_back_trace( 'NOTICE', '$docLocation: '. $docLocation );
 
     // DIAG - Diagnostics
     // error_reporting(E_ALL);

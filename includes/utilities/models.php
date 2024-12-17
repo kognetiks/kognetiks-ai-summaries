@@ -314,21 +314,21 @@ function ksum_get_chat_completions_api_url() {
         case 'OpenAI':
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: OpenAI API' );
+            // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: OpenAI API' );
             return ksum_get_api_base_url() . "/chat/completions";
             break;
 
         case 'NVIDIA':
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: NVIDIA API' );
+            // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: NVIDIA API' );
             return ksum_get_api_base_url() . "/chat/completions";
             break;
 
         case 'Anthropic':
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: Anthropic API' );
+            // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: Anthropic API' );
             return ksum_get_api_base_url() . "/messages";
             break;
 

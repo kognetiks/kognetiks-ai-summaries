@@ -44,7 +44,7 @@ function ksum_uninstall(){
     global $wpdb;
 
     // DIAG - Log the uninstall
-    ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL STARTED');
+    // ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL STARTED');
 
     // Ask if the data should be removed, if not return
     if (esc_attr(get_option('ksum_delete_data')) != 'Yes') {
@@ -55,7 +55,7 @@ function ksum_uninstall(){
     if (esc_attr(get_option('ksum_delete_data')) == 'Yes') {
 
         // Delete AI Summaries options
-        ksum_back_trace( 'NOTICE', 'Deleting Plugin One-off options');
+        // ksum_back_trace( 'NOTICE', 'Deleting Plugin One-off options');
         // Execute the query
         $wpdb->query(
             $wpdb->prepare(
@@ -67,7 +67,7 @@ function ksum_uninstall(){
         wp_cache_flush();
 
         // Delete AI Summaries tables
-        ksum_back_trace( 'NOTICE', 'Deleting tables');
+        // ksum_back_trace( 'NOTICE', 'Deleting tables');
         // Execute the query
         $wpdb->query(
             $wpdb->prepare(
@@ -79,7 +79,7 @@ function ksum_uninstall(){
         wp_cache_flush();
 
         // Delete transients
-        ksum_back_trace( 'NOTICE', 'Deleting transients');
+        // ksum_back_trace( 'NOTICE', 'Deleting transients');
         // Execute the query
         $wpdb->query(
             $wpdb->prepare(
@@ -91,7 +91,7 @@ function ksum_uninstall(){
         wp_cache_flush();
 
         // Delete any scheduled cron events
-        ksum_back_trace( 'NOTICE', 'Deleting cron events');
+        // ksum_back_trace( 'NOTICE', 'Deleting cron events');
         $crons = _get_cron_array();
         foreach ($crons as $timestamp => $cron) {
             foreach ($cron as $hook => $events) {
@@ -106,7 +106,7 @@ function ksum_uninstall(){
     }
 
     // DIAG - Log the uninstall
-    ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL COMPLETED');
+    // ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL COMPLETED');
 
     return;
 

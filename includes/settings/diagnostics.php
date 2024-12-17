@@ -28,7 +28,7 @@ function ksum_diagnostics_overview_section_callback($args) {
 function ksum_diagnostics_system_settings_section_callback($args) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_diagnostics_system_settings_section_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_system_settings_section_callback');
     
     // Get PHP version
     $php_version = phpversion();

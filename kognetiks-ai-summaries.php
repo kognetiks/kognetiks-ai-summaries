@@ -122,8 +122,8 @@ function ksum_generate_ai_summary( $pid )  {
     set_transient( $lock_key, true, 30 );
 
     // Diagnostics
-    ksum_back_trace( 'NOTICE', 'Generating AI summary' );
-    ksum_back_trace( 'NOTICE', '$pid: ' . $pid );
+    // ksum_back_trace( 'NOTICE', 'Generating AI summary' );
+    // ksum_back_trace( 'NOTICE', '$pid: ' . $pid );
 
      // Fetch and sanitize the content
     $row = $wpdb->get_row(
@@ -175,7 +175,7 @@ function ksum_generate_ai_summary( $pid )  {
         case null:
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
+            // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
 
             $ai_summary = ksum_generate_ai_summary_api($model, $content);
             ksum_insert_ai_summary($pid, $ai_summary, $post_modified);
@@ -185,7 +185,7 @@ function ksum_generate_ai_summary( $pid )  {
         default:
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'AI summary exists' );
+            // ksum_back_trace( 'NOTICE', 'AI summary exists' );
 
             if ( ksum_ai_summary_is_stale($pid) ) {
                 // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
@@ -204,7 +204,7 @@ function ksum_generate_ai_summary( $pid )  {
     $ai_summary = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
+    // ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
 
     // Trim the AI summary if it starts with 'Summary:' or 'Here's a 55-word summary:'
     if ( strpos($ai_summary, 'Summary: ') === 0 ) {
@@ -218,7 +218,7 @@ function ksum_generate_ai_summary( $pid )  {
     }
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
+    // ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
 
     // Release the lock
     delete_transient( $lock_key );
@@ -277,7 +277,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
         default:
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'No valid platform selected for for AI summary generation');
+            // ksum_back_trace( 'NOTICE', 'No valid platform selected for for AI summary generation');
             $response = '';
 
             break;
@@ -323,7 +323,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
 function ksum_create_ai_summary_table() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Creating AI summary table' );
+    // ksum_back_trace( 'NOTICE', 'Creating AI summary table' );
 
     global $wpdb;
 
@@ -352,7 +352,7 @@ function ksum_create_ai_summary_table() {
 function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Inserting or updating AI summary into table' );
+    // ksum_back_trace( 'NOTICE', 'Inserting or updating AI summary into table' );
 
     global $wpdb;
 
@@ -378,7 +378,7 @@ function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     } else {
 
-        ksum_back_trace( 'NOTICE', 'AI summary successfully inserted or updated.' );
+        // ksum_back_trace( 'NOTICE', 'AI summary successfully inserted or updated.' );
 
     }
 
@@ -391,7 +391,7 @@ function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 function ksum_ai_summary_exists( $pid ) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Checking if AI summary exists' );
+    // ksum_back_trace( 'NOTICE', 'Checking if AI summary exists' );
 
     global $wpdb;
    
@@ -408,14 +408,14 @@ function ksum_ai_summary_exists( $pid ) {
         $post_modified = $row->post_modified;
 
         // DIAG - Diagnostics
-        ksum_back_trace( 'NOTICE', 'AI summary exists for $pid: ' . $pid );
+        // ksum_back_trace( 'NOTICE', 'AI summary exists for $pid: ' . $pid );
 
         return $ai_summary;
 
     } else {
 
         // DIAG - Diagnostics
-        ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
+        // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
         
         return null;
 
@@ -427,7 +427,7 @@ function ksum_ai_summary_exists( $pid ) {
 function ksum_delete_ai_summary( $pid ) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Deleting AI summary from table' );
+    // ksum_back_trace( 'NOTICE', 'Deleting AI summary from table' );
 
     global $wpdb;
 
@@ -449,7 +449,7 @@ function ksum_delete_ai_summary( $pid ) {
 function ksum_ai_summary_is_stale( $pid ) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Checking if AI summary is stale' );
+    // ksum_back_trace( 'NOTICE', 'Checking if AI summary is stale' );
 
     global $wpdb;
            
@@ -477,14 +477,14 @@ function ksum_ai_summary_is_stale( $pid ) {
     if ( strtotime($ai_post_modified) < strtotime($post_modified) ) {
 
         // DIAG - Diagnostics
-        ksum_back_trace( 'NOTICE', 'AI summary is stale' );
+        // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
 
         return true;
 
     } else {
 
         // DIAG - Diagnostics
-        ksum_back_trace( 'NOTICE', 'AI summary is not stale' );
+        // ksum_back_trace( 'NOTICE', 'AI summary is not stale' );
 
         return false;
 
@@ -496,7 +496,7 @@ function ksum_ai_summary_is_stale( $pid ) {
 function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'Updating AI summary in table' );
+    // ksum_back_trace( 'NOTICE', 'Updating AI summary in table' );
 
     global $wpdb;
     
@@ -528,13 +528,13 @@ function ksum_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
     if ($enabled === 'Off') {
 
         // DIAG - Diagnostics
-        ksum_back_trace('NOTICE', 'AI summaries are DISABLED');
+        // ksum_back_trace('NOTICE', 'AI summaries are DISABLED');
         return $excerpt; // Return the default excerpt
 
     } else {
 
         // DIAG - Diagnostics
-        ksum_back_trace('NOTICE', 'AI summaries are ENABLED');
+        // ksum_back_trace('NOTICE', 'AI summaries are ENABLED');
 
     }
 

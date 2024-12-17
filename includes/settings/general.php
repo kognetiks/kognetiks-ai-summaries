@@ -127,7 +127,7 @@ function ksum_ai_summaries_length_callback() {
 function ksum_general_settings_init() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_general_settings_init');
+    // ksum_back_trace( 'NOTICE', 'ksum_general_settings_init');
 
     add_settings_section(
         'ksum_general_settings_section',

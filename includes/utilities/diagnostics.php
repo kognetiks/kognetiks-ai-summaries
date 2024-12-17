@@ -208,7 +208,7 @@ add_action('wp_ajax_nopriv_log_ksum_error', 'log_ksum_error');
 function ksum_get_plugin_version() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_get_plugin_version');
+    // ksum_back_trace( 'NOTICE', 'ksum_get_plugin_version');
 
     global $ksum_plugin_version;
 
@@ -217,18 +217,18 @@ function ksum_get_plugin_version() {
     }
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'plugin_dir_path: ' . plugin_dir_path(__FILE__));
+    // ksum_back_trace( 'NOTICE', 'plugin_dir_path: ' . plugin_dir_path(__FILE__));
 
     $plugin_data = get_plugin_data(plugin_dir_path(__FILE__) . '../../kognetiks-ai-summaries.php');
 
     // DIAG - Print the plugin data
-    ksum_back_trace( 'NOTICE', 'Plugin data: ' . print_r($plugin_data, true));
+    // ksum_back_trace( 'NOTICE', 'Plugin data: ' . print_r($plugin_data, true));
 
     $plugin_version = $plugin_data['Version'];
     update_option('ksum_plugin_version', $plugin_version);
 
     // DIAG - Log the plugin version
-    ksum_back_trace( 'NOTICE', 'Plugin version ' . $plugin_version);
+    // ksum_back_trace( 'NOTICE', 'Plugin version ' . $plugin_version);
 
     return $plugin_version;
 

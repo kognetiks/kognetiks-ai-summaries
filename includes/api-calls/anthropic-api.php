@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function ksum_anthropic_api_call($api_key, $message) {
 
     // DIAG - Diagnostics
-    ksum_back_trace('NOTICE', 'ksum_anthropic_api_call');
+    // ksum_back_trace('NOTICE', 'ksum_anthropic_api_call');
 
     global $errorResponses;
 

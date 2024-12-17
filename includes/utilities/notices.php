@@ -20,7 +20,7 @@ function ksum_general_admin_notice($message = null) {
         printf(
             '<div class="%1$s"><p><strong>Kognetiks AI Summaries: </strong>%2$s</p></div>',
             esc_attr('notice notice-error is-dismissible'),
-            $message
+            esc_html($message)
         );
         return;
     }

@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 // API/NVIDIA Settings section callback
 function ksum_nvidia_general_settings_callback($args) {
 
-    ksum_back_trace( 'NOTICE', 'ksum_nvidia_general_settings_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_general_settings_callback');
     
     ?>
     <p>Configure the default settings for the plugin NVIDIA for AI Summary generation.  Start by adding your API key then selecting your choices below.</p>
@@ -46,7 +46,7 @@ function ksum_nvidia_model_section_callback($args) {
 function ksum_nvidia_model_choice_callback($args) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_nvidia_model_choice_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_model_choice_callback');
   
     // Get the saved ksum_nvidia_model_choice value or default to "nvidia/llama-3.1-nemotron-51b-instruct"
     $model_choice = esc_attr(get_option('ksum_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
@@ -148,7 +148,7 @@ function ksum_nvidia_base_url_callback($args) {
 function ksum_nvidia_settings_init() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_nvidia_settings_init');
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_settings_init');
 
     // Add the settings section
     add_settings_section(

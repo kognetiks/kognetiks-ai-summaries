@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 // API/Anthropic Settings section callback
 function ksum_anthropic_general_settings_callback($args) {
 
-    ksum_back_trace( 'NOTICE', 'ksum_anthropic_general_settings_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_general_settings_callback');
     
     ?>
     <p>Configure the default settings for the plugin Anthropic for AI Summary generation.  Start by adding your API key then selecting your choices below.</p>
@@ -46,7 +46,7 @@ function ksum_anthropic_model_section_callback($args) {
 function ksum_anthropic_model_choice_callback($args) {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_anthropic_model_choice_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_model_choice_callback');
   
     // Get the saved ksum_anthropic_model_choice value or default to "claude-3-5-sonnet-latest"
     $model_choice = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
@@ -148,7 +148,7 @@ function ksum_anthropic_base_url_callback($args) {
 function ksum_anthropic_settings_init() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_anthropic_settings_init');
+    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_settings_init');
 
     // Add the settings section
     add_settings_section(
