@@ -29,7 +29,7 @@ function ksum_general_settings_callback($args) {
 function ksum_engine_section_callback($args) {
 
     // DIAG - Diagnostics - Ver 2.1.8
-    back_trace( 'NOTICE', 'ksum_engine_section_callback');
+    ksum_back_trace( 'NOTICE', 'ksum_engine_section_callback');
 
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
@@ -79,7 +79,7 @@ function ksum_ai_platform_choice_callback($args) {
 function ksum_additional_selections_section_callback($args) {
 
     // DIAG - Diagnostics - Ver 2.1.8
-    back_trace( 'NOTICE', 'ksum_additional_selections_section_callback');
+    ksum_back_trace( 'NOTICE', 'ksum_additional_selections_section_callback');
 
     ?>
     <p>Turn AI Summaries on/off for your site. <b>NOTE</b>: The default is off until you configure the plugin with a valid API key.</p>

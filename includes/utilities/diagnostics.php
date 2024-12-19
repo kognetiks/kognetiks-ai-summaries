@@ -135,7 +135,7 @@ function ksum_error_log($message) {
     $ksum_logs_dir = $ksum_plugin_dir_path . 'logs/';
 
     // Ensure the directory and index file exist
-    create_directory_and_index_file($ksum_logs_dir);
+    ksum_create_directory_and_index_file($ksum_logs_dir);
 
     // Get the current date to create a daily log file
     $current_date = gmdate('Y-m-d');
@@ -165,7 +165,7 @@ function log_ksum_error() {
             $ksum_logs_dir = $ksum_plugin_dir_path . 'logs/';
 
             // Ensure the directory and index file exist
-            create_directory_and_index_file($ksum_logs_dir);
+            ksum_create_directory_and_index_file($ksum_logs_dir);
 
             // Get the current date to create a daily log file
             $current_date = gmdate('Y-m-d');

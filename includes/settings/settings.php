@@ -13,23 +13,8 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Set up the plugin Main Menu Page - Ver 1.0.0
-function ksum_menu_page() {
-
-    add_menu_page(
-        'AI Summaries Settings',                // Page title
-        'Kognetiks AI Summaries',               // Menu title
-        'manage_options',                       // Capability
-        'kognetiks-ai-summaries',               // Menu slug
-        'ksum_settings_page_html',              // Callback function
-        'dashicons-text',                       // Icon URL (optional)
-    );
-
-}
-add_action('admin_menu', 'ksum_menu_page');
-
 // Settings page HTML - Ver 1.0.0
-function ksum_settings_page_html() {
+function ksum_settings_page() {
     
     if (!current_user_can('manage_options')) {
         return;

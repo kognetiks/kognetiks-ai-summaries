@@ -49,6 +49,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/openai-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-status.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/ksum-menus.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-anthropic.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
@@ -65,9 +66,6 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/notices.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/restore.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/upgrade.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
-
-// Include the necessary files - Documentation files
-// TBD
 
 // Use the WP Filesystem API
 global $wp_filesystem;
