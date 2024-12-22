@@ -15,6 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Function to create a directory and an index.php file
 function ksum_create_directory_and_index_file($dir_path) {
+    
     // Ensure the directory ends with a slash
     $dir_path = rtrim($dir_path, '/') . '/';
 
@@ -40,4 +41,3 @@ function ksum_create_directory_and_index_file($dir_path) {
     return true;
 
 }
-

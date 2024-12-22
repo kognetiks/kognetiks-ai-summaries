@@ -10,11 +10,11 @@
 /dataSources/
 /dataSources.local.xml
 .idea/
-debug/
 package.json
 composer.json
 
 # Ignore all files in the results folder
+debug/
 logs/*
 
 # Allow tracking of only the index.php file in the results folder
