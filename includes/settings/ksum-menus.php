@@ -13,8 +13,11 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
+// Use a number lower than default (10), e.g., 5.
+add_action('admin_menu', 'ksum_register_menus', 7);
+
 // Add a menu item in the admin panel
-add_action('admin_menu', function() {
+function ksum_register_menus() {
 
     global $menu;
 
@@ -39,7 +42,7 @@ add_action('admin_menu', function() {
             'manage_options',                       // Capability
             'kognetiks_main_menu',                  // Menu slug
             'ksum_settings_page',                   // Callback function
-            'dashicons-text',                       // Icon
+            'dashicons-rest-api',                   // Icon
             999                                     // Position
         );
 
@@ -54,7 +57,7 @@ add_action('admin_menu', function() {
 
     } else {
 
-        // Add this plugin as a submenu of the existing Kognetiks menu
+        // If Kognetiks menu exists, add this as a submenu
         add_submenu_page(
             'kognetiks_main_menu',                  // Parent slug
             'AI Summaries',                         // Page title
@@ -66,4 +69,12 @@ add_action('admin_menu', function() {
 
     }
 
-});
+};
+
+// Remove the extra submenu page
+add_action('admin_menu', 'ksum_remove_extra_submenu', 999);
+function ksum_remove_extra_submenu() {
+
+    remove_submenu_page('kognetiks_main_menu', 'kognetiks_main_menu');
+
+}

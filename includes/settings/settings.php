@@ -15,6 +15,9 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Settings page HTML - Ver 1.0.0
 function ksum_settings_page() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_settings_page' );
     
     if (!current_user_can('manage_options')) {
         return;
@@ -56,7 +59,7 @@ function ksum_settings_page() {
 
     ?>
     <div class="wrap">
-        <h1><span class="dashicons dashicons-text"></span> AI Summaries Settings</h1>
+        <h1><span class="dashicons dashicons-text"></span> Kognetiks AI Summaries</h1>
 
         <h2 class="nav-tab-wrapper">
             <a href="?page=kognetiks-ai-summaries&tab=general" class="nav-tab <?php echo $active_tab == 'general' ? 'nav-tab-active' : ''; ?>">General</a>
