@@ -55,6 +55,11 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.ph
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/tools.php';
+
+// Include the necessary files - Tools files
+require_once plugin_dir_path( __FILE__ ) . 'includes/tools/manage-error-logs.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/tools/options-exporter.php';
 
 // Include the necessary files - Utilities files
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/deactivate.php';

@@ -13,7 +13,11 @@ Effortlessly add artificial intelligent (AI) summaries of your posts and pages.
 
 == Description ==
 
-**Transform Your WordPress Site with the Kognetiks AI Summaries Plugin**
+**Kognetiks AI Summaries**: Transforming Content with AI-Powered Precision
+
+Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other content—effortlessly enhancing user experience and site navigation.
+
+Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
 
 With AI Summaries, your content - whether it’s pages, posts, or other published resources - can be automatically summarized by your selected AI Engine, delivering concise, insightful responses to your site visitors.
 
@@ -21,19 +25,24 @@ With AI Summaries, your content - whether it’s pages, posts, or other publishe
 
 **Installing the Kognetiks AI Summaries Plugin on Your Site**
 
-1. **Plugin Upload**
-   - Begin by downloading the 'kogentiks-ai-summaries' plugin folder.
-   - Navigate to your WordPress website's dashboard.
-   - Click on 'Plugins' and select 'Add New'.
-   - Choose the 'Upload Plugin' option at the top of the page.
-   - Upload the 'kogentiks-ai-summaries' folder and click 'Install Now'.
+1. From the `General` tab on the **Kognetiks AI Summaries** settings page, select from one of three AI Platform Choices: `OpenAI` (the default), `NVIDIA`, or `Anthropic`.
 
-2. **Plugin Activation**
-   - Once the installation is complete, activate the plugin by clicking 'Activate Plugin'.
+2. Before you can `Turn AI Summaries` to `On`, you'll need to setup an account with the AI Platform vendor of your choice.  The plugin is very efficient when it comes to generating AI excerpts of your content.
 
-3. **API Key Configuration**
-   - After activation, head to 'Settings > Chatbot' in your dashboard.
-   - Enter your OpenAI API key here. (You can obtain this key from [OpenAI API Keys](https://platform.openai.com/account/api-keys) if you haven't already.)
+    - The plugin will only generate a summary of a page, port or other published content once.  But, it will check to see if the content has been updated or modified.  If the page or post has changed since the last time the summary was generated, a new summary will be created.  This makes incorporating AI generated excerpts very cost affordable.
+    - AI generated excerpts appear whereever WordPress would present a excerpt on your site.  It **does not** replace any hand-crafted excepts you might have added to posts, pages or other content.  AI summaries are in addition to these excerpts and are stored in a seperate table on your site.  Once generated, they won't be regenerated unless the content has been updated.
+
+3. From the `API/OpenAI`, `API/NVIDIA`, or `API/Anthropic` tab (depending on the `AI Platform Choice` you made on teh `General` tab), enter your `API Key`, then click the `Save Settings` button at the bottom of the page.
+
+4. Once you have saved your API key, the list of currently available models from the AI Platform vendor of your choice will be available in the `Model Choice` pulldown menu.  In most cases, the `Model Choice` will default to the latest model.  If you changes models, remember to click the `Save Settings` button at the bottom of the page.
+
+5. In most cases you should not need to change the `Advanced Settings` defaults.
+
+6. You can check that everything is working as expected by clicking on the `Diagnostics` tabs.  Once the page has loaded, the `API STATUS` will reflect `Success: Connection to the OpenAI API was successful!`.  If there is a problem with the API service or your account, a more detail error message will be presented.
+
+7. Now that you have configured the plugin, return to the `General` tab, and `Turn AI Summaries On/Off` by selecting `On`.  Then choose the `AI Summaries Length (Words)` from the pulldown (the default is a brief summary of only 55 words).  Remember to click the `Save Settings` button at the bottom of the page.
+
+8. Now you're ready to generate summaries.  Use any page on your site where a summary might appear, such as `Search`, to see an automatically crafted, concise, and insightful summarization of your content. These polished excerpts seamlessly enhance your site, offering visitors clear and impactful content wherever excerpts are displayed.
 
 == Frequently Asked Questions ==
 
@@ -45,23 +54,27 @@ For **frequently asked questions**, please visit [https://kognetiks.com/wordpres
 
 **How do I get an API key?**
 
-Sign up at [OpenAI API Keys]((https://platform.openai.com/account/api-keys)) to obtain your API key. This key is necessary to use the plugin.
+Sign up with one of the following AI platforms to obtain your API key:
 
-**Can I customize the chatbot's appearance?**
+- **OpenAI**
 
-Yes, the chatbot’s appearance can be fully customized through CSS or via the plugin’s settings page. You can also personalize the chatbot’s name, greetings, and even choose from different avatars.
+    [See API/OpenAI Settings](api-settings/api-openai-settings.md)
 
-**Does the chatbot support multiple languages?**
+- **NVIDIA**
 
-Yes, the Kognetiks Chatbot supports multiple languages, allowing you to cater to a diverse audience. Set your preferred language in WordPress, and the chatbot will adapt accordingly.
+    [See API/NVIDIA Settings](api-settings/api-nvidia-settings.md)
 
-**What models does the plugin support?**
+- **Anthropic**
 
-The plugin supports OpenAI’s latest models, including the GPT series for text, DALL-E for image generation, and TTS for speech. For a detailed list, check the plugin settings or visit OpenAI's Model Overview.
+    [See API/Anthropic Settings](api-settings/api-anthropic-settings.md)
 
-== Your Journey Towards an Interactive Website Begins! ==
+**Does the plugin support multiple languages?**
 
-With the Kognetiks Chatbot installed, you're now equipped to offer a more dynamic, engaging, and responsive experience to your website visitors.
+Yes, the **Kognetiks AI Summaries** plugin supports multiple languages, allowing you to cater to a diverse audience.
+
+== Your Journey Towards an AI Enhanced Website Begins! ==
+
+With the **Kognetiks AI Summaries** installed, you're now equipped to offer a more dynamic, engaging, and responsive experience to your website visitors.
 
 == Disclaimer ==
 
@@ -69,7 +82,11 @@ WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT
 
 == Screenshots ==
 
-1. Floating Chatbot - Howdy!
+1. General Settings
+2. API Settings
+3. Diagnostics
+4. Tools
+5. Support
 
 == Changelog ==
 

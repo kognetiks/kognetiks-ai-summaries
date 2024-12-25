@@ -18,6 +18,7 @@ debug/
 logs/*
 
 # Allow tracking of only the index.php file in the results folder
+!debug/index.php
 !logs/index.php
 
 # Ignore specific files

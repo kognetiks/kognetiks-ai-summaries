@@ -166,8 +166,16 @@ function ksum_settings_page() {
                 do_settings_sections('ksum_tools_overview');
                 echo '</div>';
 
+                // echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                // do_settings_sections('ksum_tools');
+                // echo '</div>';
+
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
-                do_settings_sections('ksum_tools');
+                do_settings_sections('ksum_tools_exporter_button');
+                echo '</div>';
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('ksum_manage_error_logs');
                 echo '</div>';
 
             } elseif ($active_tab == 'diagnostics') {

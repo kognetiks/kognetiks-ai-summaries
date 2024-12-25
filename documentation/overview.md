@@ -1,8 +1,8 @@
-# **Kognetiks AI Summaries** Plugin Documentation
+# **Kognetiks AI Summaries**: Transforming Content with AI-Powered Precision
 
-**Kognetiks AI Summaries** is a powerful plugin designed to simplify the creation of engaging, AI-generated excerpts for your pages, posts, and other published content.  Harness the power of artificial intelligence to automatically craft concise, insightful summaries using your preferred AI engine.  These polished excerpts seamlessly enhance your site, offering visitors clear and impactful content wherever excerpts are displayed.
+Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other content—effortlessly enhancing user experience and site navigation.
 
-The **Kognetiks AI Summaries** is powered by OpenAI, NVIDIA, Anthropic or other AI platforms tp be announced, via their APIs and Models to bring artificial intelligence to life within your WordPress website.
+Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
 
 **Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly. You can obtain an API key by signing up with one of the vendors below:
 
@@ -12,19 +12,15 @@ The **Kognetiks AI Summaries** is powered by OpenAI, NVIDIA, Anthropic or other 
 
 - [Anthropic](https://console.anthropic.com)
 
-### Kognetiks AI Summaries 🎉
-
-We’re thrilled to introduce **AI Summaries**, an exciting new feature designed to enhance your chatbot and site search functionality! 
-
-With AI Summaries, your content - whether it’s pages, posts, or other resources - can be automatically summarized by your selected AI Engine, delivering concise, insightful responses to your site visitors.  Here's what you can expect:
+With the **Kognetiks AI Summaries** plugin, your content - whether it’s pages, posts, or other resources - can be automatically summarized by your selected AI Engine, delivering concise, insightful responses to your site visitors.  Here's what you can expect:
 
 - **Enhanced Responses**: Automatically include AI-generated summaries of related links in chatbot replies.  
 - **Improved Search Results**: Replace traditional excerpts with AI summaries for a more dynamic search experience.  
 - **Customizable Summary Length**: Set the word count for summaries, from bite-sized insights to detailed overviews.
 
-This update makes your site excerpts smarter and more engaging, while ensuring that visitors quickly grasp the key takeaways from your content.
+The **Kognetiks AI Summaries** plugin makes your site excerpts smarter and more engaging, while ensuring that visitors quickly grasp the key takeaways from your content.
 
-Start using AI Summaries today and take your site excerpts to the next level! 🚀
+Start using **Kognetiks AI Summaries** today and take your site excerpts to the next level!
 
 ## Documentation
 
@@ -54,13 +50,15 @@ What's new in Version 1.0.0
 
 - [Diagnostics](diagnostics/diagnostics.md)
 
+- [Tools](tools/tools.md)
+
 ## Support
 
 - [How the Kognetiks AI Summaries Plugin Works](support/how-it-works.md)
 
 - [API Key Safety and Security](support/api-key-safety-and-security.md)
 
-- [Diagnostics - For Developers](support/diagnostics.md)
+- [Diagnostics - For Developers](diagnostics/diagnostics.md)
 
 ## Demos
 

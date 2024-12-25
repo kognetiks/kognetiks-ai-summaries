@@ -4,7 +4,6 @@
  *
  * This file contains the code for the Chatbot settings page.
  * It handles the support settings and other parameters.
- * 
  *
  * @package kognetiks-ai-summaries
  */
@@ -18,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function ksum_support_settings_init() {
 
     // Support settings tab
-    register_setting('ksum_support', 'chatgpt_support_key');
+    register_setting( 'ksum_support', 'chatgpt_support_key' );
 
     add_settings_section(
         'ksum_support_section',
@@ -26,44 +25,54 @@ function ksum_support_settings_init() {
         'ksum_support_section_callback',
         'ksum_support'
     );
-
 }
-add_action('admin_init', 'ksum_support_settings_init');
+add_action( 'admin_init', 'ksum_support_settings_init' );
 
 // Get the list of documentation contents
-function ksum_list_documentation_contents() {
+function ksum_list_documentation_contents( $dir = '', $file = '' ) {
 
     global $ksum_plugin_dir_path;
 
-    $documentationPath = $ksum_plugin_dir_path . '/documentation';
-    
-    if (!file_exists($documentationPath)) {
-        return "The specified documentation directory does not exist.";
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_list_documentation_contents()' );
+    // ksum_back_trace( 'NOTICE', '$ksum_plugin_dir_path: ' . $ksum_plugin_dir_path );
+
+    $documentation_path = $ksum_plugin_dir_path . 'documentation';
+
+    if ( ! file_exists( $documentation_path ) ) {
+        return 'The specified documentation directory does not exist.';
     }
 
-    return ksum_traverse_directory($documentationPath);
-    
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', '$documentation_path: ' . $documentation_path );
+
+    return ksum_traverse_directory( $documentation_path );
+
 }
 
 // Traverse the directory structure to get the list of directories and files
-function ksum_traverse_directory($path) {
+function ksum_traverse_directory( $path ) {
 
-    $contents = scandir($path);
-    $result = [
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_traverse_directory()' );
+    // ksum_back_trace( 'NOTICE', '$path: ' . $path );
+
+    $contents = scandir( $path );
+    $result   = [
         'directories' => [],
-        'files' => []
+        'files' => [],
     ];
 
-    foreach ($contents as $item) {
-        if ($item == '.' || $item == '..') {
+    foreach ( $contents as $item ) {
+        if ( $item === '.' || $item === '..' ) {
             continue;
         }
 
-        $fullPath = $path . '/' . $item;
+        $full_path = $path . '/' . $item;
 
-        if (is_dir($fullPath)) {
-            $result['directories'][$item] = ksum_traverse_directory($fullPath);
-        } elseif (is_file($fullPath) && pathinfo($item, PATHINFO_EXTENSION) === 'md') {
+        if ( is_dir( $full_path ) ) {
+            $result['directories'][ $item ] = ksum_traverse_directory( $full_path );
+        } elseif ( is_file( $full_path ) && pathinfo( $item, PATHINFO_EXTENSION ) === 'md' ) {
             $result['files'][] = $item;
         }
     }
@@ -73,58 +82,60 @@ function ksum_traverse_directory($path) {
 }
 
 // Validate the requested directory and file
-function ksum_validate_documentation($dir, $file) {
+function ksum_validate_documentation( $dir, $file ) {
 
-    $allowed_file_extension = 'md'; // Set the allowed file extension to 'md'
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation()' );
+    // ksum_back_trace( 'NOTICE', '$dir: ' . $dir );
+    // ksum_back_trace( 'NOTICE', '$file: ' . $file );
 
-    if (!preg_match('/^[a-zA-Z0-9_\-\/]+$/', $dir) || pathinfo($file, PATHINFO_EXTENSION) !== $allowed_file_extension) {
+    $allowed_file_extension = 'md'; // Only allow .md files
+
+    // Quick checks.
+    if (
+        ! preg_match( '/^[a-zA-Z0-9_\-\/]+$/', $dir ) ||
+        pathinfo( $file, PATHINFO_EXTENSION ) !== $allowed_file_extension
+    ) {
         return false;
     }
 
-    $data = []; // Initialize $data as an empty array
-    $sub_directory = ""; // Initialize $sub_directory as an empty string
-    $directory = ""; // Initialize $directory as an empty string
+    // Initialize placeholders
+    $data = [];
+    $sub_directory = '';
+    $directory = '';
 
-    $contents = ksum_list_documentation_contents();
+    // Gather the entire doc structure
+    $contents = ksum_list_documentation_contents( $dir, $file );
 
     // Flatten the directory structure to create a list of valid directories and files
-    $valid_directories = array_keys($contents['directories']);
+    $valid_directories = array_keys( $contents['directories'] );
     $valid_files = [];
 
-    foreach ($contents['directories'] as $directory => $data) {
-        if (isset($data['files'])) {
-            $valid_files[$directory] = $data['files'];
+    foreach ( $contents['directories'] as $directory => $data ) {
+        if ( isset( $data['files'] ) ) {
+            $valid_files[ $directory ] = $data['files'];
         } else {
-            $valid_files[$directory] = [];
+            $valid_files[ $directory ] = [];
         }
 
         // Traverse subdirectories recursively
-        $sub_directories = array_keys($data['directories']);
-        foreach ($sub_directories as $sub_directory) {
+        $sub_directories = array_keys( $data['directories'] );
+        foreach ( $sub_directories as $sub_directory ) {
             $valid_directories[] = $directory . '/' . $sub_directory;
-            $valid_files[$directory . '/' . $sub_directory] = $data['directories'][$sub_directory]['files'];
+            $valid_files[ $directory . '/' . $sub_directory ] = $data['directories'][ $sub_directory ]['files'];
         }
     }
 
-    // Diagnostics
-    // ksum_back_trace( 'NOTICE', '$valid_directories: ' . print_r($valid_directories, true));
-    // ksum_back_trace( 'NOTICE', '$valid_files: ' . print_r($valid_files, true));
-
-    if (!empty($valid_directories) && !empty($valid_files) && !empty($dir) && !empty($file)) {
-        // If the $dir and $file are found in the list of $valid_directories and $valid_files, return true
-        if (in_array($dir, $valid_directories) && in_array($file, $valid_files[$dir])) {
-
-            // DIAG - Diagnostics
-            // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation: $dir: '. $dir );
-            // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation: $file: '. $file );
-
-            // Return true if the directory and file are valid
+    if ( ! empty( $valid_directories ) && ! empty( $valid_files ) && ! empty( $dir ) && ! empty( $file ) ) {
+        // Check if the $dir and $file are found in valid arrays
+        if (
+            in_array( $dir, $valid_directories, true ) &&
+            in_array( $file, $valid_files[ $dir ], true )
+        ) {
             return true;
-
         }
     }
 
-    // Return false if the directory and file are invalid
     return false;
 
 }
@@ -132,93 +143,120 @@ function ksum_validate_documentation($dir, $file) {
 // Support settings section callback
 function ksum_support_section_callback() {
 
-    global $ksum_plugin_dir_path;
+    global $ksum_plugin_dir_path, $wp_filesystem;
 
-    // Get the 'documentation' parameter from the URL
-    $docLocation = '';
+    // Check the nonce if either param is set
+    // This ensures the GET request is valid and not tampered with
+    if ( isset( $_GET['dir'] ) || isset( $_GET['file'] ) ) {
+        check_admin_referer( 'ksum_support_nonce' );
+    }
 
-    if (isset($_GET['dir'])) {
-        $dir = sanitize_file_name(basename(sanitize_text_field($_GET['dir'])));
+    // Unsplash and sanitize $_GET['dir'] and $_GET['file']
+    // If not set, default to an empty string
+    if ( isset( $_GET['dir'] ) ) {
+        $dir = sanitize_text_field( wp_unslash( $_GET['dir'] ) );
     } else {
         $dir = '';
     }
 
-    if (isset($_GET['file'])) {
-        $file = sanitize_file_name(basename(sanitize_text_field($_GET['file'])));
+    if ( isset( $_GET['file'] ) ) {
+        $file = sanitize_text_field( wp_unslash( $_GET['file'] ) );
     } else {
         $file = '';
     }
 
-    if (!empty($dir) && !empty($file)) {
-        $docLocation = $dir . '/' . $file;
-    } else if (empty($dir) && empty($file)) {
-        $docLocation = 'overview.md';
+    // Determine the documentation path to load
+    if ( ! empty( $dir ) && ! empty( $file ) ) {
+        $doc_location = ltrim( $dir, '/' ) . '/' . ltrim( $file, '/' );
+    } elseif ( empty( $dir ) && empty( $file ) ) {
+        $doc_location = '/documentation/overview.md';
     }
 
-    // Validate the that the requested documentation directory and file exist
-    if (ksum_validate_documentation($dir, $file)) {
-        $docLocation = $ksum_plugin_dir_path . 'documentation/' . $docLocation;
+    // Validate directory/file combination
+    if ( ksum_validate_documentation( $dir, $file ) ) {
+
+        // DIAG - Diagnostics
+        // ksum_back_trace( 'NOTICE', '$doc_location: ' . $doc_location );
+
+        // Document found, display it
+        $doc_location = $ksum_plugin_dir_path . 'documentation/' . $doc_location;
+
     } else {
-        $docLocation = $ksum_plugin_dir_path . 'documentation/' . 'overview.md';
+
+        // DIAG - Diagnostics
+        // ksum_back_trace( 'NOTICE', 'Invalid directory/file combination.' );
+
+        // Fallback to overview.md
+        $doc_location = $ksum_plugin_dir_path . 'documentation/overview.md';
+
     }
 
-    // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', '$docLocation: '. $docLocation );
+    // Initialize the WP Filesystem API if not already done
+    if ( ! function_exists( 'WP_Filesystem' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+    }
+    if ( ! is_object( $wp_filesystem ) ) {
+        WP_Filesystem();
+    }
 
-    // DIAG - Diagnostics
-    // error_reporting(E_ALL);
-    // ini_set('display_errors', 1);
-  
+    // Safely get file contents via WP_Filesystem
+    $markdown_content = '';
+    if ( $wp_filesystem->exists( $doc_location ) ) {
+        $markdown_content = $wp_filesystem->get_contents( $doc_location );
+    }
+
+    // Parse the markdown to HTML
     $parsedown = new Parsedown();
-    $markdownContent = file_get_contents($docLocation);
-    $htmlContent = $parsedown->text($markdownContent);
+    $html_content = $parsedown->text( $markdown_content );
 
-    $dir = isset($_GET['dir']) ? sanitize_text_field($_GET['dir']) : '';
-    $file = isset($_GET['file']) ? sanitize_text_field($_GET['file']) : '';
-    
-    $basePath = $ksum_plugin_dir_path . 'documentation/';
-    $basePath = "?page=kognetiks-ai-summaries";
-    if ($dir !== '') {
-        $basePath .= "&tab=support&dir=" . $dir;
+    // Build the base path for anchor & image adjustments
+    $base_path = '?page=kognetiks-ai-summaries';
+    if ( '' !== $dir ) {
+        $base_path .= '&tab=support&dir=' . rawurlencode( $dir );
     }
-    if ($file !== '') {
+    if ( '' !== $file ) {
         // Remove 'overview.md/' from the file parameter
-        $file = str_replace('overview.md/', '', $file);
-        $basePath .= "&file=" . $file;
+        $file = str_replace( 'overview.md/', '', $file );
+        $base_path .= '&file=' . rawurlencode( $file );
     }
-    $adjustedHtmlContent = ksum_adjust_paths($htmlContent, $basePath);
+    $adjusted_html_content = ksum_adjust_paths( $html_content, $base_path );
 
-    // Add inline styling to <ul> and <li> tags
-    $adjustedHtmlContent = str_replace('<ul>', '<ul style="list-style-type: disc; margin-left: 20px;">', $adjustedHtmlContent);
-    $adjustedHtmlContent = str_replace('<li>', '<li style="margin-bottom: 10px;">', $adjustedHtmlContent);
+    // Optional: Add inline styling to <ul> and <li> tags
+    $adjusted_html_content = str_replace(
+        '<ul>',
+        '<ul style="list-style-type: disc; margin-left: 20px;">',
+        $adjusted_html_content
+    );
+    $adjusted_html_content = str_replace(
+        '<li>',
+        '<li style="margin-bottom: 10px;">',
+        $adjusted_html_content
+    );
 
     // DIAG - Diagnostics
-    // $absolutePath = __DIR__ . '/adjustedHtmlContent.html';
-    // $result = file_put_contents($absolutePath, $adjustedHtmlContent);
-    // if ($result === false) {
-    //     ksum_back_trace(  "Failed to write to file: " . $absolutePath );
-    // } else {
-    //     ksum_back_trace( 'NOTICE', "File written successfully to: " . $absolutePath );
-    // }
+    // ksum_back_trace( 'NOTICE', '$adjusted_html_content: ' . $adjusted_html_content );
 
-    echo wp_kses_post($adjustedHtmlContent);
+    // Output the HTML content
+    echo wp_kses_post( $adjusted_html_content );
 
 }
 
-function ksum_file_exists_in_doc_location($docLocation) {
+// Check if a file exists in the documentation location
+function ksum_file_exists_in_doc_location( $doc_location ) {
 
-    return file_exists($docLocation);
+    return file_exists( $doc_location );
 
 }
 
-function ksum_adjust_paths($html, $basePath) {
+// Adjust the paths of images and anchors in the documentation
+function ksum_adjust_paths( $html, $base_path ) {
 
     // Adjust image paths
     $html = preg_replace_callback(
         '/<img\s+src="([^"]+)"/i',
-        function ($matches) use ($basePath) {
-            $adjustedImagePath = ksum_adjust_image_path($matches[1], $basePath);
-            return '<img src="' . esc_url($adjustedImagePath) . '" style="max-width: 80%; width: auto; height: auto; border: 1px solid black; box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.3);"';
+        function ( $matches ) use ( $base_path ) {
+            $adjusted_image_path = ksum_adjust_image_path( $matches[1], $base_path );
+            return '<img src="' . esc_url( $adjusted_image_path ) . '" style="max-width: 80%; width: auto; height: auto; border: 1px solid black; box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.3);"';
         },
         $html
     );
@@ -226,62 +264,79 @@ function ksum_adjust_paths($html, $basePath) {
     // Adjust anchor paths
     $html = preg_replace_callback(
         '/<a\s+href="([^"]+)"/i',
-        function ($matches) use ($basePath) {
-            $adjustedHref = ksum_adjust_path($matches[1], $basePath);
-            return '<a href="' . esc_url($adjustedHref) . '"';
+        function ( $matches ) use ( $base_path ) {
+            $adjusted_href = ksum_adjust_path( $matches[1], $base_path );
+            return '<a href="' . esc_url( $adjusted_href ) . '"';
         },
         $html
     );
 
     return $html;
-    
+
 }
 
-function ksum_adjust_path($url, $basePath) {
+// Adjust the path of an anchor
+function ksum_adjust_path( $url, $base_path ) {
 
-    if (strpos($url, 'http') !== 0 && strpos($url, '#') !== 0) {
+    // If it’s not an absolute URL and not an anchor (#)
+    if ( 0 !== strpos( $url, 'http' ) && 0 !== strpos( $url, '#' ) ) {
+        
+        $nonce = wp_create_nonce( 'ksum_support_nonce' );
 
         // Split the URL by '/' to get the dir and file
-        $parts = explode('/', $url);
+        $parts = explode( '/', $url );
 
-        if (count($parts) >= 2) {
-            $dir = $parts[0];
+        // Build the new link
+        if ( count( $parts ) >= 2 ) {
+            $dir  = $parts[0];
             $file = $parts[1];
 
             // Construct the URL with the correct parameters
-            $url = rtrim($basePath, '/') . "&tab=support&dir=" . $dir . "&file=" . $file;
+            $url = add_query_arg(
+                array(
+                    'tab'      => 'support',
+                    'dir'      => $dir,
+                    'file'     => $file,
+                    '_wpnonce' => $nonce,
+                ),
+                $base_path
+            );
         } else {
-            // If the URL is a relative path, append it to the base path of the current document
-            $basePathParts = explode('&file=', $basePath);
-            $url = rtrim($basePathParts[0], '/') . "&file=" . $url;
-
+            $base_path_parts = explode( '&file=', $base_path );
+            $url = add_query_arg(
+                array(
+                    'file'     => $url,
+                    '_wpnonce' => $nonce,
+                ),
+                rtrim( $base_path_parts[0], '/' )
+            );
         }
-
     }
 
     return $url;
 
 }
 
-function ksum_adjust_image_path($url, $basePath) {
+// Adjust the path of an image
+function ksum_adjust_image_path( $url, $base_path ) {
 
-    if (strpos($url, 'http') !== 0) {
-
+    // If not an absolute URL
+    if ( 0 !== strpos( $url, 'http' ) ) {
         // If the URL is a relative path, construct the direct path to the image
-        $basePathParts = explode('&dir=', $basePath);
+        $base_path_parts = explode( '&dir=', $base_path );
 
-        if (count($basePathParts) > 1) {
-            $dirParts = explode('&file=', $basePathParts[1]);
-            $dir = rtrim($dirParts[0], '/');
-            // Check if the URL is a relative path and sanitize it
-            $url = site_url() . '/wp-content/plugins/kognetiks-ai-summaries/documentation/' . $dir . '/' . $url;
+        $plugin_url = plugins_url('/', dirname(dirname(__FILE__)));
+
+        if ( count( $base_path_parts ) > 1 ) {
+            $dir_parts = explode( '&file=', $base_path_parts[1] );
+            $dir = rtrim( $dir_parts[0], '/' );
+            // Build the full path
+            $url = $plugin_url . 'documentation/' . $dir . '/' . $url;
         } else {
-            // Check if the URL is a relative path and sanitize it
-            $url = site_url() . '/wp-content/plugins/kognetiks-ai-summaries/documentation/' . $url;
+            $url = $plugin_url . 'documentation/' . $url;
         }
-
     }
 
-    return esc_url($url);
+    return esc_url( $url );
 
 }
