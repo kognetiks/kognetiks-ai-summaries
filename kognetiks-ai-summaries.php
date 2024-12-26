@@ -74,11 +74,9 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/utilities.php';
 
 // Use the WP Filesystem API
 global $wp_filesystem;
-
 if ( ! function_exists( 'WP_Filesystem' ) ) {
     require_once ABSPATH . 'wp-admin/includes/file.php';
 }
-
 WP_Filesystem();
 
 // Settings and Deactivation
@@ -100,6 +98,9 @@ function ksum_enqueue_admin_scripts() {
 
     global $ksum_plugin_version;
 
+    wp_enqueue_style('dashicons');
+    wp_enqueue_style('ksum-css', plugins_url('assets/css/ksum-admin.css', __FILE__), array(), $ksum_plugin_version, 'all');
+
     wp_enqueue_script('jquery'); // Ensure jQuery is enqueued
     wp_enqueue_script('ksum_admin', plugins_url('assets/js/ksum-admin.js', __FILE__), array('jquery'), $ksum_plugin_version, true);
 
@@ -113,6 +114,7 @@ function ksum_generate_ai_summary( $pid )  {
     // ksum_back_trace( 'NOTICE', 'ksum_generate_ai_summary' );
 
     global $wpdb;
+    global $ksum_error_responses;
 
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = 'ai_summary_lock_' . $pid;
@@ -185,7 +187,23 @@ function ksum_generate_ai_summary( $pid )  {
             // ksum_back_trace( 'NOTICE', 'AI summary does not exist' );
 
             $ai_summary = ksum_generate_ai_summary_api($model, $content);
-            ksum_insert_ai_summary($pid, $ai_summary, $post_modified);
+
+            if ($ai_summary == 'ERROR') {
+
+                // DIAG - Diagnostics
+                // ksum_back_trace( 'NOTICE', 'An API error occurred.' );
+
+                // Release the lock
+                delete_transient( $lock_key );
+
+                return $ksum_error_responses[array_rand($ksum_error_responses)];
+
+            } else {
+
+                // Insert the AI summary
+                ksum_insert_ai_summary($pid, $ai_summary, $post_modified);
+
+            }
 
             break;
 
@@ -195,9 +213,27 @@ function ksum_generate_ai_summary( $pid )  {
             // ksum_back_trace( 'NOTICE', 'AI summary exists' );
 
             if ( ksum_ai_summary_is_stale($pid) ) {
+
                 // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
                 $ai_summary = ksum_generate_ai_summary_api($model, $content);
-                ksum_update_ai_summary($pid, $ai_summary, $post_modified);
+
+                if ($ai_summary == 'ERROR') {
+
+                    // DIAG - Diagnostics
+                    // ksum_back_trace( 'NOTICE', 'An API error occurred.' );
+    
+                    // Release the lock
+                    delete_transient( $lock_key );
+    
+                    return $ksum_error_responses[array_rand($ksum_error_responses)];
+    
+                } else {
+
+                    // Update the AI summary
+                    ksum_update_ai_summary($pid, $ai_summary, $post_modified);
+
+                }
+
             }
 
             break;
@@ -270,7 +306,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
             $api_key = esc_attr(get_option('ksum_nvidia_api_key'));
             // ksum_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
-            $response = ksum_nvidia_call_api($api_key, $message);
+            $response = ksum_nvidia_api_call($api_key, $message);
 
             break;
 

@@ -134,9 +134,8 @@ function ksum_options_exporter_button_callback() {
         <p>Use the button (below) to retrieve the plugin options and download the file.</p>
         <?php
             if (is_admin()) {
-                $header = " ";
-                $header .= '<a class="button button-primary" href="' . esc_url(admin_url('admin-post.php?action=ksum_download_options_data')) . '">Download Options Data</a>';
-                echo $header;
+                $header = '<a class="button button-primary" href="' . esc_url(admin_url('admin-post.php?action=ksum_download_options_data')) . '">Download Options Data</a>';
+                echo wp_kses_post($header);
             }
         ?>
     </div>

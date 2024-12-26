@@ -140,7 +140,9 @@ function ksum_error_log($message) {
 
     // Append the error message to the log file
     if ( $wp_filesystem ) {
-        $wp_filesystem->put_contents( $log_file, $message . PHP_EOL, FS_CHMOD_FILE );
+        $existing_content = $wp_filesystem->get_contents( $log_file );
+        $new_content = $existing_content . $message . PHP_EOL;
+        $wp_filesystem->put_contents( $log_file, $new_content, FS_CHMOD_FILE );
     }
 
 }

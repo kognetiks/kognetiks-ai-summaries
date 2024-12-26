@@ -89,6 +89,7 @@ function ksum_anthropic_api_call($api_key, $message) {
     // Fallback Response
     // DIAG - Diagnostics
     ksum_prod_trace('ERROR', 'No valid response received from API.');
-    return 'No response received.';
+    // return 'No response received.';
+    return 'ERROR';
 
 }

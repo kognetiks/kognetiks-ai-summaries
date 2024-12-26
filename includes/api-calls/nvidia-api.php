@@ -101,14 +101,15 @@ function ksum_nvidia_api_call($api_key, $message) {
     }
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body));
+    // ksum_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
     
     if (!empty($response_body['choices'])) {
         // Handle the response from the chat engine
         return $response_body['choices'][0]['message']['content'];
     } else {
         // Return a random error message
-        return $ksum_error_responses[array_rand($ksum_error_responses)];
+        // return $ksum_error_responses[array_rand($ksum_error_responses)];
+        return 'ERROR';
     }
     
 }

@@ -18,6 +18,8 @@ function ksum_create_directory_and_index_file($dir_path) {
 
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_create_directory_and_index_file' );
+
+    global $wp_filesystem;
     
     // Ensure the directory ends with a slash
     $dir_path = rtrim($dir_path, '/') . '/';
@@ -35,11 +37,15 @@ function ksum_create_directory_and_index_file($dir_path) {
     // Check if the index.php file exists, if not create it
     if (!file_exists($index_file_path)) {
         $file_content = "<?php\n// Silence is golden.\n\n// Load WordPress Environment\n\$wp_load_path = dirname(__FILE__, 5) . '/wp-load.php';\nif (file_exists(\$wp_load_path)) {\n    require_once(\$wp_load_path);\n} else {\n    exit('Could not find wp-load.php');\n}\n\n// Force a 404 error\nstatus_header(404);\nnocache_headers();\ninclude(get_404_template());\nexit;\n?>";
-        file_put_contents($index_file_path, $file_content);
+        if ( ! $wp_filesystem->put_contents( $index_file_path, $file_content, FS_CHMOD_FILE ) ) {
+            wp_die( esc_html__( 'Failed to write to file.', 'kognetiks-ai-summaries' ) );
+        }
     }
 
     // Set directory permissions
-    chmod($dir_path, 0755);
+    if ( ! $wp_filesystem->chmod( $dir_path, 0755 ) ) {
+        wp_die( esc_html__( 'Failed to change directory permissions.', 'kognetiks-ai-summaries' ) );
+    }
 
     return true;
 
