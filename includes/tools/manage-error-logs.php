@@ -113,8 +113,7 @@ function ksum_manage_error_logs() {
     $output .= '</div>';
 
     echo $output; // Output the generated HTML
-
-    return;
+    
 }
 
 // Handle error log actions

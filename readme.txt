@@ -1,5 +1,5 @@
 === Kognetiks AI Summaries ===
-Contributors: Kogentiks
+Contributors: Kognetiks
 Tags: AI, Excerpts, Search
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
 Requires at least: 5.5
@@ -27,14 +27,14 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kog
 
 1. From the `General` tab on the **Kognetiks AI Summaries** settings page, select from one of three AI Platform Choices: `OpenAI` (the default), `NVIDIA`, or `Anthropic`.
 
-2. Before you can `Turn AI Summaries` to `On`, you'll need to setup an account with the AI Platform vendor of your choice.  The plugin is very efficient when it comes to generating AI excerpts of your content.
+2. Before you can `Turn AI Summaries` to `On`, you'll need to set up an account with the AI Platform vendor of your choice.  The plugin is very efficient when it comes to generating AI excerpts of your content.
 
     - The plugin will only generate a summary of a page, port or other published content once.  But, it will check to see if the content has been updated or modified.  If the page or post has changed since the last time the summary was generated, a new summary will be created.  This makes incorporating AI generated excerpts very cost affordable.
-    - AI generated excerpts appear whereever WordPress would present a excerpt on your site.  It **does not** replace any hand-crafted excepts you might have added to posts, pages or other content.  AI summaries are in addition to these excerpts and are stored in a seperate table on your site.  Once generated, they won't be regenerated unless the content has been updated.
+    - AI generated excerpts appear where ever WordPress would present an excerpt on your site.  It **does not** replace any hand-crafted excepts you might have added to posts, pages or other content.  AI summaries are in addition to these excerpts and are stored in a separate table on your site.  Once generated, they won't be regenerated unless the content has been updated.
 
-3. From the `API/OpenAI`, `API/NVIDIA`, or `API/Anthropic` tab (depending on the `AI Platform Choice` you made on teh `General` tab), enter your `API Key`, then click the `Save Settings` button at the bottom of the page.
+3. From the `API/OpenAI`, `API/NVIDIA`, or `API/Anthropic` tab (depending on the `AI Platform Choice` you made on the `General` tab), enter your `API Key`, then click the `Save Settings` button at the bottom of the page.
 
-4. Once you have saved your API key, the list of currently available models from the AI Platform vendor of your choice will be available in the `Model Choice` pulldown menu.  In most cases, the `Model Choice` will default to the latest model.  If you changes models, remember to click the `Save Settings` button at the bottom of the page.
+4. Once you have saved your API key, the list of currently available models from the AI Platform vendor of your choice will be available in the `Model Choice` pull down menu.  In most cases, the `Model Choice` will default to the latest model.  If you changes models, remember to click the `Save Settings` button at the bottom of the page.
 
 5. In most cases you should not need to change the `Advanced Settings` defaults.
 
@@ -97,8 +97,3 @@ WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT
 
 = 1.0.0 =
 * Initial release.
-
-
-
-
-

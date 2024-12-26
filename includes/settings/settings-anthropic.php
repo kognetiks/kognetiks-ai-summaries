@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries - Anthorpic API Settings - Ver 1.0.0
+ * Kognetiks AI Summaries - Anthropic API Settings - Ver 1.0.0
  *
  * This file contains the code for the Anthropic API settings page.
  * It handles the support settings and other parameters.

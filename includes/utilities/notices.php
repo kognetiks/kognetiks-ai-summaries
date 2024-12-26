@@ -26,9 +26,6 @@ function ksum_general_admin_notice($message = null) {
             esc_attr('notice notice-error is-dismissible'),
             esc_html($message)
         );
-
-        return;
-
     }
 
 }

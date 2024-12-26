@@ -11,7 +11,7 @@ The Diagnostics Settings allow you to customize the basic behavior the **Kogneti
    - **Description**: Displays key information about your system and the plugin, including PHP version, WordPress version, PHP memory limits, plugin version, and WordPress language code.
    - **Usage**: Use this information for troubleshooting and ensuring compatibility with your environment.
 
-## AI Satus and Results
+## AI Status and Results
 
 ![API Status and Results - Success](api-status-and-results-success.png)
 
@@ -22,7 +22,7 @@ The Diagnostics Settings allow you to customize the basic behavior the **Kogneti
    - **Description**: Displays the API status, either `Success` or `Error`, along with any message.
    - **Note**: An valid API key obtained from the respective model vendor is required for the plugin to operate correctly.
 
-## Messages and Disgnostics Settings
+## Messages and Diagnostics Settings
 
 ![Messages and Diagnostics Settings](messages-and-diagnostics-settings.png)
 

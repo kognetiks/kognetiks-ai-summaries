@@ -108,7 +108,7 @@ function ksum_nvidia_api_call($api_key, $message) {
         return $response_body['choices'][0]['message']['content'];
     } else {
         // Return a random error message
-        return $ksum_error_responses[array_rand($ksum_error_responses)];;
+        return $ksum_error_responses[array_rand($ksum_error_responses)];
     }
     
 }

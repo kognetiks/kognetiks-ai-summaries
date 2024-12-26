@@ -33,7 +33,7 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
     // Uncomment the // ksum_back_trace() function in the file(s) where you want to log messages
     // Or add new // ksum_back_trace() calls to log messages at any point in the code
     //
-    // Go to the Kogentiks AI Summaries Settings, then the Messages tab
+    // Go to the Kognetiks AI Summaries Settings, then the Messages tab
     // Set the Plugin Diagnotics to one of Off, Success, Notice, Failure, Warning, or Error
     //
     // Each level will log messages based on the following criteria (Off will not log any messages)
@@ -118,9 +118,6 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
         // Print all types of messages
         error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
         ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
-    } else {
-        // Exit if none of the conditions are met
-        return;
     }
 
 }
@@ -173,7 +170,7 @@ function log_ksum_error() {
             // Get additional info
             $session_id = session_id();
             $user_id = get_current_user_id();
-             $ip_address = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+            $ip_address = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
             $date_time = gmdate('Y-m-d H:i:s');
 
             // Construct the log message

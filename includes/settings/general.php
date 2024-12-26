@@ -98,7 +98,7 @@ function ksum_additional_selections_section_callback($args) {
 
     ?>
     <p>Turn AI Summaries on/off for your site. <b>NOTE</b>: The default is off until you configure the plugin with a valid API key.</p>
-    <p>Select the general lenght of the AI summaries in words. <b>NOTE</b>: The default is 55 words, however fewer or more words my be included in the summary based on analysis of the content by the AI platform of your choice.</p>
+    <p>Select the general length of the AI summaries in words. <b>NOTE</b>: The default is 55 words, however fewer or more words may be included in the summary based on analysis of the content by the AI platform of your choice.</p>
     <?php
 
 }

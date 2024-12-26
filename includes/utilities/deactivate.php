@@ -47,7 +47,7 @@ function ksum_admin_notices() {
 function ksum_uninstall(){
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_uninstall' );
+    // ksum_back_trace( 'NOTICE', 'ksum_uninstall - started' );
 
     global $wpdb;
 
@@ -111,8 +111,6 @@ function ksum_uninstall(){
     }
 
     // DIAG - Log the uninstall
-    // ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL COMPLETED');
-
-    return;
+    // ksum_back_trace( 'NOTICE', 'ksum_uninstall - completed');
 
 }

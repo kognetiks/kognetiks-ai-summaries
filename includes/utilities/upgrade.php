@@ -25,19 +25,21 @@ function ksum_activate() {
     // Handle unexpect output during activation
     $unexpected_output = ob_get_clean();
     if (!empty($unexpected_output)) {
+
         // Handle unexpected output
         if (!empty($unexpected_output)) {
+
             $error_message = 'Unexpected output during plugin activation: ' . esc_html($unexpected_output);
             add_action('admin_notices', function() use ($error_message) {
                 echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($error_message) . '</p></div>';
             });
+
         }
+        
     }
 
     // DIAG - Diagnotics
     // ksum_back_trace( 'NOTICE', 'ksum_activate - completed');
-
-    return;
 
 }
 
@@ -48,7 +50,9 @@ function ksum_upgrade_completed($upgrader_object, $options) {
     // ksum_back_trace( 'NOTICE', 'ksum_upgrade_completed');
 
     if ($options['action'] == 'update' && $options['type'] == 'plugin') {
+
         if (isset($options['plugins']) && is_array($options['plugins'])) {
+
             foreach($options['plugins'] as $plugin) {
                 if (plugin_basename(__FILE__) === $plugin) {
                     // Logic to run during upgrade
@@ -56,16 +60,18 @@ function ksum_upgrade_completed($upgrader_object, $options) {
                     break;
                 }
             }
+
         } else {
+
             // DIAG - Log the warning
             // ksum_back_trace( 'WARNING', '"plugins" key is not set or not an array');
+
         }
+
     }
 
     // DIAG - Log the activation
     // ksum_back_trace( 'NOTICE', 'ksum_upgrade_completed - completed');
-
-    return;
 
 }
 
@@ -80,7 +86,5 @@ function ksum_upgrade() {
 
     // DIAG - Diagnotics
     // back_trace( 'NOTICE', 'ksum_upgrade - completed');
-
-    return;
 
 }

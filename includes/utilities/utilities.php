@@ -2,7 +2,7 @@
 /**
  * Kognetiks AI Summaries - Utilities - Ver 1.0.0
  *
- * This file contains the code for the Kognetiks AI Summaries utitlies.
+ * This file contains the code for the Kognetiks AI Summaries utilities.
  * It handles the support settings and other parameters.
  * 
  * @package kognetiks-ai-summaries

@@ -2,7 +2,7 @@
 
 The **Kognetiks AI Summaries** plugin requires proper configuration to function correctly. Follow the steps below to set up your plugin:
 
-![API/OpenaAI Settings](api-openai-settings.png)
+![API/OpenAI Settings](api-openai-settings.png)
 
 1. **OpenAI API Key**:
 

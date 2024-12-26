@@ -292,7 +292,7 @@ function ksum_get_api_base_url() {
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_get_api_base_url' );
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
     switch ($ksum_ai_platform_choice) {
 
@@ -321,8 +321,8 @@ function ksum_get_chat_completions_api_url() {
 
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url' );
-    
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
+
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
     switch ($ksum_ai_platform_choice) {
 

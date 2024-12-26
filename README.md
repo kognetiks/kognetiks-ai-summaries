@@ -1,6 +1,6 @@
 # Kognetiks AI Summaries
 
-**Kogentiks AI Summaries** - Effortless Excerpts, Power by Intelligence.
+**Kognetiks AI Summaries** - Effortless Excerpts, Power by Intelligence.
 
 Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other content — effortlessly enhancing user experience and site navigation.
 

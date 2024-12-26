@@ -40,7 +40,7 @@ function ksum_settings_page() {
     $reminderCount = intval(esc_attr(get_option('ksum_reminder_count', 0)));
     if ($reminderCount % 100 === 0 && $reminderCount <= 500) {
         // $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to <a href="https://wordpress.org/support/plugin/kognetiks-ai-summaries/reviews/" target="_blank">rate and review this plugin</a>. Thank you!';
-        // $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to rate and review this plugin. Thank you!';
+        $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to rate and review this plugin. Thank you!';
         ksum_general_admin_notice($message);
     }
     // Add 1 to reminderCount and update localStorage

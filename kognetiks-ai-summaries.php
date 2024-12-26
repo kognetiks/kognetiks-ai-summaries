@@ -115,7 +115,7 @@ function ksum_generate_ai_summary( $pid )  {
     global $wpdb;
 
     // Add a lock to prevent concurrent execution for the same post ID
-    $lock_key = "ai_summary_lock_{$pid}";
+    $lock_key = 'ai_summary_lock_' . $pid;
 
     if ( get_transient( $lock_key ) ) {
 
@@ -141,7 +141,7 @@ function ksum_generate_ai_summary( $pid )  {
     $content = $row->post_content;
     $post_modified = $row->post_modified;
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
+    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
     switch ($ksum_ai_platform_choice) {
 
@@ -287,7 +287,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
         default:
 
             // DIAG - Diagnostics
-            // ksum_back_trace( 'NOTICE', 'No valid platform selected for for AI summary generation');
+            // ksum_back_trace( 'NOTICE', 'No valid platform selected for AI summary generation');
             $response = '';
 
             break;
@@ -323,9 +323,8 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     // REMOVE EXTRA SPACES
     $response = preg_replace('/\s+/', ' ', $response);
 
-    $ai_summary = $response;
-
-    return $ai_summary;
+    // Return the AI summary
+    return $response;
 
 }
 
@@ -384,10 +383,12 @@ function ksum_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
     // Handle any errors
     if ( $wpdb->last_error ) {
 
+        // DIAG - Diagnostics
         ksum_prod_trace( 'ERROR', 'Error inserting or updating AI summary: ' . $wpdb->last_error );
 
     } else {
 
+        // DIAG - Diagnostics
         // ksum_back_trace( 'NOTICE', 'AI summary successfully inserted or updated.' );
 
     }
@@ -433,7 +434,7 @@ function ksum_ai_summary_exists( $pid ) {
 
 }
 
-// Delete an AI summary from the ai summary table
+// Delete an AI summary from the AI summary table
 function ksum_delete_ai_summary( $pid ) {
 
     // DIAG - Diagnostics
@@ -502,7 +503,7 @@ function ksum_ai_summary_is_stale( $pid ) {
 
 }
 
-// Update an AI summary in the ai summary table
+// Update an AI summary in the AI summary table
 function ksum_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // DIAG - Diagnostics

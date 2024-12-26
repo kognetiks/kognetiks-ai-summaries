@@ -147,6 +147,7 @@ function ksum_support_section_callback() {
     // ksum_back_trace( 'NOTICE', 'ksum_support_section_callback' );
 
     global $ksum_plugin_dir_path, $wp_filesystem;
+    $doc_location = '';
 
     // Check the nonce if either param is set
     // This ensures the GET request is valid and not tampered with
@@ -278,8 +279,8 @@ function ksum_adjust_paths( $html, $base_path ) {
             $plugin_url = plugins_url('/', dirname(__FILE__));
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', '$adjusted_href: ' . $adjusted_href );
-            ksum_back_trace( 'NOTICE', '$plugin_url: ' . $plugin_url );
+            // ksum_back_trace( 'NOTICE', '$adjusted_href: ' . $adjusted_href );
+            // ksum_back_trace( 'NOTICE', '$plugin_url: ' . $plugin_url );
 
             $target_blank = strpos($adjusted_href, $plugin_url) === false ? ' target="_blank"' : '';
             return '<a href="' . esc_url( $adjusted_href ) . '"' . $target_blank;
@@ -297,7 +298,7 @@ function ksum_adjust_path( $url, $base_path ) {
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_adjust_path' );
 
-    // If its not an absolute URL and not an anchor (#)
+    // If it's not an absolute URL and not an anchor (#)
     if ( 0 !== strpos( $url, 'http' ) && 0 !== strpos( $url, '#' ) ) {
         
         $nonce = wp_create_nonce( 'ksum_support_nonce' );
@@ -342,12 +343,12 @@ function ksum_adjust_image_path( $url, $base_path ) {
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_adjust_image_path' );
 
-    // If its not an absolute URL
+    // If it's not an absolute URL
     if ( 0 !== strpos( $url, 'http' ) ) {
         // If the URL is a relative path, construct the direct path to the image
         $base_path_parts = explode( '&dir=', $base_path );
 
-        $plugin_url = plugins_url('/', dirname(dirname(__FILE__)));
+        $plugin_url = plugins_url('/', dirname(__FILE__, 2));
 
         if ( count( $base_path_parts ) > 1 ) {
             $dir_parts = explode( '&file=', $base_path_parts[1] );
