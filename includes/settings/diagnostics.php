@@ -16,12 +16,26 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Diagnostics overview section callback
 function ksum_diagnostics_overview_section_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_overview_section_callback');
+
+    $nonce = wp_create_nonce('ksum_support_nonce');
+    $url = add_query_arg(array(
+    'page' => 'kognetiks-ai-summaries',
+    'tab' => 'support',
+    'dir' => 'diagnostics',
+    'file' => 'diagnostics.md',
+    '_wpnonce' => $nonce
+    ), admin_url('admin.php'));
+
     ?>
         <p>The Diagnostics tab checks the API status and set options for diagnostics and notices.</p>
         <p>You can turn on/off console and error logging (as of Version 1.0.0 most are now commented out).</p>
         <p><b><i>Don't forget to click </i><code>Save Settings</code><i> to save any changes your might make.</i></b></p>
-        <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation on how to use the diagnostics, messages, and additional documentation please click <a href="?page=kognetiks-ai-summaries&tab=support&dir=diagnostics&file=diagnostics.md">here</a>.</b></p>
+        <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the Diagnostics settings, Messages  and additional documentation please click <a href="<?php echo esc_url($url); ?>">here</a>.</b></p>
     <?php
+
 }
 
 // System Details

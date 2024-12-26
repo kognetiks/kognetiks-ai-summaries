@@ -17,10 +17,22 @@ if ( ! defined( 'WPINC' ) ) {
 // General settings section callback - Ver 2.0.2.1
 function ksum_general_settings_callback($args) {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_general_settings_callback');
+
+    $nonce = wp_create_nonce('ksum_support_nonce');
+    $url = add_query_arg(array(
+    'page' => 'kognetiks-ai-summaries',
+    'tab' => 'support',
+    'dir' => 'general',
+    'file' => 'general.md',
+    '_wpnonce' => $nonce
+    ), admin_url('admin.php'));
+
     ?>
     <p>Configure the general settings for the Kognetiks AI Summary plugin.</p>
     <p><b><i>Don't forget to click </i><code>Save Settings</code><i> to save any changes your might make.</i></b></p>
-    <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the general Settings and additional documentation please click <a href="?page=kognetiks-ai-summaries&tab=support&dir=general&file=general.md">here</a>.</b></p>
+    <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the General settings and additional documentation please click <a href="<?php echo esc_url($url); ?>">here</a>.</b></p>
     <?php
 
 }
@@ -79,7 +91,7 @@ function ksum_ai_platform_choice_callback($args) {
 function ksum_additional_selections_section_callback($args) {
 
     // DIAG - Diagnostics - Ver 2.1.8
-    ksum_back_trace( 'NOTICE', 'ksum_additional_selections_section_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_additional_selections_section_callback');
 
     ?>
     <p>Turn AI Summaries on/off for your site. <b>NOTE</b>: The default is off until you configure the plugin with a valid API key.</p>

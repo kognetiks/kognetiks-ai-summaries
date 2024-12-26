@@ -17,12 +17,21 @@ if ( ! defined( 'WPINC' ) ) {
 function ksum_openai_general_settings_callback($args) {
 
     // ksum_back_trace( 'NOTICE', 'ksum_openai_general_settings_callback');
+
+    $nonce = wp_create_nonce('ksum_support_nonce');
+    $url = add_query_arg(array(
+    'page' => 'kognetiks-ai-summaries',
+    'tab' => 'support',
+    'dir' => 'api-settings',
+    'file' => 'api-openai-settings.md',
+    '_wpnonce' => $nonce
+    ), admin_url('admin.php'));
     
     ?>
     <p>Configure the default settings for the plugin OpenAI for AI Summary generation.  Start by adding your API key then selecting your choices below.</p>
     <p>More information about OpenAI models and their capability can be found at <a href="https://platform.openai.com/docs/models/overview" target="_blank">https://platform.openai.com/docs/models/overview</a>.</p>
     <p><b><i>Don't forget to click </i><code>Save Settings</code><i> to save any changes your might make.</i></b></p>
-    <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the API/OpenAI Settings and additional documentation please click <a href="?page=kognetiks-ai-summariest&tab=support&dir=api-chatgpt-settings&file=api-chatgpt-model-settings.md">here</a>.</b></p>
+    <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the OpenAI settings and additional documentation please click <a href="<?php echo esc_url($url); ?>">here</a>.</b></p>
     <?php
 }
 

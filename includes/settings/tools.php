@@ -65,11 +65,20 @@ add_action('admin_init', 'ksum_tools_settings_init');
 // Add the Tools section
 function ksum_tools_overview_section_callback() {
 
+    $nonce = wp_create_nonce('ksum_support_nonce');
+    $url = add_query_arg(array(
+    'page' => 'kognetiks-ai-summaries',
+    'tab' => 'support',
+    'dir' => 'tools',
+    'file' => 'tools.md',
+    '_wpnonce' => $nonce
+    ), admin_url('admin.php'));
+    
     ?>
     <div>
         <p>This tab provides tools, tests and diagnostics that are enabled when the plugin Diagnostics are enabled on the Diagnostics tab.</p>
         <p><b><i>Don't forget to click </i><code>Save Settings</code><i> to save any changes your might make.</i></b></p>
-        <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the Tool settings and additional documentation please click <a href="?page=kognetiks-ai-summaries&tab=support&dir=tools&file=tools.md">here</a>.</b></p>
+        <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the Tool settings and additional documentation please click <a href="<?php echo esc_url($url); ?>">here</a>.</b></p>
     </div>
     <?php
     

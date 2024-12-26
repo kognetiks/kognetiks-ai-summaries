@@ -1,6 +1,6 @@
 <?php
 /**
- * Kognetiks AI Summaries for WordPress - Settings - Ver 1.0.0
+ * Kognetiks AI Summaries - Settings - Ver 1.0.0
  *
  * This file contains the code for the Kognetiks AI Summaries settings page.
  * It handles the support settings and other parameters.

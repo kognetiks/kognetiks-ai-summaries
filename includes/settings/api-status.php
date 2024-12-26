@@ -19,8 +19,6 @@ function ksum_test_api_status() {
 
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
-
     $test_message = 'Write a one sentence response to this test message.';
 
     switch ($ksum_ai_platform_choice) {
