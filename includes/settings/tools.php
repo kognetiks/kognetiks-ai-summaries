@@ -16,6 +16,9 @@ if ( ! defined( 'WPINC' ) ) {
 // Register Tools settings - Ver 2.0.7
 function ksum_tools_settings_init() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_tools_settings_init' );
+
     // Register tools settings
     register_setting('ksum_tools', 'ksum_options_exporter_extension');
 
@@ -65,6 +68,9 @@ add_action('admin_init', 'ksum_tools_settings_init');
 // Add the Tools section
 function ksum_tools_overview_section_callback() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_tools_overview_section_callback' );
+
     $nonce = wp_create_nonce('ksum_support_nonce');
     $url = add_query_arg(array(
     'page' => 'kognetiks-ai-summaries',
@@ -87,6 +93,9 @@ function ksum_tools_overview_section_callback() {
 // Options Exporter
 function ksum_options_exporter_tools_section_callback() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_options_exporter_tools_section_callback' );
+
     ?>
     <div>
         <p>Export the options to a file.</p>
@@ -98,6 +107,9 @@ function ksum_options_exporter_tools_section_callback() {
 
 // Export the options to a file
 function ksum_options_exporter_tools_callback() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_options_exporter_tools_callback' );
 
     // Get the saved ksum_options_exporter_extension value or default to "CSV"
     $output_choice = esc_attr(get_option('ksum_options_exporter_extension', 'CSV'));
@@ -113,6 +125,9 @@ function ksum_options_exporter_tools_callback() {
 }
 
 function ksum_options_exporter_button_callback() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_options_exporter_button_callback' );
 
     ?>
     <div>
@@ -131,6 +146,9 @@ function ksum_options_exporter_button_callback() {
 
 // Manage Error Logs
 function ksum_manage_error_logs_section_callback() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_manage_error_logs_section_callback' );
 
     ?>
     <div>

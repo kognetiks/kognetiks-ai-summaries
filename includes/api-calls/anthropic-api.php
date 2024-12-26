@@ -19,7 +19,7 @@ function ksum_anthropic_api_call($api_key, $message) {
     // DIAG - Diagnostics
     // ksum_back_trace('NOTICE', 'ksum_anthropic_api_call');
 
-    global $errorResponses;
+    global $ksum_error_responses;
 
     // API URL
     $api_url = ksum_get_chat_completions_api_url();
@@ -63,7 +63,7 @@ function ksum_anthropic_api_call($api_key, $message) {
 
         // DIAG - Diagnostics
         ksum_prod_trace('ERROR', 'Error: ' . $response->get_error_message());
-        return isset($errorResponses['api_error']) ? $errorResponses['api_error'] : 'An API error occurred.';
+        return isset($ksum_error_responses['api_error']) ? $ksum_error_responses['api_error'] : 'An API error occurred.';
 
     }
 
@@ -75,7 +75,7 @@ function ksum_anthropic_api_call($api_key, $message) {
 
         // DIAG - Diagnostics
         ksum_prod_trace('ERROR', 'Error: Type: ' . $response_body['error']['type'] . ' Message: ' . $response_body['error']['message']);
-        return isset($errorResponses['api_error']) ? $errorResponses['api_error'] : 'An error occurred.';
+        return isset($ksum_error_responses['api_error']) ? $ksum_error_responses['api_error'] : 'An error occurred.';
 
     }
 

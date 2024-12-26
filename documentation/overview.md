@@ -1,10 +1,14 @@
-# **Kognetiks AI Summaries**: Transforming Content with AI-Powered Precision
+# **Kognetiks AI Summaries**
 
-Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other content—effortlessly enhancing user experience and site navigation.
+**Kogentiks AI Summaries** - Effortless Excerpts, Power by Intelligence.
+
+Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other conten — effortlessly enhancing user experience and site navigation.
 
 Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
 
-**Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly. You can obtain an API key by signing up with one of the vendors below:
+**Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly.
+
+You can obtain an API key by signing up with one of the vendors below:
 
 - [OpenAI](https://platform.openai.com/account/api-keys)
 
@@ -38,7 +42,7 @@ What's new in Version 1.0.0
 
 - [Frequently Asked Questions](support/faqs.md)
 
-## Sections
+## Support
 
 - [General](settings/settings.md)
 
@@ -52,13 +56,11 @@ What's new in Version 1.0.0
 
 - [Tools](tools/tools.md)
 
-## Support
+## Additional Information
 
 - [How the Kognetiks AI Summaries Plugin Works](support/how-it-works.md)
 
 - [API Key Safety and Security](support/api-key-safety-and-security.md)
-
-- [Diagnostics - For Developers](diagnostics/diagnostics.md)
 
 ## Demos
 

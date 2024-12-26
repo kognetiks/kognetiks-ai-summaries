@@ -15,6 +15,9 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Function to get the Model names from OpenAI API
 function ksum_openai_get_models() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_get_models' );
     
     $api_key = '';
 
@@ -105,6 +108,9 @@ function ksum_openai_get_models() {
 
 // Function to get the Model names from NVIDIA API
 function ksum_nvidia_get_models() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_get_models' );
     
     $api_key = '';
 
@@ -194,6 +200,9 @@ function ksum_nvidia_get_models() {
 // Function to get the Model names from Anthropic API
 function ksum_anthropic_get_models() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_get_models' );
+
     // https://docs.anthropic.com/en/api/messages-examples
     // https://docs.anthropic.com/en/docs/models-overview
     // https://docs.anthropic.com/en/docs/about-claude/models
@@ -280,6 +289,9 @@ function ksum_anthropic_get_models() {
 // Base URL for API Calls
 function ksum_get_api_base_url() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_get_api_base_url' );
+
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
 
     switch ($ksum_ai_platform_choice) {
@@ -307,6 +319,9 @@ function ksum_get_api_base_url() {
 // Function to get the URL for the completions API
 function ksum_get_chat_completions_api_url() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url' );
+    
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
 
     switch ($ksum_ai_platform_choice) {

@@ -16,4 +16,17 @@ if ( ! defined( 'WPINC' ) ) {
 // Activation Hook
 function ksum_restore_defaults() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_restore_defaults' );
+
+    // When added this code will:
+    //
+    // 1. Confirm the user has the authority to take this action
+    // 2. Check if the user has clicked the restore defaults button and confirm the action
+    // 3. If the user has clicked the restore defaults button, the plugin will restore the default settings
+    // 4. Reset the options and preference settings to the default values
+    // 5. Drop and re-add any plugin tables
+    // 6. The plugin will display a success message to the user
+    //
+    
 }

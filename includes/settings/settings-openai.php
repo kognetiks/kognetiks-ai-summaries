@@ -16,6 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 // API/OpenAI Settings section callback
 function ksum_openai_general_settings_callback($args) {
 
+    // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_openai_general_settings_callback');
 
     $nonce = wp_create_nonce('ksum_support_nonce');
@@ -33,26 +34,40 @@ function ksum_openai_general_settings_callback($args) {
     <p><b><i>Don't forget to click </i><code>Save Settings</code><i> to save any changes your might make.</i></b></p>
     <p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the OpenAI settings and additional documentation please click <a href="<?php echo esc_url($url); ?>">here</a>.</b></p>
     <?php
+
 }
 
 // API key field callback
 function ksum_openai_api_key_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_api_key_callback');
+
     $api_key = esc_attr(get_option('ksum_openai_api_key'));
     ?>
     <input type="password" id="ksum_openai_api_key" name="ksum_openai_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
     <?php
+
 }
 
 // OpenAI Model Section Callback
 function ksum_openai_model_section_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_model_section_callback');
+
     ?>
     <p>Configure the settings for the plugin by selecting the OpenAI model you would like to use. The plugin will use the selected model to generate responses.</p>
     <?php
+
 }
 
 // OpenAI model choice
 // https://platform.openai.com/docs/models
 function ksum_openai_model_choice_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_model_choice_callback');
   
     // Get the saved ksum_openai_model_choice value or default to "chatgpt-4o-latest"
     $model_choice = esc_attr(get_option('ksum_openai_model_choice', 'chatgpt-4o-latest'));
@@ -93,16 +108,26 @@ function ksum_openai_model_choice_callback($args) {
 
 // OpenAI Advanced Settings Section Callback
 function ksum_openai_advanced_settings_section_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_advanced_settings_section_callback');
+
     ?>
     <p>Configure the advanced settings for the plugin. These settings are optional and can be used to fine-tune the plugin's behavior.</p>
     <?php
+
 }
 
 // Max Tokens choice
 function ksum_openai_max_tokens_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_max_tokens_callback');
+
     // Get the saved ksum_openai_max_tokens_setting or default to 500
     $max_tokens = esc_attr(get_option('ksum_openai_max_tokens', '500'));
-    // Allow for a range of tokens between 100 and 4096 in 100-step increments
+
+    // Allow for a range of tokens between 100 and 4000 in 100-step increments
     ?>
     <select id="ksum_openai_max_tokens" name="ksum_openai_max_tokens">
         <?php
@@ -112,12 +137,18 @@ function ksum_openai_max_tokens_callback($args) {
         ?>
     </select>
     <?php
+
 }
 
 // Set ksum_openai_temperature
 // https://platform.openai.com/docs/assistants/how-it-works/temperature
 function ksum_openai_temperature_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_temperature_callback');
+
     $temperature = esc_attr(get_option('ksum_openai_temperature', 0.50));
+
     ?>
     <select id="ksum_openai_temperature" name="ksum_openai_temperature">
         <?php
@@ -127,11 +158,16 @@ function ksum_openai_temperature_callback($args) {
         ?>
     </select>
     <?php
+
 }
 
 // Set ksum_openai_top_p
 // https://platform.openai.com/docs/assistants/how-it-works/top-p
 function ksum_openai_top_p_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_top_p_callback');
+
     $top_p = esc_attr(get_option('ksum_openai_top_p', 1.00));
     ?>
     <select id="ksum_open_aitop_p" name="ksum_openai_top_p">
@@ -142,14 +178,20 @@ function ksum_openai_top_p_callback($args) {
         ?>
     </select>
     <?php
+
 }
 
 // Base URL for the OpenAI API
 function ksum_openai_base_url_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_base_url_callback');
+
     $ksum_openai_base_url = esc_attr(get_option('ksum_openai_base_url', ksum_get_api_base_url()));
     ?>
     <input type="text" id="ksum_openai_base_url" name="ksum_openai_base_url" value="<?php echo esc_attr( $ksum_openai_base_url ); ?>" class="regular-text">
     <?php
+
 }
 
 // Register the OpenAI API settings
@@ -167,7 +209,6 @@ function ksum_openai_settings_init() {
     );
 
     // OpenAI API Key and Model settings
-
     register_setting('ksum_openai_settings', 'ksum_openai_api_key');
     register_setting('ksum_openai_settings', 'ksum_openai_model_choice');
     
@@ -195,7 +236,6 @@ function ksum_openai_settings_init() {
     );
 
     // Advanced OpenAI API settings
-
     register_setting('ksum_openai_settings', 'ksum_openai_max_tokens');
     register_setting('ksum_openai_settings', 'ksum_openai_temperature');
     register_setting('ksum_openai_settings', 'ksum_openai_top_p');

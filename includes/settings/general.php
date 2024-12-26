@@ -41,7 +41,7 @@ function ksum_general_settings_callback($args) {
 function ksum_engine_section_callback($args) {
 
     // DIAG - Diagnostics - Ver 2.1.8
-    ksum_back_trace( 'NOTICE', 'ksum_engine_section_callback');
+    // ksum_back_trace( 'NOTICE', 'ksum_engine_section_callback');
 
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
@@ -53,6 +53,9 @@ function ksum_engine_section_callback($args) {
 
 // AI Platform Choice - Ver 2.1.8
 function ksum_ai_platform_choice_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_ai_platform_choice_callback');
 
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
 
@@ -103,6 +106,9 @@ function ksum_additional_selections_section_callback($args) {
 // Activate the AI Summaries
 function ksum_additional_selections_callback($args) {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_additional_selections_callback');
+
     if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI' && esc_attr(get_option('ksum_openai_api_key')) == '') {
         $ksum_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('ksum_ai_platform_choice')) == 'NVIDIA' && esc_attr(get_option('ksum_nvidia_api_key')) == '') {
@@ -123,7 +129,12 @@ function ksum_additional_selections_callback($args) {
 }
 
 function ksum_ai_summaries_length_callback() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_ai_summaries_length_callback');
+
     $value = esc_attr(get_option('ksum_ai_summaries_length', 55));
+
     ?>
     <select id="ksum_ai_summaries_length" name="ksum_ai_summaries_length">
         <?php
@@ -133,6 +144,7 @@ function ksum_ai_summaries_length_callback() {
         ?>
     </select>
     <?php
+
 }
 
 // Register the general settings
@@ -149,7 +161,6 @@ function ksum_general_settings_init() {
     );
 
     // Platform selection
-
     register_setting('ksum_general_settings', 'ksum_ai_platform_choice');
 
     add_settings_section(
@@ -168,7 +179,6 @@ function ksum_general_settings_init() {
     );
 
     // Additional Settings
-
     register_setting('ksum_general_settings', 'ksum_ai_summaries_enabled');
     register_setting('ksum_general_settings', 'ksum_ai_summaries_length');
 

@@ -60,15 +60,23 @@ function ksum_diagnostics_system_settings_section_callback($args) {
 
 // Diagnostics settings section callback
 function ksum_diagnostics_section_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_section_callback');
+
     ?>
         <p>Choose your settings for Diagnostics and Plugin Data retention settings.</p>
     <?php
+
 }
 
 // API Status and Results section callback
 function ksum_diagnostics_api_status_section_callback($args) {
 
-        $updated_status = ksum_test_api_status();
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_api_status_section_callback');
+
+    $updated_status = ksum_test_api_status();
 
     ?>
         <p>API STATUS: <b><?php echo esc_html( $updated_status ); ?></b></p>
@@ -79,7 +87,11 @@ function ksum_diagnostics_api_status_section_callback($args) {
 // Call the api-test.php file to test the API
 function ksum_api_test_callback($args) {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_api_test_callback');
+
     $updated_status = ksum_test_api_status();
+
     ?>
     <p>API STATUS: <b><?php echo esc_html( $updated_status ); ?></b></p>
     <?php
@@ -89,7 +101,11 @@ function ksum_api_test_callback($args) {
 // Diagnostics On/Off
 function ksum_diagnostics_setting_callback($args) {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_setting_callback');
+
     $ksum_diagnostics = esc_attr(get_option('ksum_diagnostics', 'Off'));
+
     ?>
     <select id="ksum_diagnostics" name = "ksum_diagnostics">
         <option value="Off" <?php selected( $ksum_diagnostics, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
@@ -105,42 +121,66 @@ function ksum_diagnostics_setting_callback($args) {
 
 // Custom Error Message
 function ksum_custom_error_message_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_custom_error_message_callback');
+
     $ksum_custom_error_message = esc_attr(get_option('ksum_custom_error_message', 'Your custom error message goes here.'));
+
     if ( $ksum_custom_error_message === null || $ksum_custom_error_message === '' ) {
         $ksum_custom_error_message = 'Your custom error message goes here.';
     }
+
     ?>
     <input type="text" id="ksum_custom_error_message" name="ksum_custom_error_message" value="<?php echo esc_html( $ksum_custom_error_message ); ?>" size="50">
     <?php
+
 }
 
 // Suppress Notices On/Off
 function ksum_suppress_notices_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_suppress_notices_callback');
+
     global $ksum_suppress_notices;
+
     $ksum_suppress_notices = esc_attr(get_option('ksum_suppress_notices', 'Off'));
+
     ?>
     <select id="chatgpt_suppress_notices_setting" name = "ksum_suppress_notices">
         <option value="On" <?php selected( $ksum_suppress_notices, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
         <option value="Off" <?php selected( $ksum_suppress_notices, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
     </select>
     <?php
+
 }
 
 
 // Delete Plugin Data on Uninstall
 function ksum_delete_data_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_delete_data_callback');
+
     global $ksum_delete_data;
+
     $ksum_delete_data = esc_attr(get_option('ksum_delete_data', 'no'));
+
     ?>
     <select id="chatgpt_delete_data_setting" name="ksum_delete_data">
     <option value="no" <?php selected( $ksum_delete_data, 'no' ); ?>><?php echo esc_html( 'DO NOT DELETE' ); ?></option>
     <option value="yes" <?php selected( $ksum_delete_data, 'yes' ); ?>><?php echo esc_html( 'DELETE ALL DATA' ); ?></option>
     </select>
     <?php
+
 }
 
 // Register Diagnostics settings
 function ksum_diagnostics_settings_init() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_settings_init');
 
     register_setting('ksum_diagnostics', 'ksum_diagnostics');
     register_setting('ksum_diagnostics', 'ksum_custom_error_message');

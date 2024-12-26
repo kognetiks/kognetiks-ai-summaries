@@ -34,7 +34,7 @@ function ksum_list_documentation_contents( $dir = '', $file = '' ) {
     global $ksum_plugin_dir_path;
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_list_documentation_contents()' );
+    // ksum_back_trace( 'NOTICE', 'ksum_list_documentation_contents' );
     // ksum_back_trace( 'NOTICE', '$ksum_plugin_dir_path: ' . $ksum_plugin_dir_path );
 
     $documentation_path = $ksum_plugin_dir_path . 'documentation';
@@ -54,7 +54,7 @@ function ksum_list_documentation_contents( $dir = '', $file = '' ) {
 function ksum_traverse_directory( $path ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_traverse_directory()' );
+    // ksum_back_trace( 'NOTICE', 'ksum_traverse_directory' );
     // ksum_back_trace( 'NOTICE', '$path: ' . $path );
 
     $contents = scandir( $path );
@@ -85,13 +85,13 @@ function ksum_traverse_directory( $path ) {
 function ksum_validate_documentation( $dir, $file ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation()' );
+    // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation' );
     // ksum_back_trace( 'NOTICE', '$dir: ' . $dir );
     // ksum_back_trace( 'NOTICE', '$file: ' . $file );
 
     $allowed_file_extension = 'md'; // Only allow .md files
 
-    // Quick checks.
+    // Quick checks for invalid characters and file extension
     if (
         ! preg_match( '/^[a-zA-Z0-9_\-\/]+$/', $dir ) ||
         pathinfo( $file, PATHINFO_EXTENSION ) !== $allowed_file_extension
@@ -104,7 +104,7 @@ function ksum_validate_documentation( $dir, $file ) {
     $sub_directory = '';
     $directory = '';
 
-    // Gather the entire doc structure
+    // Gather the entire document structure
     $contents = ksum_list_documentation_contents( $dir, $file );
 
     // Flatten the directory structure to create a list of valid directories and files
@@ -142,6 +142,9 @@ function ksum_validate_documentation( $dir, $file ) {
 
 // Support settings section callback
 function ksum_support_section_callback() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_support_section_callback' );
 
     global $ksum_plugin_dir_path, $wp_filesystem;
 
@@ -244,12 +247,18 @@ function ksum_support_section_callback() {
 // Check if a file exists in the documentation location
 function ksum_file_exists_in_doc_location( $doc_location ) {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_file_exists_in_doc_location' );
+
     return file_exists( $doc_location );
 
 }
 
 // Adjust the paths of images and anchors in the documentation
 function ksum_adjust_paths( $html, $base_path ) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_adjust_paths' );
 
     // Adjust image paths
     $html = preg_replace_callback(
@@ -261,12 +270,19 @@ function ksum_adjust_paths( $html, $base_path ) {
         $html
     );
 
-    // Adjust anchor paths
+    // Adjust anchor paths and conditionally add target="_blank"
     $html = preg_replace_callback(
         '/<a\s+href="([^"]+)"/i',
         function ( $matches ) use ( $base_path ) {
             $adjusted_href = ksum_adjust_path( $matches[1], $base_path );
-            return '<a href="' . esc_url( $adjusted_href ) . '"';
+            $plugin_url = plugins_url('/', dirname(__FILE__));
+
+            // DIAG - Diagnostics
+            ksum_back_trace( 'NOTICE', '$adjusted_href: ' . $adjusted_href );
+            ksum_back_trace( 'NOTICE', '$plugin_url: ' . $plugin_url );
+
+            $target_blank = strpos($adjusted_href, $plugin_url) === false ? ' target="_blank"' : '';
+            return '<a href="' . esc_url( $adjusted_href ) . '"' . $target_blank;
         },
         $html
     );
@@ -278,7 +294,10 @@ function ksum_adjust_paths( $html, $base_path ) {
 // Adjust the path of an anchor
 function ksum_adjust_path( $url, $base_path ) {
 
-    // If it’s not an absolute URL and not an anchor (#)
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_adjust_path' );
+
+    // If its not an absolute URL and not an anchor (#)
     if ( 0 !== strpos( $url, 'http' ) && 0 !== strpos( $url, '#' ) ) {
         
         $nonce = wp_create_nonce( 'ksum_support_nonce' );
@@ -313,14 +332,17 @@ function ksum_adjust_path( $url, $base_path ) {
         }
     }
 
-    return $url;
+    return esc_url( $url );
 
 }
 
 // Adjust the path of an image
 function ksum_adjust_image_path( $url, $base_path ) {
 
-    // If not an absolute URL
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_adjust_image_path' );
+
+    // If its not an absolute URL
     if ( 0 !== strpos( $url, 'http' ) ) {
         // If the URL is a relative path, construct the direct path to the image
         $base_path_parts = explode( '&dir=', $base_path );

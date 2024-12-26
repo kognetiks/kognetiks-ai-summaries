@@ -15,8 +15,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 function ksum_download_options_data() {
 
-    global $ksum_plugin_dir_path;
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_download_options_data' );
 
+    global $ksum_plugin_dir_path;
     global $wpdb;
 
     // Ensure the current user has the capability to export options
@@ -126,8 +128,9 @@ function ksum_download_options_data() {
         $message = __('Failed to delete options file after download.', 'kognetiks-ai-summaries');
         ksum_general_admin_notice($message);
     }
-    exit;
-}
 
+    exit;
+
+}
 // Hook the exporter function to admin_menu action
 add_action('admin_post_ksum_download_options_data', 'ksum_download_options_data');

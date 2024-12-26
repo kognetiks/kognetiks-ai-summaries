@@ -16,8 +16,8 @@ if ( ! defined( 'WPINC' ) ) {
 // Activation Hook
 function ksum_activate() {
 
-    // DIAG - Log the activation
-    // ksum_back_trace( 'NOTICE', 'Plugin activation started');
+    // DIAG - Diagnotics
+    // ksum_back_trace( 'NOTICE', 'ksum_activate');
 
     // Logic to run during activation
     ksum_upgrade();
@@ -34,8 +34,8 @@ function ksum_activate() {
         }
     }
 
-    // DIAG - Log the activation
-    // ksum_back_trace( 'NOTICE', 'Plugin activation completed');
+    // DIAG - Diagnotics
+    // ksum_back_trace( 'NOTICE', 'ksum_activate - completed');
 
     return;
 
@@ -44,8 +44,8 @@ function ksum_activate() {
 // Upgrade Hook for Plugin Update
 function ksum_upgrade_completed($upgrader_object, $options) {
 
-    // DIAG - Log the activation
-    // ksum_back_trace( 'NOTICE', 'Plugin upgrade completed started');
+    // DIAG - Diagnotics
+    // ksum_back_trace( 'NOTICE', 'ksum_upgrade_completed');
 
     if ($options['action'] == 'update' && $options['type'] == 'plugin') {
         if (isset($options['plugins']) && is_array($options['plugins'])) {
@@ -63,7 +63,7 @@ function ksum_upgrade_completed($upgrader_object, $options) {
     }
 
     // DIAG - Log the activation
-    // ksum_back_trace( 'NOTICE', 'Plugin upgrade completed finished');
+    // ksum_back_trace( 'NOTICE', 'ksum_upgrade_completed - completed');
 
     return;
 
@@ -72,14 +72,14 @@ function ksum_upgrade_completed($upgrader_object, $options) {
 // Upgrade Logic - Revised 1.7.6
 function ksum_upgrade() {
 
-    // DIAG - Log the upgrade
-    // back_trace( 'NOTICE', 'Plugin upgrade started');
+    // DIAG - Diagnotics
+    // back_trace( 'NOTICE', 'ksum_upgrade');
 
     // Removed obsolete or replaced options
     // None at this time - Ver 1.0.0
 
-    // DIAG - Log the upgrade complete
-    // back_trace( 'NOTICE', 'Plugin upgrade completed');
+    // DIAG - Diagnotics
+    // back_trace( 'NOTICE', 'ksum_upgrade - completed');
 
     return;
 

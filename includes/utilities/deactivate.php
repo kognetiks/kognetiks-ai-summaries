@@ -16,16 +16,21 @@ if ( ! defined( 'WPINC' ) ) {
 // Deactivation Hook
 function ksum_deactivate() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_deactivate' );
+
     if (empty(esc_attr(get_option('ksum_delete_data')))) {      
         ksum_admin_notices();
     }
 
 }
-
 // Delete Plugin Data Notice
 add_action('admin_notices', 'ksum_admin_notices');
 
 function ksum_admin_notices() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_admin_notices' );
 
     if (empty(esc_attr(get_option('ksum_delete_data')))) {     
 
@@ -41,10 +46,10 @@ function ksum_admin_notices() {
 // Upgrade Logic
 function ksum_uninstall(){
 
-    global $wpdb;
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_uninstall' );
 
-    // DIAG - Log the uninstall
-    // ksum_back_trace( 'NOTICE', 'PLUGIN UNINSTALL STARTED');
+    global $wpdb;
 
     // Ask if the data should be removed, if not return
     if (esc_attr(get_option('ksum_delete_data')) != 'Yes') {

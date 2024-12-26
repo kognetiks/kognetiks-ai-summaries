@@ -16,6 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 // API/NVIDIA Settings section callback
 function ksum_nvidia_general_settings_callback($args) {
 
+    // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_nvidia_general_settings_callback');
 
     $nonce = wp_create_nonce('ksum_support_nonce');
@@ -38,17 +39,27 @@ function ksum_nvidia_general_settings_callback($args) {
 
 // API key field callback
 function ksum_nvidia_api_key_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_api_key_callback');
+
     $api_key = esc_attr(get_option('ksum_nvidia_api_key'));
     ?>
     <input type="password" id="ksum_nvidia_api_key" name="ksum_nvidia_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
     <?php
+
 }
 
 // NVIDIA Model Section Callback
 function ksum_nvidia_model_section_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_model_section_callback');
+
     ?>
     <p>Configure the settings for the plugin by selecting the NVIDIA model you would like to use. The plugin will use the selected model to generate responses.</p>
     <?php
+
 }
 
 // NVIDIA model choice
@@ -96,16 +107,26 @@ function ksum_nvidia_model_choice_callback($args) {
 
 // NVIDIA Advanced Settings Section Callback
 function ksum_nvidia_advanced_settings_section_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_advanced_settings_section_callback');
+
     ?>
     <p>Configure the advanced settings for the plugin. These settings are optional and can be used to fine-tune the plugin's behavior.</p>
     <?php
+
 }
 
 // Max Tokens choice
 function ksum_nvidia_max_tokens_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_max_tokens_callback');
+
     // Get the saved ksum_openai_max_tokens_setting or default to 500
     $max_tokens = esc_attr(get_option('ksum_nvidia_max_tokens', '500'));
-    // Allow for a range of tokens between 100 and 4096 in 100-step increments
+
+    // Allow for a range of tokens between 100 and 4000 in 100-step increments
     ?>
     <select id="ksum_nvidia_max_tokens" name="ksum_nvidia_max_tokens">
         <?php
@@ -115,11 +136,17 @@ function ksum_nvidia_max_tokens_callback($args) {
         ?>
     </select>
     <?php
+
 }
 
 // Set ksum_nvidia_temperature
 function ksum_nvidia_temperature_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_temperature_callback');
+
     $temperature = esc_attr(get_option('ksum_nvidia_temperature', 0.50));
+
     ?>
     <select id="ksum_nvidia_temperature" name="ksum_nvidia_temperature">
         <?php
@@ -129,11 +156,17 @@ function ksum_nvidia_temperature_callback($args) {
         ?>
     </select>
     <?php
+
 }
 
 // Set ksum_nvidia_top_p
 function ksum_nvidia_top_p_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_top_p_callback');
+
     $top_p = esc_attr(get_option('ksum_nvidia_top_p', 1.00));
+
     ?>
     <select id="ksum_open_aitop_p" name="ksum_nvidia_top_p">
         <?php
@@ -143,14 +176,21 @@ function ksum_nvidia_top_p_callback($args) {
         ?>
     </select>
     <?php
+
 }
 
 // Base URL for the NVIDIA API
 function ksum_nvidia_base_url_callback($args) {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_base_url_callback');
+
     $ksum_nvidia_base_url = esc_attr(get_option('ksum_nvidia_base_url', ksum_get_api_base_url()));
+
     ?>
     <input type="text" id="ksum_nvidia_base_url" name="ksum_nvidia_base_url" value="<?php echo esc_attr( $ksum_nvidia_base_url ); ?>" class="regular-text">
     <?php
+
 }
 
 // Register the NVIDIA API settings
@@ -168,7 +208,6 @@ function ksum_nvidia_settings_init() {
     );
 
     // NVIDIA API Key and Model settings
-
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_api_key');
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_model_choice');
     
@@ -196,7 +235,6 @@ function ksum_nvidia_settings_init() {
     );
 
     // Advanced NVIDIA API settings
-
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_max_tokens');
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_temperature');
     register_setting('ksum_nvidia_settings', 'ksum_nvidia_top_p');

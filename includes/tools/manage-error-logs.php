@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function ksum_manage_error_logs() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_manage_error_logs');
+    // ksum_back_trace( 'NOTICE', 'ksum_manage_error_logs');
 
     global $ksum_plugin_dir_path;
 
@@ -121,7 +121,7 @@ function ksum_manage_error_logs() {
 function ksum_handle_log_actions() {
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_handle_log_actions');
+    // ksum_back_trace( 'NOTICE', 'ksum_handle_log_actions');
 
     global $ksum_plugin_dir_path;
 

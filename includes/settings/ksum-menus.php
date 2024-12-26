@@ -19,6 +19,9 @@ add_action('admin_menu', 'ksum_register_menus', 7);
 // Add a menu item in the admin panel
 function ksum_register_menus() {
 
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_register_menus' );
+
     global $menu;
 
     // Check if the 'Kognetiks' menu already exists
@@ -74,6 +77,9 @@ function ksum_register_menus() {
 // Remove the extra submenu page
 add_action('admin_menu', 'ksum_remove_extra_submenu', 999);
 function ksum_remove_extra_submenu() {
+
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_remove_extra_submenu' );
 
     remove_submenu_page('kognetiks_main_menu', 'kognetiks_main_menu');
 

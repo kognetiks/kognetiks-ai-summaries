@@ -129,7 +129,6 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
 function ksum_error_log($message) {
 
     global $wp_filesystem;
-
     global $ksum_plugin_dir_path;
 
     $ksum_logs_dir = $ksum_plugin_dir_path . 'logs/';
@@ -153,7 +152,6 @@ function ksum_error_log($message) {
 function log_ksum_error() {
 
     global $wp_filesystem;
-
     global $ksum_plugin_dir_path;
     
     if (isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'ksum_diagnostics_action')) {

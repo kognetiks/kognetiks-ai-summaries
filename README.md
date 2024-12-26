@@ -1,8 +1,12 @@
 # Kognetiks AI Summaries
 
-We’re thrilled to introduce the **Kognetiks AI Summaries** plugin, an exciting new plugins designed to enhance your site with AI summaries.
+**Kogentiks AI Summaries** - Effortless Excerpts, Power by Intelligence.
 
-With AI Summaries, your content - whether it’s pages, posts, or other published resources - can be automatically summarized by your selected AI Engine, delivering concise, insightful responses to your site visitors.
+Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other content — effortlessly enhancing user experience and site navigation.
+
+Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
+
+**Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly.
 
 ## Disclaimer
 

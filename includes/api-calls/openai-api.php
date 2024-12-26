@@ -16,7 +16,10 @@ if ( ! defined( 'WPINC' ) ) {
 // Call the OpenAI API without trappings
 function ksum_openai_api_call($api_key, $message) {
 
-    global $errorResponses;
+    // DIAG - Diagnostics
+    // ksum_back_trace( 'NOTICE', 'ksum_openai_api_call' );
+
+    global $ksum_error_responses;
 
     // The current ChatGPT API URL endpoint for chatgpt-4o-latest
     // $api_url = 'https://api.openai.com/v1/chat/completions';
@@ -94,7 +97,7 @@ function ksum_openai_api_call($api_key, $message) {
         return $response_body['choices'][0]['message']['content'];
     } else {
         // Return a random error message
-        return $errorResponses[array_rand($errorResponses)];;
+        return $ksum_error_responses[array_rand($ksum_error_responses)];;
     }
 
 }
