@@ -261,6 +261,8 @@ function ksum_adjust_paths( $html, $base_path ) {
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_adjust_paths' );
 
+    global $ksum_plugin_name;
+
     // Adjust image paths
     $html = preg_replace_callback(
         '/<img\s+src="([^"]+)"/i',
@@ -275,15 +277,21 @@ function ksum_adjust_paths( $html, $base_path ) {
     $html = preg_replace_callback(
         '/<a\s+href="([^"]+)"/i',
         function ( $matches ) use ( $base_path ) {
+
+            global $ksum_plugin_name;
+
             $adjusted_href = ksum_adjust_path( $matches[1], $base_path );
             $plugin_url = plugins_url('/', dirname(__FILE__));
-
+            
             // DIAG - Diagnostics
             // ksum_back_trace( 'NOTICE', '$adjusted_href: ' . $adjusted_href );
-            // ksum_back_trace( 'NOTICE', '$plugin_url: ' . $plugin_url );
-
-            $target_blank = strpos($adjusted_href, $plugin_url) === false ? ' target="_blank"' : '';
+            // ksum_back_trace( 'NOTICE', '$ksum_plugin_name: ' . $ksum_plugin_name );
+            
+            // Check for the name of the plugin in the $adjusted_href
+            $target_blank = strpos( $adjusted_href, $ksum_plugin_name ) === false ? ' target="_blank"' : '';
+            
             return '<a href="' . esc_url( $adjusted_href ) . '"' . $target_blank;
+
         },
         $html
     );

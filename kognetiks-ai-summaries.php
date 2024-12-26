@@ -25,7 +25,11 @@
 // If this file is called directly, die.
 defined( 'WPINC' ) || die();
 
-// Plugin version
+// Globals for plugin name
+global $ksum_plugin_name;
+$ksum_plugin_name = 'kognetiks-ai-summaries';
+
+// Globals for plugin version
 global $ksum_plugin_version;
 $ksum_plugin_version = '1.0.0';
 
@@ -136,9 +140,28 @@ function ksum_generate_ai_summary( $pid )  {
     // ksum_back_trace( 'NOTICE', '$pid: ' . $pid );
 
      // Fetch and sanitize the content
-    $row = $wpdb->get_row(
-        $wpdb->prepare("SELECT post_content, post_modified FROM {$wpdb->posts} WHERE ID = %d", $pid)
-    );
+     $cache_key = 'kognetiks_ai_summaries_post_' . $pid;
+     $row = wp_cache_get($cache_key);
+     
+     if ($row === false) {
+
+         $post = get_post($pid);
+     
+         if ($post) {
+
+             $row = (object) [
+                 'post_content' => $post->post_content,
+                 'post_modified' => $post->post_modified,
+             ];
+             wp_cache_set($cache_key, $row);
+
+         } else {
+
+             $row = null;
+
+         }
+
+     }
 
     $content = $row->post_content;
     $post_modified = $row->post_modified;
@@ -282,7 +305,7 @@ function ksum_generate_ai_summary_api( $model, $content ) {
     $word_count = esc_attr(get_option('ksum_ai_summaries_length', 55));
 
     // Prepare special instructions if needed
-    $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or few words: ";
+    $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or few words and just return the summary text without stating that it is a summary: ";
 
     // Update the platform choice
     $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice'));
@@ -443,11 +466,24 @@ function ksum_ai_summary_exists( $pid ) {
     global $wpdb;
    
     // Fetch ai_summary and post_modified from ai_summaries table
-    $row = $wpdb->get_row(
-        $wpdb->prepare(
-            "SELECT ai_summary, post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", $pid
+    $cache_key = 'kognetiks_ai_summaries_' . $pid;
+    $row = wp_cache_get($cache_key);
+    
+    if ($row === false) {
+
+        $row = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT ai_summary, post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", 
+                $pid
             )
         );
+    
+        if ($row) {
+
+            wp_cache_set($cache_key, $row);
+
+        }
+    }
 
     if ( $row ) {
 
@@ -501,11 +537,25 @@ function ksum_ai_summary_is_stale( $pid ) {
     global $wpdb;
            
     // Fetch post_modified from ai_summaries table
-    $row = $wpdb->get_row(
-        $wpdb->prepare(
-            "SELECT post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", $pid
-        )
-    );
+    $cache_key = 'kognetiks_ai_summaries_post_modified_' . $pid;
+    $row = wp_cache_get($cache_key);
+    
+    if ($row === false) {
+
+        $row = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", 
+                $pid
+            )
+        );
+    
+        if ($row) {
+
+            wp_cache_set($cache_key, $row);
+
+        }
+
+    }
 
     if ( ! $row ) {
         // AI summary doesn't exist; it's stale by default
@@ -515,26 +565,40 @@ function ksum_ai_summary_is_stale( $pid ) {
     $ai_post_modified = $row->post_modified;
 
     // Fetch post_modified from posts table
-    $row = $wpdb->get_row(
-        $wpdb->prepare("SELECT post_modified FROM {$wpdb->posts} WHERE ID = %d", $pid)
-    );
-    $post_modified = $row->post_modified;
+    $cache_key = 'kognetiks_ai_summaries_post_modified_' . $pid;
+    $post_modified = wp_cache_get($cache_key);
+    
+    if ($post_modified === false) {
+
+        $row = $wpdb->get_row(
+            $wpdb->prepare("SELECT post_modified FROM {$wpdb->posts} WHERE ID = %d", $pid)
+        );
+    
+        if ($row) {
+
+            $post_modified = $row->post_modified;
+            wp_cache_set($cache_key, $post_modified);
+
+        }
+
+    }
 
     // Compare the dates
-    if ( strtotime($ai_post_modified) < strtotime($post_modified) ) {
 
-        // DIAG - Diagnostics
-        // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
-
-        return true;
-
+    if ( isset( $ai_post_modified->post_modified ) && isset( $post_modified->post_modified ) ) {
+        if ( strtotime( $ai_post_modified->post_modified ) < strtotime( $post_modified->post_modified ) ) {
+            // DIAG - Diagnostics
+            // ksum_back_trace( 'NOTICE', 'AI summary is stale' );
+            return true;
+        } else {
+            // DIAG - Diagnostics
+            // ksum_back_trace( 'NOTICE', 'AI summary is not stale' );
+            return false;
+        }
     } else {
-
         // DIAG - Diagnostics
         // ksum_back_trace( 'NOTICE', 'AI summary is not stale' );
-
         return false;
-
     }
 
 }
