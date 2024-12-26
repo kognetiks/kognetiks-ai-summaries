@@ -34,15 +34,15 @@ function ksum_manage_error_logs() {
         $scanned_dir = scandir($ksum_logs_dir);
     } else {
         // Handle the error, e.g., log it, create the directory, or throw an exception
-        ksum_back_trace( 'ERROR', 'Directory not found: ' . $ksum_logs_dir);
-        // Optionally, create the directory
-        // mkdir($ksum_logs_dir, 0777, true);
-        // Then, you might want to scan it again or handle the situation differently
+        // DIAG - Diagnostics
+        // ksum_back_trace( 'ERROR', 'Directory not found: ' . $ksum_logs_dir);
+        return;
     }
 
     // Check if scandir returns false and handle the error
     if ($scanned_dir === false) {
-        ksum_back_trace( 'ERROR', 'Error accessing log files directory.');
+        // DIAG - Diagnostics
+        // ksum_back_trace( 'ERROR', 'Error accessing log files directory.');
         return;
     }
 
@@ -59,7 +59,7 @@ function ksum_manage_error_logs() {
     }
 
     // DIAG - Log files for troubleshooting - Ver 2.0.7
-    ksum_back_trace( 'NOTICE', 'ksum_manage_error_logs - Files: ' . print_r($files, true));
+    // ksum_back_trace( 'NOTICE', 'ksum_manage_error_logs - Files: ' . print_r($files, true));
 
     // Start HTML output with styling
     $output = '<style>
@@ -113,7 +113,7 @@ function ksum_manage_error_logs() {
     $output .= '</div>';
 
     echo $output; // Output the generated HTML
-    
+
 }
 
 // Handle error log actions
@@ -132,7 +132,7 @@ function ksum_handle_log_actions() {
     $nonce = sanitize_text_field($_GET['_wpnonce']);
 
     // DIAG - Diagnostics
-    ksum_back_trace( 'NOTICE', 'ksum_handle_log_actions - Action: ' . $action . ' - Nonce: ' . $nonce);
+    // ksum_back_trace( 'NOTICE', 'ksum_handle_log_actions - Action: ' . $action . ' - Nonce: ' . $nonce);
 
     switch ($action) {
         case 'ksum_download_log':
@@ -167,7 +167,7 @@ function ksum_handle_log_actions() {
             $file_path = $ksum_logs_dir . $file;
 
             // DIAG - Diagnostics
-            ksum_back_trace( 'NOTICE', 'ksum_handle_log_actions - delete_log: ' . $file . ' - File Path: ' . $file_path);
+            // ksum_back_trace( 'NOTICE', 'ksum_handle_log_actions - delete_log: ' . $file . ' - File Path: ' . $file_path);
 
             if (file_exists($file_path)) {
                 unlink($file_path);

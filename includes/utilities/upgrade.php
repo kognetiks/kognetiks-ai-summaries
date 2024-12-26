@@ -35,7 +35,7 @@ function ksum_activate() {
             });
 
         }
-        
+
     }
 
     // DIAG - Diagnotics
@@ -79,12 +79,12 @@ function ksum_upgrade_completed($upgrader_object, $options) {
 function ksum_upgrade() {
 
     // DIAG - Diagnotics
-    // back_trace( 'NOTICE', 'ksum_upgrade');
+    // ksum_back_trace( 'NOTICE', 'ksum_upgrade');
 
     // Removed obsolete or replaced options
     // None at this time - Ver 1.0.0
 
     // DIAG - Diagnotics
-    // back_trace( 'NOTICE', 'ksum_upgrade - completed');
+    // ksum_back_trace( 'NOTICE', 'ksum_upgrade - completed');
 
 }
