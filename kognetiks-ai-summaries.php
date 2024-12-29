@@ -266,8 +266,18 @@ function ksum_generate_ai_summary( $pid )  {
     // Get the desired excerpt length from options
     $ai_summary_length = intval( esc_attr( get_option( 'ksum_ai_summaries_length', 55 ) ) );
 
-    // Trim the AI summary to the specified length
-    $ai_summary = wp_trim_words( $ai_summary, $ai_summary_length, '...' );
+    // Trim the text to the specified number of words without appending '...'
+    $trimmed_summary = wp_trim_words( $ai_summary, $ai_summary_length, '' );
+
+    // Check if the text was trimmed by comparing the original and trimmed versions
+    if ( str_word_count( $ai_summary ) > $ai_summary_length ) {
+        // Remove trailing punctuation if present
+        $trimmed_summary = rtrim($trimmed_summary, '.,!?;:');
+        // Append ellipsis
+        $trimmed_summary .= '...';
+    }
+
+    $ai_summary = $trimmed_summary;
 
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );

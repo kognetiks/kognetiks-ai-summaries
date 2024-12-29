@@ -38,13 +38,22 @@ function ksum_settings_page() {
 
     // Check reminderCount in local storage
     $reminderCount = intval(esc_attr(get_option('ksum_reminder_count', 0)));
-    if ($reminderCount % 100 === 0 && $reminderCount <= 500) {
+    $installation_date = esc_attr(get_option('ksum_installation_date'));
+    if (!$installation_date) {
+        $installation_date = current_time('mysql');
+        update_option('ksum_installation_date', $installation_date);
+    } else {
+        $installation_date = esc_attr($installation_date);
+    }
+    $current_date = current_time('mysql');
+    $days_since_installation = (strtotime($current_date) - strtotime($installation_date)) / (60 * 60 * 24);
+
+    if ($days_since_installation <= 10 && $reminderCount < 10) {
         // $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to <a href="https://wordpress.org/support/plugin/kognetiks-ai-summaries/reviews/" target="_blank">rate and review this plugin</a>. Thank you!';
         $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to rate and review this plugin. Thank you!';
         ksum_general_admin_notice($message);
-    }
-    // Add 1 to reminderCount and update localStorage
-    if ($reminderCount < 501) {
+
+        // Increment reminderCount and update option
         $reminderCount++;
         update_option('ksum_reminder_count', $reminderCount);
     }
