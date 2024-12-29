@@ -13,15 +13,17 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Add link to ChatGPT options in the plugins page.
+// Add link to plugin options in the plugins page.
 function ksum_plugin_action_links( $links ) {
 
     // DIAG - Diagnostics
     // ksum_back_trace( 'NOTICE', 'ksum_plugin_action_links' );
 
-    $settings_link = '<a href="' . admin_url( 'options-general.php?page=kognetiks-ai-summaries' ) . '">' . __( 'Settings', 'kognetiks-ai-summaries' ) . '</a>';
-    $support_link = '<a href="' . admin_url( 'options-general.php?page=kognetiks-ai-summaries&tab=support' ) . '">' . __( 'Support', 'kognetiks-ai-summaries' ) . '</a>';
-    array_unshift( $links, $settings_link, $support_link );
+    if ( current_user_can( 'manage_options' ) ) {
+        $settings_link = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin.php?page=kognetiks-ai-summaries' ), 'kognetiks_ai_summaries_settings' ) ) . '">' . __( 'Settings', 'kognetiks-ai-summaries' ) . '</a>';
+        $support_link = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin.php?page=kognetiks-ai-summaries&tab=support' ), 'kognetiks_ai_summaries_support' ) ) . '">' . __( 'Support', 'kognetiks-ai-summaries' ) . '</a>';
+        array_unshift( $links, $settings_link, $support_link );
+    }
     return $links;
 
 }
@@ -34,7 +36,7 @@ function ksum_plugin_row_meta( $links, $file ) {
     // ksum_back_trace( 'NOTICE', 'ksum_plugin_row_meta' );
 
     if ( plugin_basename( __FILE__ ) == $file ) {
-        $deactivate_link = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( plugin_basename( __FILE__ ) ), 'deactivate-plugin_' . plugin_basename( __FILE__ ) ) . '">' . __( 'Deactivate', 'kognetiks-ai-summaries' ) . '</a>';
+        $deactivate_link = '<a href="' . esc_url( wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( plugin_basename( __FILE__ ) ), 'deactivate-plugin_' . plugin_basename( __FILE__ ) ) ) . '">' . __( 'Deactivate', 'kognetiks-ai-summaries' ) . '</a>';
         $links[] = $deactivate_link;
     }
     return $links;
