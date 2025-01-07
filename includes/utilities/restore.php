@@ -14,10 +14,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Activation Hook
-function ksum_restore_defaults() {
+function kognetiks_ai_summaries_restore_defaults() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_restore_defaults' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_restore_defaults' );
 
     // When added this code will:
     //

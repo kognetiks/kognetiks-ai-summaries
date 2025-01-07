@@ -14,15 +14,15 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Call the NVIDIA API without trappings
-function ksum_anthropic_api_call($api_key, $message) {
+function kognetiks_ai_summaries_anthropic_api_call($api_key, $message) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace('NOTICE', 'ksum_anthropic_api_call');
+    // kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_anthropic_api_call');
 
-    global $ksum_error_responses;
+    global $kognetiks_ai_summaries_error_responses;
 
     // API URL
-    $api_url = ksum_get_chat_completions_api_url();
+    $api_url = kognetiks_ai_summaries_get_chat_completions_api_url();
 
     // Headers
     $headers = array(
@@ -32,12 +32,12 @@ function ksum_anthropic_api_call($api_key, $message) {
     );
 
     // Options
-    $model = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
-    $max_tokens = intval(esc_attr(get_option('ksum_anthropic_max_tokens_setting', 500)));
-    $context = sanitize_text_field(esc_attr(get_option('ksum_anthropic_conversation_context', '')));
-    $temperature = floatval(esc_attr(get_option('ksum_anthropic_temperature', 0.5)));
-    $top_p = floatval(esc_attr(get_option('ksum_anthropic_top_p', 1.0)));
-    $timeout = intval(esc_attr(get_option('ksum_anthropic_timeout_setting', 240)));
+    $model = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+    $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_max_tokens_setting', 500)));
+    $context = sanitize_text_field(esc_attr(get_option('kognetiks_ai_summaries_anthropic_conversation_context', '')));
+    $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_temperature', 0.5)));
+    $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_top_p', 1.0)));
+    $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_timeout_setting', 240)));
 
     // Body
     $body = wp_json_encode(array(
@@ -62,8 +62,8 @@ function ksum_anthropic_api_call($api_key, $message) {
     if (is_wp_error($response)) {
 
         // DIAG - Diagnostics
-        ksum_prod_trace('ERROR', 'Error: ' . $response->get_error_message());
-        return isset($ksum_error_responses['api_error']) ? $ksum_error_responses['api_error'] : 'An API error occurred.';
+        kognetiks_ai_summaries_prod_trace('ERROR', 'Error: ' . $response->get_error_message());
+        return isset($kognetiks_ai_summaries_error_responses['api_error']) ? $kognetiks_ai_summaries_error_responses['api_error'] : 'An API error occurred.';
 
     }
 
@@ -74,8 +74,8 @@ function ksum_anthropic_api_call($api_key, $message) {
     if (isset($response_body['error'])) {
 
         // DIAG - Diagnostics
-        ksum_prod_trace('ERROR', 'Error: Type: ' . $response_body['error']['type'] . ' Message: ' . $response_body['error']['message']);
-        return isset($ksum_error_responses['api_error']) ? $ksum_error_responses['api_error'] : 'An error occurred.';
+        kognetiks_ai_summaries_prod_trace('ERROR', 'Error: Type: ' . $response_body['error']['type'] . ' Message: ' . $response_body['error']['message']);
+        return isset($kognetiks_ai_summaries_error_responses['api_error']) ? $kognetiks_ai_summaries_error_responses['api_error'] : 'An error occurred.';
 
     }
 
@@ -88,7 +88,7 @@ function ksum_anthropic_api_call($api_key, $message) {
 
     // Fallback Response
     // DIAG - Diagnostics
-    ksum_prod_trace('ERROR', 'No valid response received from API.');
+    kognetiks_ai_summaries_prod_trace('ERROR', 'No valid response received from API.');
     // return 'No response received.';
     return 'ERROR';
 

@@ -13,9 +13,9 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Declare the $ksum_error_responses array as global
-global $ksum_error_responses;
-$ksum_error_responses = [
+// Declare the $kognetiks_ai_summaries_error_responses array as global
+global $kognetiks_ai_summaries_error_responses;
+$kognetiks_ai_summaries_error_responses = [
     " It seems there may have been an issue with the API. Let's try again later.",
     " Unfortunately, we might have encountered a problem with the API. Please give it another shot in a little while.",
     " I apologize, but it appears there's a hiccup with the API at the moment. We can attempt this again later.",

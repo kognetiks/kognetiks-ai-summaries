@@ -2,10 +2,8 @@
 Contributors: Kognetiks
 Tags: AI, Excerpts, Search
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
-Requires at least: 5.5
-Tested up to: 6.7.1
+Tested up to: 6.7
 Stable tag: 1.0.0
-Requires PHP: 7.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -20,6 +18,16 @@ Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for cr
 Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
 
 **Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly.
+
+== External services ==
+
+This plugin relies on external AI services for generating summaries. By using this plugin, you agree to abide by each service’s terms of service and privacy policy:
+
+- **OpenAI**: [Terms of Use](https://platform.openai.com/terms) | [Privacy Policy](https://openai.com/policies/privacy-policy/)
+- **NVIDIA**: [Terms of Use](https://www.nvidia.com/en-us/about-nvidia/nv-accounts/) | [Privacy Policy](https://www.nvidia.com/en-us/about-nvidia/privacy-policy/)
+- **Anthropic**: [Terms of Service](https://www.anthropic.com/legal/consumer-terms) | [Privacy Policy](https://docs.anthropic.com/en/docs/legal-center/privacy)
+
+When you choose a vendor and set up an account, you may be responsible for any fees associated with their platform. Please review each provider’s pricing and usage policies before proceeding. By proceeding with one of these services, you also acknowledge that your data, including the text you submit for summarization, may be transferred to and processed by the selected AI platform in accordance with their privacy policy.
 
 == Installation ==
 

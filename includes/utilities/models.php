@@ -14,12 +14,12 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Function to get the Model names from OpenAI API
-function ksum_openai_get_models() {
+function kognetiks_ai_summaries_openai_get_models() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_openai_get_models');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_openai_get_models');
 
-    $api_key = esc_attr(get_option('ksum_openai_api_key'));
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_openai_api_key'));
 
     // Default model list
     $default_model_list = array(
@@ -39,7 +39,7 @@ function ksum_openai_get_models() {
     }
 
     // Set the API URL
-    $openai_models_url = esc_attr(get_option('ksum_openai_base_url', ksum_get_api_base_url()));
+    $openai_models_url = esc_attr(get_option('kognetiks_ai_summaries_openai_base_url', kognetiks_ai_summaries_get_api_base_url()));
     $openai_models_url = rtrim($openai_models_url, '/') . '/models';
 
     // Set headers
@@ -90,12 +90,12 @@ function ksum_openai_get_models() {
 }
 
 // Function to get the Model names from NVIDIA API
-function ksum_nvidia_get_models() {
+function kognetiks_ai_summaries_nvidia_get_models() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_nvidia_get_models');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_nvidia_get_models');
 
-    $api_key = esc_attr(get_option('ksum_nvidia_api_key'));
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key'));
 
     // Default model list
     $default_model_list = array(
@@ -115,7 +115,7 @@ function ksum_nvidia_get_models() {
     }
 
     // Set the API URL
-    $nvidia_models_url = esc_attr(get_option('ksum_nvidia_base_url', ksum_get_api_base_url()));
+    $nvidia_models_url = esc_attr(get_option('kognetiks_ai_summaries_nvidia_base_url', kognetiks_ai_summaries_get_api_base_url()));
     $nvidia_models_url = rtrim($nvidia_models_url, '/') . '/models';
 
     // Set headers
@@ -166,10 +166,10 @@ function ksum_nvidia_get_models() {
 }
 
 // Function to get the Model names from Anthropic API
-function ksum_anthropic_get_models() {
+function kognetiks_ai_summaries_anthropic_get_models() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_get_models');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_get_models');
 
     // Default model list
     $default_model_list = array(
@@ -211,29 +211,29 @@ function ksum_anthropic_get_models() {
 }
 
 // Base URL for API Calls
-function ksum_get_api_base_url() {
+function kognetiks_ai_summaries_get_api_base_url() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_get_api_base_url' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_api_base_url' );
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
+    $kognetiks_ai_summaries_ai_platform_choice = esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI'));
 
-    switch ($ksum_ai_platform_choice) {
+    switch ($kognetiks_ai_summaries_ai_platform_choice) {
 
         case 'OpenAI':
-            return esc_attr(get_option('ksum_openai_base_url', 'https://api.openai.com/v1'));
+            return esc_attr(get_option('kognetiks_ai_summaries_openai_base_url', 'https://api.openai.com/v1'));
             break;
 
         case 'NVIDIA':
-            return esc_attr(get_option('ksum_nvidia_base_url', 'https://integrate.api.nvidia.com/v1'));
+            return esc_attr(get_option('kognetiks_ai_summaries_nvidia_base_url', 'https://integrate.api.nvidia.com/v1'));
             break;
 
         case 'Anthropic':
-            return esc_attr(get_option('ksum_anthropic_base_url', 'https://api.anthropic.com/v1'));
+            return esc_attr(get_option('kognetiks_ai_summaries_anthropic_base_url', 'https://api.anthropic.com/v1'));
             break;
 
         default:
-            ksum_prod_trace( 'ERROR', 'Missing AI platform choice' );
+            kognetiks_ai_summaries_prod_trace( 'ERROR', 'Missing AI platform choice' );
             break;
             
     }
@@ -241,40 +241,40 @@ function ksum_get_api_base_url() {
 }
 
 // Function to get the URL for the completions API
-function ksum_get_chat_completions_api_url() {
+function kognetiks_ai_summaries_get_chat_completions_api_url() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url' );
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
+    $kognetiks_ai_summaries_ai_platform_choice = esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI'));
 
-    switch ($ksum_ai_platform_choice) {
+    switch ($kognetiks_ai_summaries_ai_platform_choice) {
 
         case 'OpenAI':
 
             // DIAG - Diagnostics
-            // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: OpenAI API' );
-            return ksum_get_api_base_url() . "/chat/completions";
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: OpenAI API' );
+            return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
             break;
 
         case 'NVIDIA':
 
             // DIAG - Diagnostics
-            // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: NVIDIA API' );
-            return ksum_get_api_base_url() . "/chat/completions";
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: NVIDIA API' );
+            return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
             break;
 
         case 'Anthropic':
 
             // DIAG - Diagnostics
-            // ksum_back_trace( 'NOTICE', 'ksum_get_chat_completions_api_url: Anthropic API' );
-            return ksum_get_api_base_url() . "/messages";
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: Anthropic API' );
+            return kognetiks_ai_summaries_get_api_base_url() . "/messages";
             break;
 
         default:
 
             // DIAG - Diagnostics
-            ksum_prod_trace( 'ERROR', 'Missing AI platform choice' );
+            kognetiks_ai_summaries_prod_trace( 'ERROR', 'Missing AI platform choice' );
             break;
             
     }

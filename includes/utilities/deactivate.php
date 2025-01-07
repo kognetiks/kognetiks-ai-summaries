@@ -14,53 +14,53 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Deactivation Hook
-function ksum_deactivate() {
+function kognetiks_ai_summaries_deactivate() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_deactivate' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deactivate' );
 
-    if (empty(esc_attr(get_option('ksum_delete_data')))) {      
-        ksum_admin_notices();
+    if (empty(esc_attr(get_option('kognetiks_ai_summaries_delete_data')))) {      
+        kognetiks_ai_summaries_admin_notices();
     }
 
 }
 // Delete Plugin Data Notice
-add_action('admin_notices', 'ksum_admin_notices');
+add_action('admin_notices', 'kognetiks_ai_summaries_admin_notices');
 
-function ksum_admin_notices() {
+function kognetiks_ai_summaries_admin_notices() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_admin_notices' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_admin_notices' );
 
-    if (empty(esc_attr(get_option('ksum_delete_data')))) {     
+    if (empty(esc_attr(get_option('kognetiks_ai_summaries_delete_data')))) {     
 
         echo '<div class="notice notice-warning is-dismissible">
             <p><strong>Kognetiks AI Summaries:</strong> Remember to set your data deletion preferences in the plugin settings if you plan to uninstall the plugin.</p>
         </div>';
-        update_option('ksum_delete_data', 'No');
+        update_option('kognetiks_ai_summaries_delete_data', 'No');
 
     }
 
 }
 
 // Upgrade Logic
-function ksum_uninstall(){
+function kognetiks_ai_summaries_uninstall(){
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_uninstall - started' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_uninstall - started' );
 
     global $wpdb;
 
     // Ask if the data should be removed, if not return
-    if (esc_attr(get_option('ksum_delete_data')) != 'Yes') {
+    if (esc_attr(get_option('kognetiks_ai_summaries_delete_data')) != 'Yes') {
         return;
     }
 
     // Check for a setting that specifies whether to delete data
-    if (esc_attr(get_option('ksum_delete_data')) == 'Yes') {
+    if (esc_attr(get_option('kognetiks_ai_summaries_delete_data')) == 'Yes') {
 
         // Delete AI Summaries options
-        // ksum_back_trace( 'NOTICE', 'Deleting Plugin One-off options');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting Plugin One-off options');
         // Execute the query
         $wpdb->query(
             $wpdb->prepare(
@@ -72,19 +72,19 @@ function ksum_uninstall(){
         wp_cache_flush();
 
         // Delete AI Summaries tables
-        // ksum_back_trace( 'NOTICE', 'Deleting tables');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting tables');
         // Execute the query
         $wpdb->query(
             $wpdb->prepare(
                 "DROP TABLE IF EXISTS %s",
-                $wpdb->prefix . 'ksum_ai_summaries'
+                $wpdb->prefix . 'kognetiks_ai_summaries_ai_summaries'
             )
         );
         // Clear the cache for the deleted table
         wp_cache_flush();
 
         // Delete transients
-        // ksum_back_trace( 'NOTICE', 'Deleting transients');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting transients');
         // Execute the query
         $wpdb->query(
             $wpdb->prepare(
@@ -96,7 +96,7 @@ function ksum_uninstall(){
         wp_cache_flush();
 
         // Delete any scheduled cron events
-        // ksum_back_trace( 'NOTICE', 'Deleting cron events');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting cron events');
         $crons = _get_cron_array();
         foreach ($crons as $timestamp => $cron) {
             foreach ($cron as $hook => $events) {
@@ -111,6 +111,6 @@ function ksum_uninstall(){
     }
 
     // DIAG - Log the uninstall
-    // ksum_back_trace( 'NOTICE', 'ksum_uninstall - completed');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_uninstall - completed');
 
 }

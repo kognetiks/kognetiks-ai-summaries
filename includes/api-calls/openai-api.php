@@ -14,16 +14,16 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Call the OpenAI API without trappings
-function ksum_openai_api_call($api_key, $message) {
+function kognetiks_ai_summaries_openai_api_call($api_key, $message) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_openai_api_call' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_openai_api_call' );
 
-    global $ksum_error_responses;
+    global $kognetiks_ai_summaries_error_responses;
 
     // The current ChatGPT API URL endpoint for chatgpt-4o-latest
     // $api_url = 'https://api.openai.com/v1/chat/completions';
-    $api_url = ksum_get_chat_completions_api_url();
+    $api_url = kognetiks_ai_summaries_get_chat_completions_api_url();
 
     $headers = array(
         'Authorization' => 'Bearer ' . $api_key,
@@ -32,19 +32,19 @@ function ksum_openai_api_call($api_key, $message) {
 
     // Select the OpenAI Model
     // Get the saved model from the settings or default to "chatgpt-4o-latest"
-    $model = esc_attr(get_option('ksum_openai_model_choice', 'chatgpt-4o-latest'));
+    $model = esc_attr(get_option('kognetiks_ai_summaries_openai_model_choice', 'chatgpt-4o-latest'));
  
     // Max tokens - Ver 1.4.2
-    $max_tokens = intval(esc_attr(get_option('ksum_openai_max_tokens_setting', '500')));
+    $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_openai_max_tokens_setting', '500')));
 
     // Conversation Context - Ver 1.6.1
-    $context = esc_attr(get_option('ksum_openai_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
+    $context = esc_attr(get_option('kognetiks_ai_summaries_openai_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
 
     // Temperature - Ver 2.1.8
-    $temperature = floatval(esc_attr(get_option('ksum_openai_temperature', '0.5')));
+    $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_openai_temperature', '0.5')));
 
     // Top P - Ver 2.1.8
-    $top_p = floatval(esc_attr(get_option('ksum_openai_top_p', '1.0')));
+    $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_openai_top_p', '1.0')));
  
     // Added Role, System, Content Static Variable
     $body = array(
@@ -58,7 +58,7 @@ function ksum_openai_api_call($api_key, $message) {
             ),
     );
 
-    $timeout = intval(esc_attr(get_option('ksum_openai_timeout_setting', '240')));
+    $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_openai_timeout_setting', '240')));
 
     $args = array(
         'headers' => $headers,
@@ -70,7 +70,7 @@ function ksum_openai_api_call($api_key, $message) {
 
     $response = wp_remote_post($api_url, $args);
     // DIAG - Diagnostics - Ver
-    // ksum_back_trace( 'NOTICE', '$response: ' . print_r($response, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response: ' . print_r($response, true));
 
     // Handle any errors that are returned from the chat engine
     if (is_wp_error($response)) {
@@ -78,7 +78,7 @@ function ksum_openai_api_call($api_key, $message) {
     }
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', print_r($response, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', print_r($response, true));
 
     // Return json_decode(wp_remote_retrieve_body($response), true);
     $response_body = json_decode(wp_remote_retrieve_body($response), true);
@@ -90,14 +90,14 @@ function ksum_openai_api_call($api_key, $message) {
     }
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body));
     
     if (!empty($response_body['choices'])) {
         // Handle the response from the chat engine
         return $response_body['choices'][0]['message']['content'];
     } else {
         // Return a random error message
-        // return $ksum_error_responses[array_rand($ksum_error_responses)];
+        // return $kognetiks_ai_summaries_error_responses[array_rand($kognetiks_ai_summaries_error_responses)];
         return 'ERROR';
     }
 

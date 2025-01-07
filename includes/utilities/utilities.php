@@ -14,10 +14,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Function to create a directory and an index.php file
-function ksum_create_directory_and_index_file($dir_path) {
+function kognetiks_ai_summaries_create_directory_and_index_file($dir_path) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_create_directory_and_index_file' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_create_directory_and_index_file' );
 
     global $wp_filesystem;
     
@@ -27,7 +27,7 @@ function ksum_create_directory_and_index_file($dir_path) {
     // Check if the directory exists, if not create it
     if (!file_exists($dir_path) && !wp_mkdir_p($dir_path)) {
         // Error handling, e.g., log the error or handle the failure appropriately
-        // ksum_back_trace( 'ERROR', 'Failed to create directory.');
+        // kognetiks_ai_summaries_back_trace( 'ERROR', 'Failed to create directory.');
         return false;
     }
 

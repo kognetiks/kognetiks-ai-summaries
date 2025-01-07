@@ -15,10 +15,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // General function to display the message
-function ksum_general_admin_notice($message = null) {
+function kognetiks_ai_summaries_general_admin_notice($message = null) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_general_admin_notice' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_general_admin_notice' );
 
     if (!empty($message)) {
         printf(
@@ -29,46 +29,46 @@ function ksum_general_admin_notice($message = null) {
     }
 
 }
-add_action('admin_notices', 'ksum_general_admin_notice');
+add_action('admin_notices', 'kognetiks_ai_summaries_general_admin_notice');
 
 // Notify outcomes
-function ksum_admin_notice() {
+function kognetiks_ai_summaries_admin_notice() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_admin_notice' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_admin_notice' );
 
     // Suppress Notices On/Off
-    global $ksum_suppress_notices;
-    $ksum_suppress_notices = esc_attr(get_option('ksum_suppress_notices', 'Off'));
+    global $kognetiks_ai_summaries_suppress_notices;
+    $kognetiks_ai_summaries_suppress_notices = esc_attr(get_option('kognetiks_ai_summaries_suppress_notices', 'Off'));
 
-    if ($ksum_suppress_notices == 'On') {
+    if ($kognetiks_ai_summaries_suppress_notices == 'On') {
         return;
     }
 
     // Check if notice is already dismissed
-    $ksum_status = esc_attr(get_option('ksum_results'));
-    if ($ksum_status) {
+    $kognetiks_ai_summaries_status = esc_attr(get_option('kognetiks_ai_summaries_results'));
+    if ($kognetiks_ai_summaries_status) {
         // Check if notice is already dismissed
         $dismiss_url = wp_nonce_url(
-            add_query_arg('dismiss_ksum_notice', '1'),
-            'dismiss_ksum_notice',
-            '_ksum_dismiss_nonce'
+            add_query_arg('dismiss_kognetiks_ai_summaries_notice', '1'),
+            'dismiss_kognetiks_ai_summaries_notice',
+            '_kognetiks_ai_summaries_dismiss_nonce'
         );
-        echo '<div class="notice notice-success is-dismissible"><p><strong>Kognetiks AI Summaries:</strong> ' . esc_html($ksum_status) . ' <a href="' . esc_url($dismiss_url) . '">Dismiss</a></p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p><strong>Kognetiks AI Summaries:</strong> ' . esc_html($kognetiks_ai_summaries_status) . ' <a href="' . esc_url($dismiss_url) . '">Dismiss</a></p></div>';
     }
 
 }
-add_action('admin_notices', 'ksum_admin_notice');
+add_action('admin_notices', 'kognetiks_ai_summaries_admin_notice');
 
 // Handle outcome notification dismissal
-function dismiss_ksum_notice() {
+function dismiss_kognetiks_ai_summaries_notice() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'dismiss_ksum_notice' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'dismiss_kognetiks_ai_summaries_notice' );
 
-    if (isset($_GET['dismiss_ksum_notice']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'ksum_dismiss_notice')) {
-        delete_option('ksum_status');
+    if (isset($_GET['dismiss_kognetiks_ai_summaries_notice']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_dismiss_notice')) {
+        delete_option('kognetiks_ai_summaries_status');
     }
 
 }
-add_action('admin_init', 'dismiss_ksum_notice');
+add_action('admin_init', 'dismiss_kognetiks_ai_summaries_notice');

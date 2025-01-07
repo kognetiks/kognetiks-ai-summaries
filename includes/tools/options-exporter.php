@@ -13,26 +13,26 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-function ksum_download_options_data() {
+function kognetiks_ai_summaries_download_options_data() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_download_options_data');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_download_options_data');
     global $wp_filesystem;
-    global $ksum_plugin_dir_path;
+    global $kognetiks_ai_summaries_plugin_dir_path;
     global $wpdb;
 
     if (!current_user_can('manage_options')) {
         wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'kognetiks-ai-summaries'));
     }
 
-    $ksum_debug_dir_path = $ksum_plugin_dir_path . 'debug/';
-    ksum_create_directory_and_index_file($ksum_debug_dir_path);
+    $kognetiks_ai_summaries_debug_dir_path = $kognetiks_ai_summaries_plugin_dir_path . 'debug/';
+    kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_debug_dir_path);
 
-    $output_choice = strtolower(esc_attr(get_option('ksum_options_exporter_extension', 'csv')));
-    $options_file = $ksum_debug_dir_path . 'kognetiks-ai-summaries-options.' . $output_choice;
+    $output_choice = strtolower(esc_attr(get_option('kognetiks_ai_summaries_options_exporter_extension', 'csv')));
+    $options_file = $kognetiks_ai_summaries_debug_dir_path . 'kognetiks-ai-summaries-options.' . $output_choice;
 
     // Use caching to retrieve options
-    $cache_key = 'ksum_options_exporter_options';
+    $cache_key = 'kognetiks_ai_summaries_options_exporter_options';
     $options = wp_cache_get($cache_key);
 
     if ($options === false) {
@@ -73,7 +73,7 @@ function ksum_download_options_data() {
 
     } else {
 
-        ksum_general_admin_notice(__('Invalid output choice.', 'kognetiks-ai-summaries'));
+        kognetiks_ai_summaries_general_admin_notice(__('Invalid output choice.', 'kognetiks-ai-summaries'));
         return;
     }
 
@@ -92,4 +92,4 @@ function ksum_download_options_data() {
     exit;
 
 }
-add_action('admin_post_ksum_download_options_data', 'ksum_download_options_data');
+add_action('admin_post_kognetiks_ai_summaries_download_options_data', 'kognetiks_ai_summaries_download_options_data');

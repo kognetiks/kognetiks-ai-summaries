@@ -14,48 +14,48 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Register Support settings
-function ksum_support_settings_init() {
+function kognetiks_ai_summaries_support_settings_init() {
 
     // Support settings tab
-    register_setting( 'ksum_support', 'chatgpt_support_key' );
+    register_setting( 'kognetiks_ai_summaries_support', 'chatgpt_support_key' );
 
     add_settings_section(
-        'ksum_support_section',
+        'kognetiks_ai_summaries_support_section',
         'Support',
-        'ksum_support_section_callback',
-        'ksum_support'
+        'kognetiks_ai_summaries_support_section_callback',
+        'kognetiks_ai_summaries_support'
     );
 }
-add_action( 'admin_init', 'ksum_support_settings_init' );
+add_action( 'admin_init', 'kognetiks_ai_summaries_support_settings_init' );
 
 // Get the list of documentation contents
-function ksum_list_documentation_contents( $dir = '', $file = '' ) {
+function kognetiks_ai_summaries_list_documentation_contents( $dir = '', $file = '' ) {
 
-    global $ksum_plugin_dir_path;
+    global $kognetiks_ai_summaries_plugin_dir_path;
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_list_documentation_contents' );
-    // ksum_back_trace( 'NOTICE', '$ksum_plugin_dir_path: ' . $ksum_plugin_dir_path );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_list_documentation_contents' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$kognetiks_ai_summaries_plugin_dir_path: ' . $kognetiks_ai_summaries_plugin_dir_path );
 
-    $documentation_path = $ksum_plugin_dir_path . 'documentation';
+    $documentation_path = $kognetiks_ai_summaries_plugin_dir_path . 'documentation';
 
     if ( ! file_exists( $documentation_path ) ) {
         return 'The specified documentation directory does not exist.';
     }
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', '$documentation_path: ' . $documentation_path );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$documentation_path: ' . $documentation_path );
 
-    return ksum_traverse_directory( $documentation_path );
+    return kognetiks_ai_summaries_traverse_directory( $documentation_path );
 
 }
 
 // Traverse the directory structure to get the list of directories and files
-function ksum_traverse_directory( $path ) {
+function kognetiks_ai_summaries_traverse_directory( $path ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_traverse_directory' );
-    // ksum_back_trace( 'NOTICE', '$path: ' . $path );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_traverse_directory' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$path: ' . $path );
 
     $contents = scandir( $path );
     $result   = [
@@ -71,7 +71,7 @@ function ksum_traverse_directory( $path ) {
         $full_path = $path . '/' . $item;
 
         if ( is_dir( $full_path ) ) {
-            $result['directories'][ $item ] = ksum_traverse_directory( $full_path );
+            $result['directories'][ $item ] = kognetiks_ai_summaries_traverse_directory( $full_path );
         } elseif ( is_file( $full_path ) && pathinfo( $item, PATHINFO_EXTENSION ) === 'md' ) {
             $result['files'][] = $item;
         }
@@ -82,12 +82,12 @@ function ksum_traverse_directory( $path ) {
 }
 
 // Validate the requested directory and file
-function ksum_validate_documentation( $dir, $file ) {
+function kognetiks_ai_summaries_validate_documentation( $dir, $file ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_validate_documentation' );
-    // ksum_back_trace( 'NOTICE', '$dir: ' . $dir );
-    // ksum_back_trace( 'NOTICE', '$file: ' . $file );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_validate_documentation' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$dir: ' . $dir );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$file: ' . $file );
 
     $allowed_file_extension = 'md'; // Only allow .md files
 
@@ -105,7 +105,7 @@ function ksum_validate_documentation( $dir, $file ) {
     $directory = '';
 
     // Gather the entire document structure
-    $contents = ksum_list_documentation_contents( $dir, $file );
+    $contents = kognetiks_ai_summaries_list_documentation_contents( $dir, $file );
 
     // Flatten the directory structure to create a list of valid directories and files
     $valid_directories = array_keys( $contents['directories'] );
@@ -141,18 +141,18 @@ function ksum_validate_documentation( $dir, $file ) {
 }
 
 // Support settings section callback
-function ksum_support_section_callback() {
+function kognetiks_ai_summaries_support_section_callback() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_support_section_callback' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_support_section_callback' );
 
-    global $ksum_plugin_dir_path, $wp_filesystem;
+    global $kognetiks_ai_summaries_plugin_dir_path, $wp_filesystem;
     $doc_location = '';
 
     // Check the nonce if either param is set
     // This ensures the GET request is valid and not tampered with
     if ( isset( $_GET['dir'] ) || isset( $_GET['file'] ) ) {
-        check_admin_referer( 'ksum_support_nonce' );
+        check_admin_referer( 'kognetiks_ai_summaries_support_nonce' );
     }
 
     // Unsplash and sanitize $_GET['dir'] and $_GET['file']
@@ -177,21 +177,21 @@ function ksum_support_section_callback() {
     }
 
     // Validate directory/file combination
-    if ( ksum_validate_documentation( $dir, $file ) ) {
+    if ( kognetiks_ai_summaries_validate_documentation( $dir, $file ) ) {
 
         // DIAG - Diagnostics
-        // ksum_back_trace( 'NOTICE', '$doc_location: ' . $doc_location );
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', '$doc_location: ' . $doc_location );
 
         // Document found, display it
-        $doc_location = $ksum_plugin_dir_path . 'documentation/' . $doc_location;
+        $doc_location = $kognetiks_ai_summaries_plugin_dir_path . 'documentation/' . $doc_location;
 
     } else {
 
         // DIAG - Diagnostics
-        // ksum_back_trace( 'NOTICE', 'Invalid directory/file combination.' );
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Invalid directory/file combination.' );
 
         // Fallback to overview.md
-        $doc_location = $ksum_plugin_dir_path . 'documentation/overview.md';
+        $doc_location = $kognetiks_ai_summaries_plugin_dir_path . 'documentation/overview.md';
 
     }
 
@@ -223,7 +223,7 @@ function ksum_support_section_callback() {
         $file = str_replace( 'overview.md/', '', $file );
         $base_path .= '&file=' . rawurlencode( $file );
     }
-    $adjusted_html_content = ksum_adjust_paths( $html_content, $base_path );
+    $adjusted_html_content = kognetiks_ai_summaries_adjust_paths( $html_content, $base_path );
 
     // Optional: Add inline styling to <ul> and <li> tags
     $adjusted_html_content = str_replace(
@@ -238,7 +238,7 @@ function ksum_support_section_callback() {
     );
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', '$adjusted_html_content: ' . $adjusted_html_content );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$adjusted_html_content: ' . $adjusted_html_content );
 
     // Output the HTML content
     echo wp_kses_post( $adjusted_html_content );
@@ -246,28 +246,28 @@ function ksum_support_section_callback() {
 }
 
 // Check if a file exists in the documentation location
-function ksum_file_exists_in_doc_location( $doc_location ) {
+function kognetiks_ai_summaries_file_exists_in_doc_location( $doc_location ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_file_exists_in_doc_location' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_file_exists_in_doc_location' );
 
     return file_exists( $doc_location );
 
 }
 
 // Adjust the paths of images and anchors in the documentation
-function ksum_adjust_paths( $html, $base_path ) {
+function kognetiks_ai_summaries_adjust_paths( $html, $base_path ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_adjust_paths' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_adjust_paths' );
 
-    global $ksum_plugin_name;
+    global $kognetiks_ai_summaries_plugin_name;
 
     // Adjust image paths
     $html = preg_replace_callback(
         '/<img\s+src="([^"]+)"/i',
         function ( $matches ) use ( $base_path ) {
-            $adjusted_image_path = ksum_adjust_image_path( $matches[1], $base_path );
+            $adjusted_image_path = kognetiks_ai_summaries_adjust_image_path( $matches[1], $base_path );
             return '<img src="' . esc_url( $adjusted_image_path ) . '" style="max-width: 80%; width: auto; height: auto; border: 1px solid black; box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.3);"';
         },
         $html
@@ -278,17 +278,17 @@ function ksum_adjust_paths( $html, $base_path ) {
         '/<a\s+href="([^"]+)"/i',
         function ( $matches ) use ( $base_path ) {
 
-            global $ksum_plugin_name;
+            global $kognetiks_ai_summaries_plugin_name;
 
-            $adjusted_href = ksum_adjust_path( $matches[1], $base_path );
+            $adjusted_href = kognetiks_ai_summaries_adjust_path( $matches[1], $base_path );
             $plugin_url = plugins_url('/', dirname(__FILE__));
             
             // DIAG - Diagnostics
-            // ksum_back_trace( 'NOTICE', '$adjusted_href: ' . $adjusted_href );
-            // ksum_back_trace( 'NOTICE', '$ksum_plugin_name: ' . $ksum_plugin_name );
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$adjusted_href: ' . $adjusted_href );
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$kognetiks_ai_summaries_plugin_name: ' . $kognetiks_ai_summaries_plugin_name );
             
             // Check for the name of the plugin in the $adjusted_href
-            $target_blank = strpos( $adjusted_href, $ksum_plugin_name ) === false ? ' target="_blank"' : '';
+            $target_blank = strpos( $adjusted_href, $kognetiks_ai_summaries_plugin_name ) === false ? ' target="_blank"' : '';
             
             return '<a href="' . esc_url( $adjusted_href ) . '"' . $target_blank;
 
@@ -301,15 +301,15 @@ function ksum_adjust_paths( $html, $base_path ) {
 }
 
 // Adjust the path of an anchor
-function ksum_adjust_path( $url, $base_path ) {
+function kognetiks_ai_summaries_adjust_path( $url, $base_path ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_adjust_path' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_adjust_path' );
 
     // If it's not an absolute URL and not an anchor (#)
     if ( 0 !== strpos( $url, 'http' ) && 0 !== strpos( $url, '#' ) ) {
         
-        $nonce = wp_create_nonce( 'ksum_support_nonce' );
+        $nonce = wp_create_nonce( 'kognetiks_ai_summaries_support_nonce' );
 
         // Split the URL by '/' to get the dir and file
         $parts = explode( '/', $url );
@@ -346,10 +346,10 @@ function ksum_adjust_path( $url, $base_path ) {
 }
 
 // Adjust the path of an image
-function ksum_adjust_image_path( $url, $base_path ) {
+function kognetiks_ai_summaries_adjust_image_path( $url, $base_path ) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_adjust_image_path' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_adjust_image_path' );
 
     // If it's not an absolute URL
     if ( 0 !== strpos( $url, 'http' ) ) {

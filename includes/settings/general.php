@@ -15,12 +15,12 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // General settings section callback - Ver 2.0.2.1
-function ksum_general_settings_callback($args) {
+function kognetiks_ai_summaries_general_settings_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_general_settings_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_general_settings_callback');
 
-    $nonce = wp_create_nonce('ksum_support_nonce');
+    $nonce = wp_create_nonce('kognetiks_ai_summaries_support_nonce');
     $url = add_query_arg(array(
     'page' => 'kognetiks-ai-summaries',
     'tab' => 'support',
@@ -38,63 +38,63 @@ function ksum_general_settings_callback($args) {
 }
 
 // AI Platform Selection section callback - Ver 2.1.8
-function ksum_engine_section_callback($args) {
+function kognetiks_ai_summaries_engine_section_callback($args) {
 
     // DIAG - Diagnostics - Ver 2.1.8
-    // ksum_back_trace( 'NOTICE', 'ksum_engine_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_engine_section_callback');
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
+    $kognetiks_ai_summaries_ai_platform_choice = esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI'));
 
     ?>
-    <p>Configure the AI Platform for the plugin. The default will be one of <?php echo esc_html( $ksum_ai_platform_choice ) ?>'s AI models; assumes you have or will provide a valid API key.</p>
+    <p>Configure the AI Platform for the plugin. The default will be one of <?php echo esc_html( $kognetiks_ai_summaries_ai_platform_choice ) ?>'s AI models; assumes you have or will provide a valid API key.</p>
     <?php
 
 }
 
 // AI Platform Choice - Ver 2.1.8
-function ksum_ai_platform_choice_callback($args) {
+function kognetiks_ai_summaries_ai_platform_choice_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_ai_platform_choice_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_platform_choice_callback');
 
-    $ksum_ai_platform_choice = esc_attr(get_option('ksum_ai_platform_choice', 'OpenAI'));
+    $kognetiks_ai_summaries_ai_platform_choice = esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI'));
 
-    if (empty($ksum_ai_platform_choice) || $ksum_ai_platform_choice == 'OpenAI') {
+    if (empty($kognetiks_ai_summaries_ai_platform_choice) || $kognetiks_ai_summaries_ai_platform_choice == 'OpenAI') {
 
-        $ksum_ai_platform_choice = 'OpenAI';
-        update_option('ksum_ai_platform_choice', 'OpenAI');
-    } else if ($ksum_ai_platform_choice == 'NVIDIA') {
+        $kognetiks_ai_summaries_ai_platform_choice = 'OpenAI';
+        update_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI');
+    } else if ($kognetiks_ai_summaries_ai_platform_choice == 'NVIDIA') {
 
-        $ksum_ai_platform_choice = 'NVIDIA';
-        update_option('ksum_ai_platform_choice', 'NVIDIA');
+        $kognetiks_ai_summaries_ai_platform_choice = 'NVIDIA';
+        update_option('kognetiks_ai_summaries_ai_platform_choice', 'NVIDIA');
 
-    } else if ($ksum_ai_platform_choice == 'Anthropic') {
+    } else if ($kognetiks_ai_summaries_ai_platform_choice == 'Anthropic') {
 
-        $ksum_ai_platform_choice = 'Anthropic';
-        update_option('ksum_ai_platform_choice', 'Anthropic');
+        $kognetiks_ai_summaries_ai_platform_choice = 'Anthropic';
+        update_option('kognetiks_ai_summaries_ai_platform_choice', 'Anthropic');
 
     } else {
 
-        $ksum_ai_platform_choice = 'OpenAI';
-        update_option('ksum_ai_platform_choice', 'OpenAI');
+        $kognetiks_ai_summaries_ai_platform_choice = 'OpenAI';
+        update_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI');
 
     }
 
     ?>
-    <select id="ksum_ai_platform_choice" name="ksum_ai_platform_choice">
-        <option value="OpenAI" <?php selected( $ksum_ai_platform_choice, 'OpenAI' ); ?>><?php echo esc_html( 'OpenAI' ); ?></option>
-        <option value="NVIDIA" <?php selected( $ksum_ai_platform_choice, 'NVIDIA' ); ?>><?php echo esc_html( 'NVIDIA' ); ?></option>
-        <option value="Anthropic" <?php selected( $ksum_ai_platform_choice, 'Anthropic' ); ?>><?php echo esc_html( 'Anthropic' ); ?></option>
+    <select id="kognetiks_ai_summaries_ai_platform_choice" name="kognetiks_ai_summaries_ai_platform_choice">
+        <option value="OpenAI" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'OpenAI' ); ?>><?php echo esc_html( 'OpenAI' ); ?></option>
+        <option value="NVIDIA" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'NVIDIA' ); ?>><?php echo esc_html( 'NVIDIA' ); ?></option>
+        <option value="Anthropic" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'Anthropic' ); ?>><?php echo esc_html( 'Anthropic' ); ?></option>
     </select>
     <?php
 
 }
 
 // AI Summaries Enabled section callback
-function ksum_additional_selections_section_callback($args) {
+function kognetiks_ai_summaries_additional_selections_section_callback($args) {
 
     // DIAG - Diagnostics - Ver 2.1.8
-    // ksum_back_trace( 'NOTICE', 'ksum_additional_selections_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_additional_selections_section_callback');
 
     ?>
     <p>Turn AI Summaries on/off for your site. <b>NOTE</b>: The default is off until you configure the plugin with a valid API key.</p>
@@ -104,39 +104,39 @@ function ksum_additional_selections_section_callback($args) {
 }
 
 // Activate the AI Summaries
-function ksum_additional_selections_callback($args) {
+function kognetiks_ai_summaries_additional_selections_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_additional_selections_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_additional_selections_callback');
 
-    if (esc_attr(get_option('ksum_ai_platform_choice')) == 'OpenAI' && esc_attr(get_option('ksum_openai_api_key')) == '') {
-        $ksum_ai_summaries_enabled = 'Off';
-    } elseif (esc_attr(get_option('ksum_ai_platform_choice')) == 'NVIDIA' && esc_attr(get_option('ksum_nvidia_api_key')) == '') {
-        $ksum_ai_summaries_enabled = 'Off';
-    } elseif (esc_attr(get_option('ksum_ai_platform_choice')) == 'Anthropic' && esc_attr(get_option('ksum_anthropic_api_key')) == '') {
-        $ksum_ai_summaries_enabled = 'Off';
+    if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'OpenAI' && esc_attr(get_option('kognetiks_ai_summaries_openai_api_key')) == '') {
+        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
+    } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'NVIDIA' && esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key')) == '') {
+        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
+    } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Anthropic' && esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key')) == '') {
+        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
    } else {
-        $ksum_ai_summaries_enabled = 'Off';
+        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
     }
 
-    $ksum_ai_summaries_enabled = esc_attr(get_option('ksum_ai_summaries_enabled', 'Off'));
+    $kognetiks_ai_summaries_ai_summaries_enabled = esc_attr(get_option('kognetiks_ai_summaries_ai_summaries_enabled', 'Off'));
     ?>
-    <select id="ksum_ai_summaries_enabled" name="ksum_ai_summaries_enabled">
-        <option value="On" <?php selected( $ksum_ai_summaries_enabled, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
-        <option value="Off" <?php selected( $ksum_ai_summaries_enabled, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
+    <select id="kognetiks_ai_summaries_ai_summaries_enabled" name="kognetiks_ai_summaries_ai_summaries_enabled">
+        <option value="On" <?php selected( $kognetiks_ai_summaries_ai_summaries_enabled, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
+        <option value="Off" <?php selected( $kognetiks_ai_summaries_ai_summaries_enabled, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
     </select>
     <?php    
 }
 
-function ksum_ai_summaries_length_callback() {
+function kognetiks_ai_summaries_ai_summaries_length_callback() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_ai_summaries_length_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_summaries_length_callback');
 
-    $value = esc_attr(get_option('ksum_ai_summaries_length', 55));
+    $value = esc_attr(get_option('kognetiks_ai_summaries_ai_summaries_length', 55));
 
     ?>
-    <select id="ksum_ai_summaries_length" name="ksum_ai_summaries_length">
+    <select id="kognetiks_ai_summaries_ai_summaries_length" name="kognetiks_ai_summaries_ai_summaries_length">
         <?php
         for ( $i = 1; $i <= 500; $i++ ) {
             echo '<option value="' . esc_attr( $i ) . '" ' . selected( $value, (string) $i, false ) . '>' . esc_html( $i ) . '</option>';
@@ -148,63 +148,63 @@ function ksum_ai_summaries_length_callback() {
 }
 
 // Register the general settings
-function ksum_general_settings_init() {
+function kognetiks_ai_summaries_general_settings_init() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_general_settings_init');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_general_settings_init');
 
     add_settings_section(
-        'ksum_general_settings_section',
+        'kognetiks_ai_summaries_general_settings_section',
         'General Settings',
-        'ksum_general_settings_callback',
-        'ksum_general_settings'
+        'kognetiks_ai_summaries_general_settings_callback',
+        'kognetiks_ai_summaries_general_settings'
     );
 
     // Platform selection
-    register_setting('ksum_general_settings', 'ksum_ai_platform_choice');
+    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_ai_platform_choice');
 
     add_settings_section(
-        'ksum_engine_section',
+        'kognetiks_ai_summaries_engine_section',
         'AI Platform Selection',
-        'ksum_engine_section_callback',
-        'ksum_ai_engine_settings'
+        'kognetiks_ai_summaries_engine_section_callback',
+        'kognetiks_ai_summaries_ai_engine_settings'
     );
 
     add_settings_field(
-        'ksum_ai_platform_choice',
+        'kognetiks_ai_summaries_ai_platform_choice',
         'AI Platform Choice',
-        'ksum_ai_platform_choice_callback',
-        'ksum_ai_engine_settings',
-        'ksum_engine_section'
+        'kognetiks_ai_summaries_ai_platform_choice_callback',
+        'kognetiks_ai_summaries_ai_engine_settings',
+        'kognetiks_ai_summaries_engine_section'
     );
 
     // Additional Settings
-    register_setting('ksum_general_settings', 'ksum_ai_summaries_enabled');
-    register_setting('ksum_general_settings', 'ksum_ai_summaries_length');
+    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_ai_summaries_enabled');
+    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_ai_summaries_length');
 
     // AI Enabled Section Selection
     add_settings_section(
-        'ksum_additional_selections_section',
+        'kognetiks_ai_summaries_additional_selections_section',
         'AI Summary Settings',
-        'ksum_additional_selections_section_callback',
-        'ksum_additional_selections_settings'
+        'kognetiks_ai_summaries_additional_selections_section_callback',
+        'kognetiks_ai_summaries_additional_selections_settings'
     );
 
     add_settings_field(
-        'ksum_ai_summaries_enabled',
+        'kognetiks_ai_summaries_ai_summaries_enabled',
         'Turn AI Summaries On/Off',
-        'ksum_additional_selections_callback',
-        'ksum_additional_selections_settings',
-        'ksum_additional_selections_section'
+        'kognetiks_ai_summaries_additional_selections_callback',
+        'kognetiks_ai_summaries_additional_selections_settings',
+        'kognetiks_ai_summaries_additional_selections_section'
     );
 
     add_settings_field(
-        'ksum_ai_summaries_length',
+        'kognetiks_ai_summaries_ai_summaries_length',
         'AI Summaries Length (Words)',
-        'ksum_ai_summaries_length_callback',
-        'ksum_additional_selections_settings',
-        'ksum_additional_selections_section'
+        'kognetiks_ai_summaries_ai_summaries_length_callback',
+        'kognetiks_ai_summaries_additional_selections_settings',
+        'kognetiks_ai_summaries_additional_selections_section'
     );
 
 }
-add_action('admin_init', 'ksum_general_settings_init');
+add_action('admin_init', 'kognetiks_ai_summaries_general_settings_init');

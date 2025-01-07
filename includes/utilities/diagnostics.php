@@ -14,24 +14,24 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Production Back Trace Function - Ver 1.0.0
-function ksum_prod_trace($message_type = "NOTICE", $message = "No message") {
+function kognetiks_ai_summaries_prod_trace($message_type = "NOTICE", $message = "No message") {
 
     // Trace production messages to the error log
-    ksum_back_trace($message_type, $message);
+    kognetiks_ai_summaries_back_trace($message_type, $message);
 
 }
 
 // Back Trace Function - Ver 1.0.0
-function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
+function kognetiks_ai_summaries_back_trace($message_type = "NOTICE", $message = "No message") {
 
     // Usage Instructions
     // 
     // NOTE: Set WP_DEBUG and WP_DEBUG_LOG to true in wp-config.php to log messages to the debug.log file
     // 
-    // Call the function // ksum_back_trace() from any file to log messages to your server's error log
+    // Call the function // kognetiks_ai_summaries_back_trace() from any file to log messages to your server's error log
     // 
-    // Uncomment the // ksum_back_trace() function in the file(s) where you want to log messages
-    // Or add new // ksum_back_trace() calls to log messages at any point in the code
+    // Uncomment the // kognetiks_ai_summaries_back_trace() function in the file(s) where you want to log messages
+    // Or add new // kognetiks_ai_summaries_back_trace() calls to log messages at any point in the code
     //
     // Go to the Kognetiks AI Summaries Settings, then the Messages tab
     // Set the Plugin Diagnotics to one of Off, Success, Notice, Failure, Warning, or Error
@@ -39,24 +39,24 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
     // Each level will log messages based on the following criteria (Off will not log any messages)
     // [ERROR], [WARNING], [NOTICE], or [SUCCESS]
     // 
-    // Call this function using // ksum_back_trace( 'NOTICE', $message);
-    // ksum_back_trace( 'ERROR', 'Some message');
-    // ksum_back_trace( 'WARNING', 'Some message');
-    // ksum_back_trace( 'NOTICE', 'Some message');
-    // ksum_back_trace( 'SUCCESS', 'Some message');
+    // Call this function using // kognetiks_ai_summaries_back_trace( 'NOTICE', $message);
+    // kognetiks_ai_summaries_back_trace( 'ERROR', 'Some message');
+    // kognetiks_ai_summaries_back_trace( 'WARNING', 'Some message');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Some message');
+    // kognetiks_ai_summaries_back_trace( 'SUCCESS', 'Some message');
 
     // Check if diagnostics is On
-    $ksum_diagnostics = esc_attr(get_option('ksum_diagnostics', 'Off'));
+    $kognetiks_ai_summaries_diagnostics = esc_attr(get_option('kognetiks_ai_summaries_diagnostics', 'Off'));
 
-    $ksum_diagnostics = esc_attr(get_option('ksum_diagnostics', 'Error'));
-    if ('Off' === $ksum_diagnostics) {
+    $kognetiks_ai_summaries_diagnostics = esc_attr(get_option('kognetiks_ai_summaries_diagnostics', 'Error'));
+    if ('Off' === $kognetiks_ai_summaries_diagnostics) {
         return;
     }
 
     // Belt and suspenders - make sure the value is either Off or Error
-    if ('On' === $ksum_diagnostics) {
-        $ksum_diagnostics = 'Error';
-        update_option('ksum_diagnostics', $ksum_diagnostics);
+    if ('On' === $kognetiks_ai_summaries_diagnostics) {
+        $kognetiks_ai_summaries_diagnostics = 'Error';
+        update_option('kognetiks_ai_summaries_diagnostics', $kognetiks_ai_summaries_diagnostics);
     }
 
     $backtrace = debug_backtrace();
@@ -92,51 +92,51 @@ function ksum_back_trace($message_type = "NOTICE", $message = "No message") {
     // Message Type: Indicating whether the log is an error, warning, notice, or success message.
     // Prefix the message with [ERROR], [WARNING], [NOTICE], or [SUCCESS].
     // Check for other levels and print messages accordingly
-    if ('Error' === $ksum_diagnostics) {
+    if ('Error' === $kognetiks_ai_summaries_diagnostics) {
         // Print all types of messages
         error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-        ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
-    } elseif (in_array($ksum_diagnostics, ['Success', 'Failure'])) {
+        kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+    } elseif (in_array($kognetiks_ai_summaries_diagnostics, ['Success', 'Failure'])) {
         // Print only SUCCESS and FAILURE messages
         if (in_array($message_type, ['SUCCESS', 'FAILURE'])) {
             error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
-    } elseif ('Warning' === $ksum_diagnostics) {
+    } elseif ('Warning' === $kognetiks_ai_summaries_diagnostics) {
         // Print only ERROR and WARNING messages
         if (in_array($message_type, ['ERROR', 'WARNING'])) {
             error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
-    } elseif ('Notice' === $ksum_diagnostics) {
+    } elseif ('Notice' === $kognetiks_ai_summaries_diagnostics) {
         // Print ERROR, WARNING, and NOTICE messages
         if (in_array($message_type, ['ERROR', 'WARNING', 'NOTICE'])) {
             error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
-    } elseif ('Debug' === $ksum_diagnostics) {
+    } elseif ('Debug' === $kognetiks_ai_summaries_diagnostics) {
         // Print all types of messages
         error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-        ksum_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+        kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
     }
 
 }
 
 // Log plugin errors to the server - Ver 1.0.0
-function ksum_error_log($message) {
+function kognetiks_ai_summaries_error_log($message) {
 
     global $wp_filesystem;
-    global $ksum_plugin_dir_path;
+    global $kognetiks_ai_summaries_plugin_dir_path;
 
-    $ksum_logs_dir = $ksum_plugin_dir_path . 'logs/';
+    $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
 
     // Ensure the directory and index file exist
-    ksum_create_directory_and_index_file($ksum_logs_dir);
+    kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
 
     // Get the current date to create a daily log file
     $current_date = gmdate('Y-m-d');
     
-    $log_file = $ksum_logs_dir . 'ksum-error-log-' . $current_date . '.log';
+    $log_file = $kognetiks_ai_summaries_logs_dir . 'kognetiks-ai-summaries-error-log-' . $current_date . '.log';
 
     // Append the error message to the log file
     if ( $wp_filesystem ) {
@@ -148,26 +148,26 @@ function ksum_error_log($message) {
 }
 
 // Log plugin errors to the server - Ver 1.0.0
-function log_ksum_error() {
+function log_kognetiks_ai_summaries_error() {
 
     global $wp_filesystem;
-    global $ksum_plugin_dir_path;
+    global $kognetiks_ai_summaries_plugin_dir_path;
     
-    if (isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'ksum_diagnostics_action')) {
+    if (isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'kognetiks_ai_summaries_diagnostics_action')) {
 
         if (isset($_POST['error_message'])) {
 
             $error_message = sanitize_text_field(wp_unslash($_POST['error_message']));
 
-            $ksum_logs_dir = $ksum_plugin_dir_path . 'logs/';
+            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
 
             // Ensure the directory and index file exist
-            ksum_create_directory_and_index_file($ksum_logs_dir);
+            kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
 
             // Get the current date to create a daily log file
             $current_date = gmdate('Y-m-d');
 
-            $log_file = $ksum_logs_dir . 'ksum-error-log-' . $current_date . '.log';
+            $log_file = $kognetiks_ai_summaries_logs_dir . 'kognetiks-ai-summaries-error-log-' . $current_date . '.log';
 
             // Get additional info
             $session_id = session_id();
@@ -198,34 +198,34 @@ function log_ksum_error() {
 
 }
 // Register AJAX actions
-add_action('wp_ajax_log_ksum_error', 'log_ksum_error');
-add_action('wp_ajax_nopriv_log_ksum_error', 'log_ksum_error');
+add_action('wp_ajax_log_kognetiks_ai_summaries_error', 'log_kognetiks_ai_summaries_error');
+add_action('wp_ajax_nopriv_log_kognetiks_ai_summaries_error', 'log_kognetiks_ai_summaries_error');
 
 // Determine if the plugin is installed
-function ksum_get_plugin_version() {
+function kognetiks_ai_summaries_get_plugin_version() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_get_plugin_version');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_plugin_version');
 
-    global $ksum_plugin_version;
+    global $kognetiks_ai_summaries_plugin_version;
 
     if (!function_exists('get_plugin_data')) {
         require_once(ABSPATH . 'wp-admin/includes/plugin.php');
     }
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'plugin_dir_path: ' . plugin_dir_path(__FILE__));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'plugin_dir_path: ' . plugin_dir_path(__FILE__));
 
     $plugin_data = get_plugin_data(plugin_dir_path(__FILE__) . '../../kognetiks-ai-summaries.php');
 
     // DIAG - Print the plugin data
-    // ksum_back_trace( 'NOTICE', 'Plugin data: ' . print_r($plugin_data, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Plugin data: ' . print_r($plugin_data, true));
 
     $plugin_version = $plugin_data['Version'];
-    update_option('ksum_plugin_version', $plugin_version);
+    update_option('kognetiks_ai_summaries_plugin_version', $plugin_version);
 
     // DIAG - Log the plugin version
-    // ksum_back_trace( 'NOTICE', 'Plugin version ' . $plugin_version);
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Plugin version ' . $plugin_version);
 
     return $plugin_version;
 

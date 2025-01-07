@@ -15,12 +15,12 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Diagnostics overview section callback
-function ksum_diagnostics_overview_section_callback($args) {
+function kognetiks_ai_summaries_diagnostics_overview_section_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_overview_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_diagnostics_overview_section_callback');
 
-    $nonce = wp_create_nonce('ksum_support_nonce');
+    $nonce = wp_create_nonce('kognetiks_ai_summaries_support_nonce');
     $url = add_query_arg(array(
     'page' => 'kognetiks-ai-summaries',
     'tab' => 'support',
@@ -39,10 +39,10 @@ function ksum_diagnostics_overview_section_callback($args) {
 }
 
 // System Details
-function ksum_diagnostics_system_settings_section_callback($args) {
+function kognetiks_ai_summaries_diagnostics_system_settings_section_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_system_settings_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_diagnostics_system_settings_section_callback');
     
     // Get PHP version
     $php_version = phpversion();
@@ -50,7 +50,7 @@ function ksum_diagnostics_system_settings_section_callback($args) {
     // Get WordPress version
     global $wp_version;
 
-    echo '<p>Kognetiks AI Summaries Version: <b>' . esc_html( ksum_get_plugin_version() ) . '</b><br>';
+    echo '<p>Kognetiks AI Summaries Version: <b>' . esc_html( kognetiks_ai_summaries_get_plugin_version() ) . '</b><br>';
     echo 'PHP Version: <b>' . esc_html( $php_version ) . '</b><br>';
     echo 'PHP Memory Limit: <b>' . esc_html( ini_get('memory_limit') ) . '</b><br>';
     echo 'WordPress Version: <b>' . esc_html( $wp_version ) . '</b><br>';
@@ -59,10 +59,10 @@ function ksum_diagnostics_system_settings_section_callback($args) {
 }
 
 // Diagnostics settings section callback
-function ksum_diagnostics_section_callback($args) {
+function kognetiks_ai_summaries_diagnostics_section_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_diagnostics_section_callback');
 
     ?>
         <p>Choose your settings for Diagnostics and Plugin Data retention settings.</p>
@@ -71,12 +71,12 @@ function ksum_diagnostics_section_callback($args) {
 }
 
 // API Status and Results section callback
-function ksum_diagnostics_api_status_section_callback($args) {
+function kognetiks_ai_summaries_diagnostics_api_status_section_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_api_status_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_diagnostics_api_status_section_callback');
 
-    $updated_status = ksum_test_api_status();
+    $updated_status = kognetiks_ai_summaries_test_api_status();
 
     ?>
         <p>API STATUS: <b><?php echo esc_html( $updated_status ); ?></b></p>
@@ -85,12 +85,12 @@ function ksum_diagnostics_api_status_section_callback($args) {
 }
 
 // Call the api-test.php file to test the API
-function ksum_api_test_callback($args) {
+function kognetiks_ai_summaries_api_test_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_api_test_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_api_test_callback');
 
-    $updated_status = ksum_test_api_status();
+    $updated_status = kognetiks_ai_summaries_test_api_status();
 
     ?>
     <p>API STATUS: <b><?php echo esc_html( $updated_status ); ?></b></p>
@@ -99,58 +99,58 @@ function ksum_api_test_callback($args) {
 }
 
 // Diagnostics On/Off
-function ksum_diagnostics_setting_callback($args) {
+function kognetiks_ai_summaries_diagnostics_setting_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_setting_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_diagnostics_setting_callback');
 
-    $ksum_diagnostics = esc_attr(get_option('ksum_diagnostics', 'Off'));
+    $kognetiks_ai_summaries_diagnostics = esc_attr(get_option('kognetiks_ai_summaries_diagnostics', 'Off'));
 
     ?>
-    <select id="ksum_diagnostics" name = "ksum_diagnostics">
-        <option value="Off" <?php selected( $ksum_diagnostics, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
-        <option value="Success" <?php selected( $ksum_diagnostics, 'Success' ); ?>><?php echo esc_html( 'Success' ); ?></option>
-        <option value="Notice" <?php selected( $ksum_diagnostics, 'Notice' ); ?>><?php echo esc_html( 'Notice' ); ?></option>
-        <option value="Failure" <?php selected( $ksum_diagnostics, 'Failure' ); ?>><?php echo esc_html( 'Failure' ); ?></option>
-        <option value="Warning" <?php selected( $ksum_diagnostics, 'Warning' ); ?>><?php echo esc_html( 'Warning' ); ?></option>
-        <option value="Error" <?php selected( $ksum_diagnostics, 'Error' ); ?>><?php echo esc_html( 'Error' ); ?></option>
+    <select id="kognetiks_ai_summaries_diagnostics" name = "kognetiks_ai_summaries_diagnostics">
+        <option value="Off" <?php selected( $kognetiks_ai_summaries_diagnostics, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
+        <option value="Success" <?php selected( $kognetiks_ai_summaries_diagnostics, 'Success' ); ?>><?php echo esc_html( 'Success' ); ?></option>
+        <option value="Notice" <?php selected( $kognetiks_ai_summaries_diagnostics, 'Notice' ); ?>><?php echo esc_html( 'Notice' ); ?></option>
+        <option value="Failure" <?php selected( $kognetiks_ai_summaries_diagnostics, 'Failure' ); ?>><?php echo esc_html( 'Failure' ); ?></option>
+        <option value="Warning" <?php selected( $kognetiks_ai_summaries_diagnostics, 'Warning' ); ?>><?php echo esc_html( 'Warning' ); ?></option>
+        <option value="Error" <?php selected( $kognetiks_ai_summaries_diagnostics, 'Error' ); ?>><?php echo esc_html( 'Error' ); ?></option>
      </select>
     <?php
     
 }
 
 // Custom Error Message
-function ksum_custom_error_message_callback($args) {
+function kognetiks_ai_summaries_custom_error_message_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_custom_error_message_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_custom_error_message_callback');
 
-    $ksum_custom_error_message = esc_attr(get_option('ksum_custom_error_message', 'Your custom error message goes here.'));
+    $kognetiks_ai_summaries_custom_error_message = esc_attr(get_option('kognetiks_ai_summaries_custom_error_message', 'Your custom error message goes here.'));
 
-    if ( $ksum_custom_error_message === null || $ksum_custom_error_message === '' ) {
-        $ksum_custom_error_message = 'Your custom error message goes here.';
+    if ( $kognetiks_ai_summaries_custom_error_message === null || $kognetiks_ai_summaries_custom_error_message === '' ) {
+        $kognetiks_ai_summaries_custom_error_message = 'Your custom error message goes here.';
     }
 
     ?>
-    <input type="text" id="ksum_custom_error_message" name="ksum_custom_error_message" value="<?php echo esc_html( $ksum_custom_error_message ); ?>" size="50">
+    <input type="text" id="kognetiks_ai_summaries_custom_error_message" name="kognetiks_ai_summaries_custom_error_message" value="<?php echo esc_html( $kognetiks_ai_summaries_custom_error_message ); ?>" size="50">
     <?php
 
 }
 
 // Suppress Notices On/Off
-function ksum_suppress_notices_callback($args) {
+function kognetiks_ai_summaries_suppress_notices_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_suppress_notices_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_suppress_notices_callback');
 
-    global $ksum_suppress_notices;
+    global $kognetiks_ai_summaries_suppress_notices;
 
-    $ksum_suppress_notices = esc_attr(get_option('ksum_suppress_notices', 'Off'));
+    $kognetiks_ai_summaries_suppress_notices = esc_attr(get_option('kognetiks_ai_summaries_suppress_notices', 'Off'));
 
     ?>
-    <select id="chatgpt_suppress_notices_setting" name = "ksum_suppress_notices">
-        <option value="On" <?php selected( $ksum_suppress_notices, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
-        <option value="Off" <?php selected( $ksum_suppress_notices, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
+    <select id="chatgpt_suppress_notices_setting" name = "kognetiks_ai_summaries_suppress_notices">
+        <option value="On" <?php selected( $kognetiks_ai_summaries_suppress_notices, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
+        <option value="Off" <?php selected( $kognetiks_ai_summaries_suppress_notices, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
     </select>
     <?php
 
@@ -158,108 +158,108 @@ function ksum_suppress_notices_callback($args) {
 
 
 // Delete Plugin Data on Uninstall
-function ksum_delete_data_callback($args) {
+function kognetiks_ai_summaries_delete_data_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_delete_data_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_delete_data_callback');
 
-    global $ksum_delete_data;
+    global $kognetiks_ai_summaries_delete_data;
 
-    $ksum_delete_data = esc_attr(get_option('ksum_delete_data', 'no'));
+    $kognetiks_ai_summaries_delete_data = esc_attr(get_option('kognetiks_ai_summaries_delete_data', 'no'));
 
     ?>
-    <select id="chatgpt_delete_data_setting" name="ksum_delete_data">
-    <option value="no" <?php selected( $ksum_delete_data, 'no' ); ?>><?php echo esc_html( 'DO NOT DELETE' ); ?></option>
-    <option value="yes" <?php selected( $ksum_delete_data, 'yes' ); ?>><?php echo esc_html( 'DELETE ALL DATA' ); ?></option>
+    <select id="chatgpt_delete_data_setting" name="kognetiks_ai_summaries_delete_data">
+    <option value="no" <?php selected( $kognetiks_ai_summaries_delete_data, 'no' ); ?>><?php echo esc_html( 'DO NOT DELETE' ); ?></option>
+    <option value="yes" <?php selected( $kognetiks_ai_summaries_delete_data, 'yes' ); ?>><?php echo esc_html( 'DELETE ALL DATA' ); ?></option>
     </select>
     <?php
 
 }
 
 // Register Diagnostics settings
-function ksum_diagnostics_settings_init() {
+function kognetiks_ai_summaries_diagnostics_settings_init() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_diagnostics_settings_init');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_diagnostics_settings_init');
 
-    register_setting('ksum_diagnostics', 'ksum_diagnostics');
-    register_setting('ksum_diagnostics', 'ksum_custom_error_message');
-    register_setting('ksum_diagnostics', 'ksum_suppress_notices');
-    register_setting('ksum_diagnostics', 'ksum_delete_data');
+    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_diagnostics');
+    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_custom_error_message');
+    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_suppress_notices');
+    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_delete_data');
 
     add_settings_section(
-        'ksum_diagnostics_overview_section',
+        'kognetiks_ai_summaries_diagnostics_overview_section',
         'Messages and Diagnostics Overview',
-        'ksum_diagnostics_overview_section_callback',
-        'ksum_diagnostics_overview'
+        'kognetiks_ai_summaries_diagnostics_overview_section_callback',
+        'kognetiks_ai_summaries_diagnostics_overview'
     );
 
     add_settings_section(
-        'ksum_diagnostics_system_settings_section',
+        'kognetiks_ai_summaries_diagnostics_system_settings_section',
         'Platform Settings',
-        'ksum_diagnostics_system_settings_section_callback',
-        'ksum_diagnostics_system_settings'
+        'kognetiks_ai_summaries_diagnostics_system_settings_section_callback',
+        'kognetiks_ai_summaries_diagnostics_system_settings'
     );
 
     // Diagnotics API Status
     add_settings_section(
-        'ksum_diagnostics_api_status_section',
+        'kognetiks_ai_summaries_diagnostics_api_status_section',
         'API Status and Results',
-        'ksum_diagnostics_api_status_section_callback',
-        'ksum_diagnostics_api_status'
+        'kognetiks_ai_summaries_diagnostics_api_status_section_callback',
+        'kognetiks_ai_summaries_diagnostics_api_status'
     );
 
     add_settings_field(
-        'ksum_api_test',
+        'kognetiks_ai_summaries_api_test',
         'API Test Results',
-        'ksum_api_test_callback',
-        'ksum_diagnostics',
-        'ksum_diagnostics_api_status_section'
+        'kognetiks_ai_summaries_api_test_callback',
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_diagnostics_api_status_section'
     );
 
     // Diagnostic Settings Section
     add_settings_section(
-        'ksum_diagnostics_section',
+        'kognetiks_ai_summaries_diagnostics_section',
         'Messages and Diagnostics Settings',
-        'ksum_diagnostics_section_callback',
-        'ksum_diagnostics'
+        'kognetiks_ai_summaries_diagnostics_section_callback',
+        'kognetiks_ai_summaries_diagnostics'
     );
 
     // Option to set diagnostics on/off
     add_settings_field(
-        'ksum_diagnostics',
+        'kognetiks_ai_summaries_diagnostics',
         'Plugin Diagnostics',
-        'ksum_diagnostics_setting_callback',
-        'ksum_diagnostics',
-        'ksum_diagnostics_section'
+        'kognetiks_ai_summaries_diagnostics_setting_callback',
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_diagnostics_section'
     );
 
     // Custom Error Message
     add_settings_field(
-        'ksum_custom_error_message',
+        'kognetiks_ai_summaries_custom_error_message',
         'Custom Error Message',
-        'ksum_custom_error_message_callback',
-        'ksum_diagnostics',
-        'ksum_diagnostics_section'
+        'kognetiks_ai_summaries_custom_error_message_callback',
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_diagnostics_section'
     );
 
     // Option to suppress notices and warnings
     add_settings_field(
-        'ksum_suppress_notices',
+        'kognetiks_ai_summaries_suppress_notices',
         'Suppress Notices and Warnings',
-        'ksum_suppress_notices_callback',
-        'ksum_diagnostics',
-        'ksum_diagnostics_section'
+        'kognetiks_ai_summaries_suppress_notices_callback',
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_diagnostics_section'
     );
 
     // Option to delete data on uninstall
     add_settings_field(
-        'ksum_delete_data',
+        'kognetiks_ai_summaries_delete_data',
         'Delete Plugin Data on Uninstall',
-        'ksum_delete_data_callback',
-        'ksum_diagnostics',
-        'ksum_diagnostics_section'
+        'kognetiks_ai_summaries_delete_data_callback',
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_diagnostics_section'
     );
     
 }
-add_action('admin_init', 'ksum_diagnostics_settings_init');
+add_action('admin_init', 'kognetiks_ai_summaries_diagnostics_settings_init');

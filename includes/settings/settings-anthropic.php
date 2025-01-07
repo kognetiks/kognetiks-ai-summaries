@@ -14,12 +14,12 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // API/Anthropic Settings section callback
-function ksum_anthropic_general_settings_callback($args) {
+function kognetiks_ai_summaries_anthropic_general_settings_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_general_settings_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_general_settings_callback');
 
-    $nonce = wp_create_nonce('ksum_support_nonce');
+    $nonce = wp_create_nonce('kognetiks_ai_summaries_support_nonce');
     $url = add_query_arg(array(
     'page' => 'kognetiks-ai-summaries',
     'tab' => 'support',
@@ -38,24 +38,24 @@ function ksum_anthropic_general_settings_callback($args) {
 }
 
 // API key field callback
-function ksum_anthropic_api_key_callback($args) {
+function kognetiks_ai_summaries_anthropic_api_key_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_api_key_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_api_key_callback');
 
-    $api_key = esc_attr(get_option('ksum_anthropic_api_key'));
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key'));
 
     ?>
-    <input type="password" id="ksum_anthropic_api_key" name="ksum_anthropic_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
+    <input type="password" id="kognetiks_ai_summaries_anthropic_api_key" name="kognetiks_ai_summaries_anthropic_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
     <?php
 
 }
 
 // Anthropic Model Section Callback
-function ksum_anthropic_model_section_callback($args) {
+function kognetiks_ai_summaries_anthropic_model_section_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_model_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_model_section_callback');
 
     ?>
     <p>Configure the settings for the plugin by selecting the Anthropic model you would like to use. The plugin will use the selected model to generate responses.</p>
@@ -64,19 +64,19 @@ function ksum_anthropic_model_section_callback($args) {
 }
 
 // Anthropic model choice
-function ksum_anthropic_model_choice_callback($args) {
+function kognetiks_ai_summaries_anthropic_model_choice_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_model_choice_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_model_choice_callback');
   
-    // Get the saved ksum_anthropic_model_choice value or default to "claude-3-5-sonnet-latest"
-    $model_choice = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+    // Get the saved kognetiks_ai_summaries_anthropic_model_choice value or default to "claude-3-5-sonnet-latest"
+    $model_choice = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
 
     // Fetch models from the API
-    $models = ksum_anthropic_get_models();
+    $models = kognetiks_ai_summaries_anthropic_get_models();
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
 
     // // Limit the models to chat models
     // $models = array_filter($models, function($model) {
@@ -86,18 +86,18 @@ function ksum_anthropic_model_choice_callback($args) {
     // Check for errors
     if (is_string($models) && strpos($models, 'Error:') === 0) {
         // If there's an error, display the hardcoded list
-        $model_choice = esc_attr(get_option('ksum_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+        $model_choice = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
         ?>
-        <select id="ksum_anthropic_model_choice" name="ksum_anthropic_model_choice">
+        <select id="kognetiks_ai_summaries_anthropic_model_choice" name="kognetiks_ai_summaries_anthropic_model_choice">
             <option value="<?php echo esc_attr( 'claude-3-5-sonnet-latest' ); ?>" <?php selected( $model_choice, 'claude-3-5-sonnet-latest' ); ?>><?php echo esc_html( 'claude-3-5-sonnet-latest' ); ?></option>
         </select>
         <?php
     } else {
         // If models are fetched successfully, display them dynamically
         ?>
-        <select id="ksum_anthropic_model_choice" name="ksum_anthropic_model_choice">
+        <select id="kognetiks_ai_summaries_anthropic_model_choice" name="kognetiks_ai_summaries_anthropic_model_choice">
             <?php foreach ($models as $model): ?>
-                <option value="<?php echo esc_attr($model['id']); ?>" <?php selected(esc_attr(get_option('ksum_anthropic_model_choice')), $model['id']); ?>><?php echo esc_html($model['id']); ?></option>
+                <option value="<?php echo esc_attr($model['id']); ?>" <?php selected(esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice')), $model['id']); ?>><?php echo esc_html($model['id']); ?></option>
             <?php endforeach; ?>
             ?>
         </select>
@@ -107,10 +107,10 @@ function ksum_anthropic_model_choice_callback($args) {
 }
 
 // Anthropic Advanced Settings Section Callback
-function ksum_anthropic_advanced_settings_section_callback($args) {
+function kognetiks_ai_summaries_anthropic_advanced_settings_section_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_advanced_settings_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_advanced_settings_section_callback');
 
     ?>
     <p>Configure the advanced settings for the plugin. These settings are optional and can be used to fine-tune the plugin's behavior.</p>
@@ -119,17 +119,17 @@ function ksum_anthropic_advanced_settings_section_callback($args) {
 }
 
 // Max Tokens choice
-function ksum_anthropic_max_tokens_callback($args) {
+function kognetiks_ai_summaries_anthropic_max_tokens_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_max_tokens_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_max_tokens_callback');
 
-    // Get the saved ksum_openai_max_tokens_setting or default to 500
-    $max_tokens = esc_attr(get_option('ksum_anthropic_max_tokens', '500'));
+    // Get the saved kognetiks_ai_summaries_openai_max_tokens_setting or default to 500
+    $max_tokens = esc_attr(get_option('kognetiks_ai_summaries_anthropic_max_tokens', '500'));
 
     // Allow for a range of tokens between 100 and 4000 in 100-step increments
     ?>
-    <select id="ksum_anthropic_max_tokens" name="ksum_anthropic_max_tokens">
+    <select id="kognetiks_ai_summaries_anthropic_max_tokens" name="kognetiks_ai_summaries_anthropic_max_tokens">
         <?php
         for ($i=100; $i<=4000; $i+=100) {
             echo '<option value="' . esc_attr($i) . '" ' . selected($max_tokens, (string)$i, false) . '>' . esc_html($i) . '</option>';
@@ -140,16 +140,16 @@ function ksum_anthropic_max_tokens_callback($args) {
 
 }
 
-// Set ksum_anthropic_temperature
-function ksum_anthropic_temperature_callback($args) {
+// Set kognetiks_ai_summaries_anthropic_temperature
+function kognetiks_ai_summaries_anthropic_temperature_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_temperature_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_temperature_callback');
 
-    $temperature = esc_attr(get_option('ksum_anthropic_temperature', 0.50));
+    $temperature = esc_attr(get_option('kognetiks_ai_summaries_anthropic_temperature', 0.50));
 
     ?>
-    <select id="ksum_anthropic_temperature" name="ksum_anthropic_temperature">
+    <select id="kognetiks_ai_summaries_anthropic_temperature" name="kognetiks_ai_summaries_anthropic_temperature">
         <?php
         for ($i = 0.01; $i <= 2.01; $i += 0.01) {
             echo '<option value="' . esc_attr($i) . '" ' . selected($temperature, (string)$i, false) . '>' . esc_html($i) . '</option>';
@@ -160,16 +160,16 @@ function ksum_anthropic_temperature_callback($args) {
 
 }
 
-// Set ksum_anthropic_top_p
-function ksum_anthropic_top_p_callback($args) {
+// Set kognetiks_ai_summaries_anthropic_top_p
+function kognetiks_ai_summaries_anthropic_top_p_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_top_p_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_top_p_callback');
 
-    $top_p = esc_attr(get_option('ksum_anthropic_top_p', 1.00));
+    $top_p = esc_attr(get_option('kognetiks_ai_summaries_anthropic_top_p', 1.00));
 
     ?>
-    <select id="ksum_open_aitop_p" name="ksum_anthropic_top_p">
+    <select id="kognetiks_ai_summaries_open_aitop_p" name="kognetiks_ai_summaries_anthropic_top_p">
         <?php
         for ($i = 0.01; $i <= 1.01; $i += 0.01) {
             echo '<option value="' . esc_attr($i) . '" ' . selected($top_p, (string)$i, false) . '>' . esc_html($i) . '</option>';
@@ -181,105 +181,105 @@ function ksum_anthropic_top_p_callback($args) {
 }
 
 // Base URL for the Anthropic API
-function ksum_anthropic_base_url_callback($args) {
+function kognetiks_ai_summaries_anthropic_base_url_callback($args) {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_base_url_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_base_url_callback');
 
-    $ksum_anthropic_base_url = esc_attr(get_option('ksum_anthropic_base_url', ksum_get_api_base_url()));
+    $kognetiks_ai_summaries_anthropic_base_url = esc_attr(get_option('kognetiks_ai_summaries_anthropic_base_url', kognetiks_ai_summaries_get_api_base_url()));
 
     ?>
-    <input type="text" id="ksum_anthropic_base_url" name="ksum_anthropic_base_url" value="<?php echo esc_attr( $ksum_anthropic_base_url ); ?>" class="regular-text">
+    <input type="text" id="kognetiks_ai_summaries_anthropic_base_url" name="kognetiks_ai_summaries_anthropic_base_url" value="<?php echo esc_attr( $kognetiks_ai_summaries_anthropic_base_url ); ?>" class="regular-text">
     <?php
 
 }
 
 // Register the Anthropic API settings
-function ksum_anthropic_settings_init() {
+function kognetiks_ai_summaries_anthropic_settings_init() {
 
     // DIAG - Diagnostics
-    // ksum_back_trace( 'NOTICE', 'ksum_anthropic_settings_init');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_settings_init');
 
     // Add the settings section
     add_settings_section(
-        'ksum_api_anthropic_settings_section',
+        'kognetiks_ai_summaries_api_anthropic_settings_section',
         'API/Anthropic Settings',
-        'ksum_anthropic_general_settings_callback',
-        'ksum_api_anthropic_general_settings'
+        'kognetiks_ai_summaries_anthropic_general_settings_callback',
+        'kognetiks_ai_summaries_api_anthropic_general_settings'
     );
 
     // Anthropic API Key and Model settings
-    register_setting('ksum_anthropic_settings', 'ksum_anthropic_api_key');
-    register_setting('ksum_anthropic_settings', 'ksum_anthropic_model_choice');
+    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_api_key');
+    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_model_choice');
     
     add_settings_section(
-        'ksum_anthropic_model_section',
+        'kognetiks_ai_summaries_anthropic_model_section',
         'API/Anthropic Settings',
-        'ksum_anthropic_model_section_callback',
-        'ksum_anthropic_model_settings'
+        'kognetiks_ai_summaries_anthropic_model_section_callback',
+        'kognetiks_ai_summaries_anthropic_model_settings'
     );
 
     add_settings_field(
-        'ksum_anthropic_api_key',
+        'kognetiks_ai_summaries_anthropic_api_key',
         'Anthropic API Key',
-        'ksum_anthropic_api_key_callback',
-        'ksum_anthropic_model_settings',
-        'ksum_anthropic_model_section'
+        'kognetiks_ai_summaries_anthropic_api_key_callback',
+        'kognetiks_ai_summaries_anthropic_model_settings',
+        'kognetiks_ai_summaries_anthropic_model_section'
     );
 
     add_settings_field(
-        'ksum_anthropic_model_choice',
+        'kognetiks_ai_summaries_anthropic_model_choice',
         'Anthropic Model Choice',
-        'ksum_anthropic_model_choice_callback',
-        'ksum_anthropic_model_settings',
-        'ksum_anthropic_model_section'
+        'kognetiks_ai_summaries_anthropic_model_choice_callback',
+        'kognetiks_ai_summaries_anthropic_model_settings',
+        'kognetiks_ai_summaries_anthropic_model_section'
     );
 
     // Advanced Anthropic API settings
-    register_setting('ksum_anthropic_settings', 'ksum_anthropic_max_tokens');
-    register_setting('ksum_anthropic_settings', 'ksum_anthropic_temperature');
-    register_setting('ksum_anthropic_settings', 'ksum_anthropic_top_p');
-    register_setting('ksum_anthropic_settings', 'ksum_anthropic_base_url');
+    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_max_tokens');
+    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_temperature');
+    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_top_p');
+    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_base_url');
 
     // Add the settings section
     add_settings_section(
-        'ksum_anthropic_advanced_settings_section',
+        'kognetiks_ai_summaries_anthropic_advanced_settings_section',
         'API/Anthropic Advanced Settings',
-        'ksum_anthropic_advanced_settings_section_callback',
-        'ksum_anthropic_advanced_settings'
+        'kognetiks_ai_summaries_anthropic_advanced_settings_section_callback',
+        'kognetiks_ai_summaries_anthropic_advanced_settings'
     );
 
     add_settings_field(
-        'ksum_anthropic_max_tokens',
+        'kognetiks_ai_summaries_anthropic_max_tokens',
         'Max Tokens',
-        'ksum_anthropic_max_tokens_callback',
-        'ksum_anthropic_advanced_settings',
-        'ksum_anthropic_advanced_settings_section'
+        'kognetiks_ai_summaries_anthropic_max_tokens_callback',
+        'kognetiks_ai_summaries_anthropic_advanced_settings',
+        'kognetiks_ai_summaries_anthropic_advanced_settings_section'
     );
 
     add_settings_field(
-        'ksum_anthropic_temperature',
+        'kognetiks_ai_summaries_anthropic_temperature',
         'Temperature',
-        'ksum_anthropic_temperature_callback',
-        'ksum_anthropic_advanced_settings',
-        'ksum_anthropic_advanced_settings_section'
+        'kognetiks_ai_summaries_anthropic_temperature_callback',
+        'kognetiks_ai_summaries_anthropic_advanced_settings',
+        'kognetiks_ai_summaries_anthropic_advanced_settings_section'
     );
 
     add_settings_field(
-        'ksum_anthropic_top_p',
+        'kognetiks_ai_summaries_anthropic_top_p',
         'Top P',
-        'ksum_anthropic_top_p_callback',
-        'ksum_anthropic_advanced_settings',
-        'ksum_anthropic_advanced_settings_section'
+        'kognetiks_ai_summaries_anthropic_top_p_callback',
+        'kognetiks_ai_summaries_anthropic_advanced_settings',
+        'kognetiks_ai_summaries_anthropic_advanced_settings_section'
     );
 
     add_settings_field(
-        'ksum_anthropic_base_url',
+        'kognetiks_ai_summaries_anthropic_base_url',
         'Anthropic Base URL',
-        'ksum_anthropic_base_url_callback',
-        'ksum_anthropic_advanced_settings',
-        'ksum_anthropic_advanced_settings_section'
+        'kognetiks_ai_summaries_anthropic_base_url_callback',
+        'kognetiks_ai_summaries_anthropic_advanced_settings',
+        'kognetiks_ai_summaries_anthropic_advanced_settings_section'
     );
 
 }
-add_action('admin_init', 'ksum_anthropic_settings_init');
+add_action('admin_init', 'kognetiks_ai_summaries_anthropic_settings_init');
