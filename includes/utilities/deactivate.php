@@ -50,10 +50,16 @@ function kognetiks_ai_summaries_uninstall(){
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_uninstall - started' );
 
     global $wpdb;
+    global $wp_filesystem;
 
     // Ask if the data should be removed, if not return
     if (esc_attr(get_option('kognetiks_ai_summaries_delete_data')) != 'Yes') {
         return;
+    }
+
+    if (empty($wp_filesystem)) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        WP_Filesystem();
     }
 
     // Check for a setting that specifies whether to delete data
@@ -123,6 +129,12 @@ function kognetiks_ai_summaries_uninstall(){
         foreach ($files as $file) {
             wp_delete_file($kognetiks_ai_summaries_debug_dir . $file);
         }
+
+        // Delete the directory
+        $upload = wp_upload_dir();
+        $kognetiks_ai_summaries_upload_dir = $upload['basedir'];
+        $kognetiks_ai_summaries_upload_dir = $kognetiks_ai_summaries_upload_dir . '/kognetiks-ai-summaries/';
+        $wp_filesystem->rmdir($kognetiks_ai_summaries_upload_dir, true);
 
     }
 
