@@ -103,10 +103,10 @@ function kognetiks_ai_summaries_enqueue_admin_scripts() {
     global $kognetiks_ai_summaries_plugin_version;
 
     wp_enqueue_style('dashicons');
-    wp_enqueue_style('kognetiks-ai-summaries-css', plugins_url('assets/css/kognetiks-ai-summaries-admin.css', __FILE__), array(), $kognetiks_ai_summaries_plugin_version, 'all');
+    wp_enqueue_style('kognetiks-ai-summaries-css', plugins_url('assets/css/admin.css', __FILE__), array(), $kognetiks_ai_summaries_plugin_version, 'all');
 
     wp_enqueue_script('jquery'); // Ensure jQuery is enqueued
-    wp_enqueue_script('kognetiks_ai_summaries_admin', plugins_url('assets/js/kognetiks-ai-summaries-admin.js', __FILE__), array('jquery'), $kognetiks_ai_summaries_plugin_version, true);
+    wp_enqueue_script('kognetiks_ai_summaries_admin', plugins_url('assets/js/admin.js', __FILE__), array('jquery'), $kognetiks_ai_summaries_plugin_version, true);
 
 }
 add_action('admin_enqueue_scripts', 'kognetiks_ai_summaries_enqueue_admin_scripts');
