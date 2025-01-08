@@ -133,7 +133,7 @@ function kognetiks_ai_summaries_uninstall(){
         // Delete the directory
         $upload = wp_upload_dir();
         $kognetiks_ai_summaries_upload_dir = $upload['basedir'];
-        $kognetiks_ai_summaries_upload_dir = $kognetiks_ai_summaries_upload_dir . '/kognetiks-ai-summaries/';
+        $kognetiks_ai_summaries_upload_dir = $kognetiks_ai_summaries_upload_dir . '/kognetiks-ai-summaries';
         $wp_filesystem->rmdir($kognetiks_ai_summaries_upload_dir, true);
 
     }
