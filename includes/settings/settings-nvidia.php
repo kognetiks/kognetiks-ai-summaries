@@ -208,9 +208,24 @@ function kognetiks_ai_summaries_nvidia_settings_init() {
     );
 
     // NVIDIA API Key and Model settings
-    register_setting('kognetiks_ai_summaries_nvidia_settings', 'kognetiks_ai_summaries_nvidia_api_key');
-    register_setting('kognetiks_ai_summaries_nvidia_settings', 'kognetiks_ai_summaries_nvidia_model_choice');
-    
+    register_setting(
+        'kognetiks_ai_summaries_nvidia_settings',
+        'kognetiks_ai_summaries_nvidia_api_key',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_nvidia_settings',
+        'kognetiks_ai_summaries_nvidia_model_choice',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
     add_settings_section(
         'kognetiks_ai_summaries_nvidia_model_section',
         'API/NVIDIA Settings',
@@ -235,10 +250,41 @@ function kognetiks_ai_summaries_nvidia_settings_init() {
     );
 
     // Advanced NVIDIA API settings
-    register_setting('kognetiks_ai_summaries_nvidia_settings', 'kognetiks_ai_summaries_nvidia_max_tokens');
-    register_setting('kognetiks_ai_summaries_nvidia_settings', 'kognetiks_ai_summaries_nvidia_temperature');
-    register_setting('kognetiks_ai_summaries_nvidia_settings', 'kognetiks_ai_summaries_nvidia_top_p');
-    register_setting('kognetiks_ai_summaries_nvidia_settings', 'kognetiks_ai_summaries_nvidia_base_url');
+    register_setting(
+        'kognetiks_ai_summaries_nvidia_settings',
+        'kognetiks_ai_summaries_nvidia_max_tokens',
+        array(
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_nvidia_settings',
+        'kognetiks_ai_summaries_nvidia_temperature',
+        array(
+            'type'              => 'float',
+            'sanitize_callback' => 'floatval',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_nvidia_settings',
+        'kognetiks_ai_summaries_nvidia_top_p',
+        array(
+            'type'              => 'float',
+            'sanitize_callback' => 'floatval',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_nvidia_settings',
+        'kognetiks_ai_summaries_nvidia_base_url',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'esc_url_raw',
+        )
+    );
 
     // Add the settings section
     add_settings_section(

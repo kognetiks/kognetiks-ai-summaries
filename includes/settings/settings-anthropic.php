@@ -209,9 +209,24 @@ function kognetiks_ai_summaries_anthropic_settings_init() {
     );
 
     // Anthropic API Key and Model settings
-    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_api_key');
-    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_model_choice');
-    
+    register_setting(
+        'kognetiks_ai_summaries_anthropic_settings',
+        'kognetiks_ai_summaries_anthropic_api_key',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_anthropic_settings',
+        'kognetiks_ai_summaries_anthropic_model_choice',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
     add_settings_section(
         'kognetiks_ai_summaries_anthropic_model_section',
         'API/Anthropic Settings',
@@ -236,10 +251,41 @@ function kognetiks_ai_summaries_anthropic_settings_init() {
     );
 
     // Advanced Anthropic API settings
-    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_max_tokens');
-    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_temperature');
-    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_top_p');
-    register_setting('kognetiks_ai_summaries_anthropic_settings', 'kognetiks_ai_summaries_anthropic_base_url');
+    register_setting(
+        'kognetiks_ai_summaries_anthropic_settings',
+        'kognetiks_ai_summaries_anthropic_max_tokens',
+        array(
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_anthropic_settings',
+        'kognetiks_ai_summaries_anthropic_temperature',
+        array(
+            'type'              => 'float',
+            'sanitize_callback' => 'floatval',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_anthropic_settings',
+        'kognetiks_ai_summaries_anthropic_top_p',
+        array(
+            'type'              => 'float',
+            'sanitize_callback' => 'floatval',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_anthropic_settings',
+        'kognetiks_ai_summaries_anthropic_base_url',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'esc_url_raw',
+        )
+    );
 
     // Add the settings section
     add_settings_section(

@@ -150,9 +150,6 @@ function kognetiks_ai_summaries_length_callback() {
 // Register the general settings
 function kognetiks_ai_summaries_general_settings_init() {
 
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_general_settings_init');
-
     add_settings_section(
         'kognetiks_ai_summaries_general_settings_section',
         'General Settings',
@@ -160,8 +157,15 @@ function kognetiks_ai_summaries_general_settings_init() {
         'kognetiks_ai_summaries_general_settings'
     );
 
-    // Platform selection
-    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_ai_platform_choice');
+    // Platform selection with sanitization
+    register_setting(
+        'kognetiks_ai_summaries_general_settings',
+        'kognetiks_ai_summaries_ai_platform_choice',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
 
     add_settings_section(
         'kognetiks_ai_summaries_engine_section',
@@ -178,11 +182,26 @@ function kognetiks_ai_summaries_general_settings_init() {
         'kognetiks_ai_summaries_engine_section'
     );
 
-    // Additional Settings
-    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_enabled');
-    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_length');
+    // AI Enabled Setting with sanitization
+    register_setting(
+        'kognetiks_ai_summaries_general_settings',
+        'kognetiks_ai_summaries_enabled',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
 
-    // AI Enabled Section Selection
+    // AI Length Setting with sanitization
+    register_setting(
+        'kognetiks_ai_summaries_general_settings',
+        'kognetiks_ai_summaries_length',
+        array(
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+        )
+    );
+
     add_settings_section(
         'kognetiks_ai_summaries_additional_selections_section',
         'AI Summary Settings',
@@ -205,6 +224,5 @@ function kognetiks_ai_summaries_general_settings_init() {
         'kognetiks_ai_summaries_additional_selections_settings',
         'kognetiks_ai_summaries_additional_selections_section'
     );
-
 }
 add_action('admin_init', 'kognetiks_ai_summaries_general_settings_init');

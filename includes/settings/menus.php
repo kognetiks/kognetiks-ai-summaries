@@ -44,7 +44,7 @@ function kognetiks_ai_summaries_register_menus() {
             'Kognetiks',                            // Menu title
             'manage_options',                       // Capability
             'kognetiks_main_menu',                  // Menu slug
-            'kognetiks_ai_summaries_settings_page',                   // Callback function
+            'kognetiks_ai_summaries_settings_page', // Callback function
             'dashicons-rest-api',                   // Icon
             999                                     // Position
         );
@@ -55,7 +55,7 @@ function kognetiks_ai_summaries_register_menus() {
             'AI Summaries',                         // Menu title
             'manage_options',                       // Capability     
             'kognetiks-ai-summaries',               // Menu slug
-            'kognetiks_ai_summaries_settings_page'                    // Callback function
+            'kognetiks_ai_summaries_settings_page'  // Callback function
         );
 
     } else {
@@ -67,7 +67,7 @@ function kognetiks_ai_summaries_register_menus() {
             'AI Summaries',                         // Menu title
             'manage_options',                       // Capability     
             'kognetiks-ai-summaries',               // Menu slug
-            'kognetiks_ai_summaries_settings_page'                    // Callback function
+            'kognetiks_ai_summaries_settings_page'  // Callback function
         );
 
     }

@@ -13,58 +13,6 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Register Tools settings - Ver 2.0.7
-function kognetiks_ai_summaries_tools_settings_init() {
-
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_tools_settings_init' );
-
-    // Register tools settings
-    register_setting('kognetiks_ai_summaries_tools', 'kognetiks_ai_summaries_options_exporter_extension');
-
-    // Tools Overview
-    add_settings_section(
-        'kognetiks_ai_summaries_tools_overview_section',
-        'Tools Overview',
-        'kognetiks_ai_summaries_tools_overview_section_callback',
-        'kognetiks_ai_summaries_tools_overview'
-    );
-
-    // options_exporter Check Overview
-    add_settings_section(
-        'kognetiks_ai_summaries_options_exporter_tools_section',
-        'Options Exporter Extension',
-        'kognetiks_ai_summaries_options_exporter_tools_section_callback',
-        'kognetiks_ai_summaries_tools'
-    );
-
-    // options_exporter Check Tool
-    add_settings_field(
-        'kognetiks_ai_summaries_options_exporter_extension',
-        'Options Exporter Extension',
-        'kognetiks_ai_summaries_options_exporter_tools_callback',
-        'kognetiks_ai_summaries_tools',
-        'kognetiks_ai_summaries_options_exporter_tools_section'
-    );
-
-    add_settings_section(
-        'kognetiks_ai_summaries_options_exporter_button_section',
-        'Options Exporter',
-        'kognetiks_ai_summaries_options_exporter_button_callback',
-        'kognetiks_ai_summaries_tools_exporter_button'
-    );
-
-    // Manage Error Logs
-    add_settings_section(
-        'kognetiks_ai_summaries_manage_error_logs_section',
-        'Manage Error Logs',
-        'kognetiks_ai_summaries_manage_error_logs_section_callback',
-        'kognetiks_ai_summaries_manage_error_logs'
-    );
-   
-}
-add_action('admin_init', 'kognetiks_ai_summaries_tools_settings_init');
-
 // Add the Tools section
 function kognetiks_ai_summaries_tools_overview_section_callback() {
 
@@ -160,3 +108,63 @@ function kognetiks_ai_summaries_manage_error_logs_section_callback() {
     kognetiks_ai_summaries_manage_error_logs();
 
 }
+
+// Register Tools settings
+function kognetiks_ai_summaries_tools_settings_init() {
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_tools_settings_init' );
+
+    // Register tools settings with sanitization
+    register_setting(
+        'kognetiks_ai_summaries_tools',
+        'kognetiks_ai_summaries_options_exporter_extension',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    // Tools Overview
+    add_settings_section(
+        'kognetiks_ai_summaries_tools_overview_section',
+        'Tools Overview',
+        'kognetiks_ai_summaries_tools_overview_section_callback',
+        'kognetiks_ai_summaries_tools_overview'
+    );
+
+    // Options Exporter Check Overview
+    add_settings_section(
+        'kognetiks_ai_summaries_options_exporter_tools_section',
+        'Options Exporter Extension',
+        'kognetiks_ai_summaries_options_exporter_tools_section_callback',
+        'kognetiks_ai_summaries_tools'
+    );
+
+    // Options Exporter Check Tool
+    add_settings_field(
+        'kognetiks_ai_summaries_options_exporter_extension',
+        'Options Exporter Extension',
+        'kognetiks_ai_summaries_options_exporter_tools_callback',
+        'kognetiks_ai_summaries_tools',
+        'kognetiks_ai_summaries_options_exporter_tools_section'
+    );
+
+    // Options Exporter Button Section
+    add_settings_section(
+        'kognetiks_ai_summaries_options_exporter_button_section',
+        'Options Exporter',
+        'kognetiks_ai_summaries_options_exporter_button_callback',
+        'kognetiks_ai_summaries_tools_exporter_button'
+    );
+
+    // Manage Error Logs
+    add_settings_section(
+        'kognetiks_ai_summaries_manage_error_logs_section',
+        'Manage Error Logs',
+        'kognetiks_ai_summaries_manage_error_logs_section_callback',
+        'kognetiks_ai_summaries_manage_error_logs'
+    );
+
+}
+add_action('admin_init', 'kognetiks_ai_summaries_tools_settings_init');

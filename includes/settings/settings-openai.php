@@ -209,9 +209,24 @@ function kognetiks_ai_summaries_openai_settings_init() {
     );
 
     // OpenAI API Key and Model settings
-    register_setting('kognetiks_ai_summaries_openai_settings', 'kognetiks_ai_summaries_openai_api_key');
-    register_setting('kognetiks_ai_summaries_openai_settings', 'kognetiks_ai_summaries_openai_model_choice');
-    
+    register_setting(
+        'kognetiks_ai_summaries_openai_settings',
+        'kognetiks_ai_summaries_openai_api_key',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_openai_settings',
+        'kognetiks_ai_summaries_openai_model_choice',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
     add_settings_section(
         'kognetiks_ai_summaries_openai_model_section',
         'API/OpenAI Settings',
@@ -236,10 +251,41 @@ function kognetiks_ai_summaries_openai_settings_init() {
     );
 
     // Advanced OpenAI API settings
-    register_setting('kognetiks_ai_summaries_openai_settings', 'kognetiks_ai_summaries_openai_max_tokens');
-    register_setting('kognetiks_ai_summaries_openai_settings', 'kognetiks_ai_summaries_openai_temperature');
-    register_setting('kognetiks_ai_summaries_openai_settings', 'kognetiks_ai_summaries_openai_top_p');
-    register_setting('kognetiks_ai_summaries_openai_settings', 'kognetiks_ai_summaries_openai_base_url');
+    register_setting(
+        'kognetiks_ai_summaries_openai_settings',
+        'kognetiks_ai_summaries_openai_max_tokens',
+        array(
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_openai_settings',
+        'kognetiks_ai_summaries_openai_temperature',
+        array(
+            'type'              => 'float',
+            'sanitize_callback' => 'floatval',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_openai_settings',
+        'kognetiks_ai_summaries_openai_top_p',
+        array(
+            'type'              => 'float',
+            'sanitize_callback' => 'floatval',
+        )
+    );
+
+    register_setting(
+        'kognetiks_ai_summaries_openai_settings',
+        'kognetiks_ai_summaries_openai_base_url',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'esc_url_raw',
+        )
+    );
 
     // Add the settings section
     add_settings_section(

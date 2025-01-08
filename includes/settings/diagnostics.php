@@ -182,10 +182,45 @@ function kognetiks_ai_summaries_diagnostics_settings_init() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_diagnostics_settings_init');
 
-    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_diagnostics');
-    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_custom_error_message');
-    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_suppress_notices');
-    register_setting('kognetiks_ai_summaries_diagnostics', 'kognetiks_ai_summaries_delete_data');
+    // Diagnostics On/Off
+    register_setting(
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_diagnostics',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    // Custom Error Message
+    register_setting(
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_custom_error_message',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    // Suppress Notices
+    register_setting(
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_suppress_notices',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    // Delete Plugin Data on Uninstall
+    register_setting(
+        'kognetiks_ai_summaries_diagnostics',
+        'kognetiks_ai_summaries_delete_data',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
 
     add_settings_section(
         'kognetiks_ai_summaries_diagnostics_overview_section',
@@ -201,7 +236,7 @@ function kognetiks_ai_summaries_diagnostics_settings_init() {
         'kognetiks_ai_summaries_diagnostics_system_settings'
     );
 
-    // Diagnotics API Status
+    // Diagnostics API Status
     add_settings_section(
         'kognetiks_ai_summaries_diagnostics_api_status_section',
         'API Status and Results',
@@ -260,6 +295,5 @@ function kognetiks_ai_summaries_diagnostics_settings_init() {
         'kognetiks_ai_summaries_diagnostics',
         'kognetiks_ai_summaries_diagnostics_section'
     );
-    
 }
 add_action('admin_init', 'kognetiks_ai_summaries_diagnostics_settings_init');
