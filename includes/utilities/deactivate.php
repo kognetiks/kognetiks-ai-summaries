@@ -53,7 +53,7 @@ function kognetiks_ai_summaries_uninstall(){
     global $wp_filesystem;
 
     // Ask if the data should be removed, if not return
-    if (esc_attr(get_option('kognetiks_ai_summaries_delete_data')) != 'Yes') {
+    if (esc_attr(get_option('kognetiks_ai_summaries_delete_data')) != 'yes') {
         return;
     }
 
@@ -63,7 +63,7 @@ function kognetiks_ai_summaries_uninstall(){
     }
 
     // Check for a setting that specifies whether to delete data
-    if (esc_attr(get_option('kognetiks_ai_summaries_delete_data')) == 'Yes') {
+    if (esc_attr(get_option('kognetiks_ai_summaries_delete_data')) == 'yes') {
 
         // Delete AI Summaries options
         // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting Plugin One-off options');
