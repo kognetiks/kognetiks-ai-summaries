@@ -136,9 +136,7 @@ function kognetiks_ai_summaries_error_log($message) {
     // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
 
     // Create the logs directory in the uploads folder
-    $upload = wp_upload_dir();
-    $kognetiks_ai_summaries_logs_dir = $upload['basedir'];
-    $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_logs_dir . '/kognetiks-ai-summaries/' . 'logs/';
+    $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
 
     // Get the current date to create a daily log file
     $current_date = gmdate('Y-m-d');
@@ -174,9 +172,7 @@ function log_kognetiks_ai_summaries_error() {
             // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
 
             // Create the logs directory in the uploads folder
-            $upload = wp_upload_dir();
-            $kognetiks_ai_summaries_logs_dir = $upload['basedir'];
-            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_logs_dir . '/kognetiks-ai-summaries/' . 'logs/';
+            $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
 
             // Get the current date to create a daily log file
             $current_date = gmdate('Y-m-d');

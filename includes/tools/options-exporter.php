@@ -25,17 +25,20 @@ function kognetiks_ai_summaries_download_options_data() {
         wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'kognetiks-ai-summaries'));
     }
 
+    // Option export format choice
+    $output_choice = strtolower(esc_attr(get_option('kognetiks_ai_summaries_options_exporter_extension', 'csv')));
+
     // REMOVE - Ver 1.0.0
     // $kognetiks_ai_summaries_debug_dir_path = $kognetiks_ai_summaries_plugin_dir_path . 'debug/';
     // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_debug_dir_path);
 
     // Create the logs directory in the uploads folder
-    $upload = wp_upload_dir();
-    $kognetiks_ai_summaries_debug_dir = $upload['basedir'];
-    $kognetiks_ai_summaries_debug_dir = $kognetiks_ai_summaries_debug_dir . '/kognetiks-ai-summaries/' . 'debug/';    
-
-    $output_choice = strtolower(esc_attr(get_option('kognetiks_ai_summaries_options_exporter_extension', 'csv')));
+    $kognetiks_ai_summaries_debug_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'debug' );
     $options_file = $kognetiks_ai_summaries_debug_dir . 'kognetiks-ai-summaries-options.' . $output_choice;
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$output_choice: ' . $output_choice);
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$options_file: ' . $options_file);
 
     // Use caching to retrieve options
     $cache_key = 'kognetiks_ai_summaries_options_exporter_options';

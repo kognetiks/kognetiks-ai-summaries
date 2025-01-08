@@ -60,7 +60,7 @@ What's new in Version 1.0.0
 
 ## Support
 
-- [General](settings/settings.md)
+- [General](general/general.md)
 
 - [API/OpenAI Settings](api-settings/api-openai-settings.md)
 
