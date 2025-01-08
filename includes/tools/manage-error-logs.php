@@ -21,10 +21,17 @@ function kognetiks_ai_summaries_manage_error_logs() {
 
     global $kognetiks_ai_summaries_plugin_dir_path;
 
-    $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
+    // REMOVE - Ver 1.0.0
+    // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
 
+    // REMOVE - Ver 1.0.0
     // Ensure the directory and index file exist
-    kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
+    // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
+
+    // Create the logs directory in the uploads folder
+    $upload = wp_upload_dir();
+    $kognetiks_ai_summaries_logs_dir = $upload['basedir'];
+    $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_logs_dir . '/kognetiks-ai-summaries/' . 'logs/';
 
     // Initialize $scanned_dir with a default value
     $scanned_dir = false;
@@ -147,8 +154,15 @@ function kognetiks_ai_summaries_handle_log_actions() {
             }
 
             $file = sanitize_file_name(basename(sanitize_text_field(wp_unslash($_GET['file']))));
-            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-            $file_path = $kognetiks_ai_summaries_logs_dir . $file;
+
+            // REMOVE - Ver 1.0.0
+            // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
+            // $file_path = $kognetiks_ai_summaries_logs_dir . $file;
+
+            // Find the file in the logs directory in the uploads folder
+            $upload = wp_upload_dir();
+            $kognetiks_ai_summaries_logs_dir = $upload['basedir'];
+            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_logs_dir . '/kognetiks-ai-summaries/' . 'logs/' . $file;
 
             if (file_exists($file_path)) {
 
@@ -192,9 +206,16 @@ function kognetiks_ai_summaries_handle_log_actions() {
             }
 
             $file = sanitize_file_name(basename(sanitize_text_field(wp_unslash($_GET['file']))));
-            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-            $file_path = $kognetiks_ai_summaries_logs_dir . $file;
 
+            // REMOVE - Ver 1.0.0
+            // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
+            // $file_path = $kognetiks_ai_summaries_logs_dir . $file;
+
+            // Find the file in the logs directory in the uploads folder
+            $upload = wp_upload_dir();
+            $kognetiks_ai_summaries_logs_dir = $upload['basedir'];
+            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_logs_dir . '/kognetiks-ai-summaries/' . 'logs/' . $file;
+            
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_handle_log_actions - delete_log: ' . $file . ' - File Path: ' . $file_path);
 
@@ -221,8 +242,15 @@ function kognetiks_ai_summaries_handle_log_actions() {
 
             }
 
-            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-            $files = array_diff(scandir($kognetiks_ai_summaries_logs_dir), array('..', '.'));
+            // REMOVE - Ver 1.0.0
+            // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
+            // $files = array_diff(scandir($kognetiks_ai_summaries_logs_dir), array('..', '.'));
+
+            // Find the file in the logs directory in the uploads folder
+            $upload = wp_upload_dir();
+            $kognetiks_ai_summaries_logs_dir = $upload['basedir'];
+            $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_logs_dir . '/kognetiks-ai-summaries/' . 'logs/';
+            $files = array_diff(scandir($kognetiks_ai_summaries_logs_dir), array('..', '.'));            
 
             foreach ($files as $file) {
 
