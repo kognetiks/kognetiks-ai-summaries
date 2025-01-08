@@ -120,6 +120,9 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     global $wpdb;
     global $kognetiks_ai_summaries_error_responses;
 
+    // Check that the table exists, if not create it
+    kognetiks_ai_summaries_create_ai_summary_table();
+
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = 'kognetiks_ai_summaries_lock_' . $pid;
 
@@ -219,6 +222,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
                 // Release the lock
                 delete_transient( $lock_key );
 
+                // Return an error response
                 return $kognetiks_ai_summaries_error_responses[array_rand($kognetiks_ai_summaries_error_responses)];
 
             } else {
@@ -247,7 +251,8 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     
                     // Release the lock
                     delete_transient( $lock_key );
-    
+                    
+                    // Return an error response
                     return $kognetiks_ai_summaries_error_responses[array_rand($kognetiks_ai_summaries_error_responses)];
     
                 } else {
@@ -264,7 +269,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     }
 
     // Get the desired excerpt length from options
-    $ai_summary_length = intval( esc_attr( get_option( 'kognetiks_ai_summaries_ai_summaries_length', 55 ) ) );
+    $ai_summary_length = intval( esc_attr( get_option( 'kognetiks_ai_summaries_length', 55 ) ) );
 
     // Trim the text to the specified number of words without appending '...'
     $trimmed_summary = wp_trim_words( $ai_summary, $ai_summary_length, '' );
@@ -312,7 +317,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
     $content = htmlspecialchars(wp_strip_all_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
 
-    $word_count = esc_attr(get_option('kognetiks_ai_summaries_ai_summaries_length', 55));
+    $word_count = esc_attr(get_option('kognetiks_ai_summaries_length', 55));
 
     // Prepare special instructions if needed
     $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or few words and just return the summary text without stating that it is a summary: ";
@@ -339,7 +344,6 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key'));
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             // $message = $special_instructions . $content;
-            // $response = kognetiks_ai_summaries_nvidia_api_call($api_key, $message);
             $response = kognetiks_ai_summaries_nvidia_api_call($api_key, $content, $special_instructions);
 
             break;
@@ -405,6 +409,11 @@ function kognetiks_ai_summaries_create_ai_summary_table() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_create_ai_summary_table' );
 
     global $wpdb;
+
+    // If table exists, return
+    if ( $wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}kognetiks_ai_summaries'") == "{$wpdb->prefix}kognetiks_ai_summaries" ) {
+        return;
+    }
 
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -648,7 +657,7 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
     // kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_replace_excerpt_with_ai_summary');
 
     // Check if AI summaries are enabled
-    $enabled = esc_attr(get_option('kognetiks_ai_summaries_ai_summaries_enabled', 'Off'));
+    $enabled = esc_attr(get_option('kognetiks_ai_summaries_enabled', 'Off'));
 
     if ($enabled === 'Off') {
 

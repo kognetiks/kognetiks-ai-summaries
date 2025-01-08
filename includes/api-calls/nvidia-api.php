@@ -14,7 +14,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Call the NVIDIA API without trappings
-function kognetiks_ai_summaries_nvidia_api_call($api_key, $message, $context) {
+function kognetiks_ai_summaries_nvidia_api_call($api_key, $message, $context = null) {
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_nvidia_api_call');

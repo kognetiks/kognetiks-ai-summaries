@@ -37,7 +37,7 @@ function kognetiks_ai_summaries_download_options_data() {
 
     if ($options === false) {
         global $wpdb;
-        $options = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE 'ksum%' AND option_name NOT LIKE '%api_key%'", ARRAY_A);
+        $options = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE 'kognetiks_ai_summaries%' AND option_name NOT LIKE '%api_key%'", ARRAY_A);
         wp_cache_set($cache_key, $options);
     }
 

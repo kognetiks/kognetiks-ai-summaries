@@ -94,30 +94,30 @@ function kognetiks_ai_summaries_back_trace($message_type = "NOTICE", $message = 
     // Check for other levels and print messages accordingly
     if ('Error' === $kognetiks_ai_summaries_diagnostics) {
         // Print all types of messages
-        error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-        kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+        error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
+        kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
     } elseif (in_array($kognetiks_ai_summaries_diagnostics, ['Success', 'Failure'])) {
         // Print only SUCCESS and FAILURE messages
         if (in_array($message_type, ['SUCCESS', 'FAILURE'])) {
-            error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
+            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
     } elseif ('Warning' === $kognetiks_ai_summaries_diagnostics) {
         // Print only ERROR and WARNING messages
         if (in_array($message_type, ['ERROR', 'WARNING'])) {
-            error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
+            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
     } elseif ('Notice' === $kognetiks_ai_summaries_diagnostics) {
         // Print ERROR, WARNING, and NOTICE messages
         if (in_array($message_type, ['ERROR', 'WARNING', 'NOTICE'])) {
-            error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+            error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
+            kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
     } elseif ('Debug' === $kognetiks_ai_summaries_diagnostics) {
         // Print all types of messages
-        error_log("[Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
-        kognetiks_ai_summaries_error_log( "[". $date_time ."] [Ksum] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
+        error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
+        kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
     }
 
 }

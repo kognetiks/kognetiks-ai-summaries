@@ -110,33 +110,33 @@ function kognetiks_ai_summaries_additional_selections_callback($args) {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_additional_selections_callback');
 
     if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'OpenAI' && esc_attr(get_option('kognetiks_ai_summaries_openai_api_key')) == '') {
-        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
+        $kognetiks_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'NVIDIA' && esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key')) == '') {
-        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
+        $kognetiks_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Anthropic' && esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key')) == '') {
-        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
+        $kognetiks_ai_summaries_enabled = 'Off';
    } else {
-        $kognetiks_ai_summaries_ai_summaries_enabled = 'Off';
+        $kognetiks_ai_summaries_enabled = 'Off';
     }
 
-    $kognetiks_ai_summaries_ai_summaries_enabled = esc_attr(get_option('kognetiks_ai_summaries_ai_summaries_enabled', 'Off'));
+    $kognetiks_ai_summaries_enabled = esc_attr(get_option('kognetiks_ai_summaries_enabled', 'Off'));
     ?>
-    <select id="kognetiks_ai_summaries_ai_summaries_enabled" name="kognetiks_ai_summaries_ai_summaries_enabled">
-        <option value="On" <?php selected( $kognetiks_ai_summaries_ai_summaries_enabled, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
-        <option value="Off" <?php selected( $kognetiks_ai_summaries_ai_summaries_enabled, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
+    <select id="kognetiks_ai_summaries_enabled" name="kognetiks_ai_summaries_enabled">
+        <option value="On" <?php selected( $kognetiks_ai_summaries_enabled, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
+        <option value="Off" <?php selected( $kognetiks_ai_summaries_enabled, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
     </select>
     <?php    
 }
 
-function kognetiks_ai_summaries_ai_summaries_length_callback() {
+function kognetiks_ai_summaries_length_callback() {
 
     // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_summaries_length_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_length_callback');
 
-    $value = esc_attr(get_option('kognetiks_ai_summaries_ai_summaries_length', 55));
+    $value = esc_attr(get_option('kognetiks_ai_summaries_length', 55));
 
     ?>
-    <select id="kognetiks_ai_summaries_ai_summaries_length" name="kognetiks_ai_summaries_ai_summaries_length">
+    <select id="kognetiks_ai_summaries_length" name="kognetiks_ai_summaries_length">
         <?php
         for ( $i = 1; $i <= 500; $i++ ) {
             echo '<option value="' . esc_attr( $i ) . '" ' . selected( $value, (string) $i, false ) . '>' . esc_html( $i ) . '</option>';
@@ -179,8 +179,8 @@ function kognetiks_ai_summaries_general_settings_init() {
     );
 
     // Additional Settings
-    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_ai_summaries_enabled');
-    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_ai_summaries_length');
+    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_enabled');
+    register_setting('kognetiks_ai_summaries_general_settings', 'kognetiks_ai_summaries_length');
 
     // AI Enabled Section Selection
     add_settings_section(
@@ -191,7 +191,7 @@ function kognetiks_ai_summaries_general_settings_init() {
     );
 
     add_settings_field(
-        'kognetiks_ai_summaries_ai_summaries_enabled',
+        'kognetiks_ai_summaries_enabled',
         'Turn AI Summaries On/Off',
         'kognetiks_ai_summaries_additional_selections_callback',
         'kognetiks_ai_summaries_additional_selections_settings',
@@ -199,9 +199,9 @@ function kognetiks_ai_summaries_general_settings_init() {
     );
 
     add_settings_field(
-        'kognetiks_ai_summaries_ai_summaries_length',
+        'kognetiks_ai_summaries_length',
         'AI Summaries Length (Words)',
-        'kognetiks_ai_summaries_ai_summaries_length_callback',
+        'kognetiks_ai_summaries_length_callback',
         'kognetiks_ai_summaries_additional_selections_settings',
         'kognetiks_ai_summaries_additional_selections_section'
     );

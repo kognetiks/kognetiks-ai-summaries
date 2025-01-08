@@ -65,7 +65,7 @@ function kognetiks_ai_summaries_uninstall(){
         $wpdb->query(
             $wpdb->prepare(
                 "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE %s",
-                'ksum%'
+                'kognetiks_ai_summaries%'
             )
         );      
         // Clear the cache for the deleted options
@@ -89,7 +89,7 @@ function kognetiks_ai_summaries_uninstall(){
         $wpdb->query(
             $wpdb->prepare(
                 "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE %s OR option_name LIKE %s",
-                '_transient_ksum%', '_transient_timeout_ksum%'
+                '_transient_kognetiks_ai_summaries%', '_transient_timeout_kognetiks_ai_summaries%'
             )
         );
         // Clear the cache for the deleted options
@@ -100,7 +100,7 @@ function kognetiks_ai_summaries_uninstall(){
         $crons = _get_cron_array();
         foreach ($crons as $timestamp => $cron) {
             foreach ($cron as $hook => $events) {
-                if (strpos($hook, 'ksum') !== false) {
+                if (strpos($hook, 'kognetiks_ai_summaries') !== false) {
                     foreach ($events as $event) {
                         wp_unschedule_event($timestamp, $hook, $event['args']);
                     }

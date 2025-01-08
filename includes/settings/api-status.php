@@ -62,7 +62,7 @@ function kognetiks_ai_summaries_test_api_status() {
 
         case 'NVIDIA':
 
-            update_option('kognetiks_ai_summaries_nvidia_api_status', 'API Error Type: Status Unknown');
+            update_option('kognetiks_ai_summaries_api_status', 'API Error Type: Status Unknown');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key', 'NOT SET'));
 
             // Model and message for testing
@@ -95,7 +95,7 @@ function kognetiks_ai_summaries_test_api_status() {
 
         case 'Anthropic':
 
-            update_option('kognetiks_ai_summaries_anthropic_api_status', 'API Error Type: Status Unknown');
+            update_option('kognetiks_ai_summaries_api_status', 'API Error Type: Status Unknown');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key', 'NOT SET'));
             
             // Model and message for testing
