@@ -80,12 +80,8 @@ function kognetiks_ai_summaries_uninstall(){
         // Delete AI Summaries tables
         // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting tables');
         // Execute the query
-        $wpdb->query(
-            $wpdb->prepare(
-                "DROP TABLE IF EXISTS %s",
-                $wpdb->prefix . 'kognetiks_ai_summaries_ai_summaries'
-            )
-        );
+        $table_name = $wpdb->prefix . 'kognetiks_ai_summaries_ai_summaries';
+        $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %s", $table_name));
         // Clear the cache for the deleted table
         wp_cache_flush();
 
