@@ -108,6 +108,22 @@ function kognetiks_ai_summaries_uninstall(){
             }
         }
 
+        // Delete the log files, if any
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting log files');
+        $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file('logs');
+        $files = array_diff(scandir($kognetiks_ai_summaries_logs_dir), array('..', '.'));
+        foreach ($files as $file) {
+            unlink($kognetiks_ai_summaries_logs_dir . $file);
+        }
+
+        // Delete the debug files, if any
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting debug files');
+        $kognetiks_ai_summaries_debug_dir = kognetiks_ai_summaries_create_directory_and_index_file('debug');
+        $files = array_diff(scandir($kognetiks_ai_summaries_debug_dir), array('..', '.'));
+        foreach ($files as $file) {
+            unlink($kognetiks_ai_summaries_debug_dir . $file);
+        }
+
     }
 
     // DIAG - Log the uninstall
