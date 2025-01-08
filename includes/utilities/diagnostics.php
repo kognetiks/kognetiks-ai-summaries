@@ -126,14 +126,6 @@ function kognetiks_ai_summaries_back_trace($message_type = "NOTICE", $message = 
 function kognetiks_ai_summaries_error_log($message) {
 
     global $wp_filesystem;
-    global $kognetiks_ai_summaries_plugin_dir_path;
-
-    // REMOVE - Ver 1.0.0
-    // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-
-    // REMOVE - Ver 1.0.0
-    // Ensure the directory and index file exist
-    // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
 
     // Create the logs directory in the uploads folder
     $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
@@ -156,20 +148,12 @@ function kognetiks_ai_summaries_error_log($message) {
 function log_kognetiks_ai_summaries_error() {
 
     global $wp_filesystem;
-    global $kognetiks_ai_summaries_plugin_dir_path;
     
     if (isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'kognetiks_ai_summaries_diagnostics_action')) {
 
         if (isset($_POST['error_message'])) {
 
             $error_message = sanitize_text_field(wp_unslash($_POST['error_message']));
-
-            // REMOVE - Ver 1.0.0
-            // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-
-            // REMOVE - Ver 1.0.0
-            // Ensure the directory and index file exist
-            // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
 
             // Create the logs directory in the uploads folder
             $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );

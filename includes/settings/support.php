@@ -146,7 +146,8 @@ function kognetiks_ai_summaries_support_section_callback() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_support_section_callback' );
 
-    global $kognetiks_ai_summaries_plugin_dir_path, $wp_filesystem;
+    global $kognetiks_ai_summaries_plugin_dir_path;
+    global $wp_filesystem;
     $doc_location = '';
 
     // Check the nonce if either param is set

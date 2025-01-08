@@ -19,15 +19,6 @@ function kognetiks_ai_summaries_manage_error_logs() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_manage_error_logs');
 
-    global $kognetiks_ai_summaries_plugin_dir_path;
-
-    // REMOVE - Ver 1.0.0
-    // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-
-    // REMOVE - Ver 1.0.0
-    // Ensure the directory and index file exist
-    // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_logs_dir);
-
     // Create the logs directory in the uploads folder
     $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
 
@@ -117,7 +108,6 @@ function kognetiks_ai_summaries_handle_log_actions() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_handle_log_actions');
 
     global $wp_filesystem;
-    global $kognetiks_ai_summaries_plugin_dir_path;
 
     if (!isset($_GET['action']) || !isset($_GET['_wpnonce'])) {
 
@@ -152,16 +142,6 @@ function kognetiks_ai_summaries_handle_log_actions() {
             }
 
             $file = sanitize_file_name(basename(sanitize_text_field(wp_unslash($_GET['file']))));
-
-            // REMOVE - Ver 1.0.0
-            // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-            // $file_path = $kognetiks_ai_summaries_logs_dir . $file;
-
-            // REMOVE - Ver 1.0.0
-            // Find the file in the logs directory in the uploads folder
-            // $upload = wp_upload_dir();
-            // $kognetiks_ai_summaries_logs_dir = $upload['basedir'];
-            // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_logs_dir . '/kognetiks-ai-summaries/' . 'logs/' . $file;
 
             // Find the file in the logs directory in the uploads folder
             $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
@@ -209,10 +189,6 @@ function kognetiks_ai_summaries_handle_log_actions() {
             }
 
             $file = sanitize_file_name(basename(sanitize_text_field(wp_unslash($_GET['file']))));
-
-            // REMOVE - Ver 1.0.0
-            // $kognetiks_ai_summaries_logs_dir = $kognetiks_ai_summaries_plugin_dir_path . 'logs/';
-            // $file_path = $kognetiks_ai_summaries_logs_dir . $file;
 
             // Find the file in the logs directory in the uploads folder
             $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );

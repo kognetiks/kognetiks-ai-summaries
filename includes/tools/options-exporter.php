@@ -17,8 +17,8 @@ function kognetiks_ai_summaries_download_options_data() {
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_download_options_data');
+
     global $wp_filesystem;
-    global $kognetiks_ai_summaries_plugin_dir_path;
     global $wpdb;
 
     if (!current_user_can('manage_options')) {
@@ -27,10 +27,6 @@ function kognetiks_ai_summaries_download_options_data() {
 
     // Option export format choice
     $output_choice = strtolower(esc_attr(get_option('kognetiks_ai_summaries_options_exporter_extension', 'csv')));
-
-    // REMOVE - Ver 1.0.0
-    // $kognetiks_ai_summaries_debug_dir_path = $kognetiks_ai_summaries_plugin_dir_path . 'debug/';
-    // kognetiks_ai_summaries_create_directory_and_index_file($kognetiks_ai_summaries_debug_dir_path);
 
     // Create the logs directory in the uploads folder
     $kognetiks_ai_summaries_debug_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'debug' );
