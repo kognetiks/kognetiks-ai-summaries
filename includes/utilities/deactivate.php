@@ -37,7 +37,7 @@ function kognetiks_ai_summaries_admin_notices() {
         echo '<div class="notice notice-warning is-dismissible">
             <p><strong>Kognetiks AI Summaries:</strong> Remember to set your data deletion preferences in the plugin settings if you plan to uninstall the plugin.</p>
         </div>';
-        update_option('kognetiks_ai_summaries_delete_data', 'No');
+        update_option('kognetiks_ai_summaries_delete_data', 'no');
 
     }
 

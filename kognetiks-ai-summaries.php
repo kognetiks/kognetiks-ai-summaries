@@ -343,8 +343,8 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling NVIDIA API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key'));
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
-            // $message = $special_instructions . $content;
-            $response = kognetiks_ai_summaries_nvidia_api_call($api_key, $content, $special_instructions);
+            $message = $special_instructions . $content;
+            $response = kognetiks_ai_summaries_nvidia_api_call($api_key, $message);
 
             break;
 
