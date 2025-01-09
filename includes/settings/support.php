@@ -150,6 +150,10 @@ function kognetiks_ai_summaries_support_section_callback() {
     global $wp_filesystem;
     $doc_location = '';
 
+    // DIAG - Diagnostics
+    // $kognetiks_ai_summaries_plugin_dir_path = plugin_dir_path( __FILE__ );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$kognetiks_ai_summaries_plugin_dir_path: ' . $kognetiks_ai_summaries_plugin_dir_path );
+
     // Check the nonce if either param is set
     // This ensures the GET request is valid and not tampered with
     if ( isset( $_GET['dir'] ) || isset( $_GET['file'] ) ) {
@@ -173,9 +177,16 @@ function kognetiks_ai_summaries_support_section_callback() {
     // Determine the documentation path to load
     if ( ! empty( $dir ) && ! empty( $file ) ) {
         $doc_location = ltrim( $dir, '/' ) . '/' . ltrim( $file, '/' );
+        // May need this option for some virtual servers or local environments
+        // $doc_location = trailingslashit( $kognetiks_ai_summaries_plugin_dir_path ) . 'documentation/' . ltrim( $dir, '/' ) . '/' . ltrim( $file, '/' );
     } elseif ( empty( $dir ) && empty( $file ) ) {
         $doc_location = '/documentation/overview.md';
+        // May need this option for some virtual servers or local environments
+        // $doc_location = trailingslashit( $kognetiks_ai_summaries_plugin_dir_path ) . 'documentation/overview.md';
     }
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$doc_location: ' . $doc_location );
 
     // Validate directory/file combination
     if ( kognetiks_ai_summaries_validate_documentation( $dir, $file ) ) {
@@ -193,6 +204,14 @@ function kognetiks_ai_summaries_support_section_callback() {
 
         // Fallback to overview.md
         $doc_location = $kognetiks_ai_summaries_plugin_dir_path . 'documentation/overview.md';
+
+        // If the file does not exist, display an error message
+        if ( ! kognetiks_ai_summaries_file_exists_in_doc_location( $doc_location ) ) {
+            echo '<script type="text/javascript">';
+            echo 'alert("Documentation is currently not available.");';
+            echo '</script>';
+            return;
+        }
 
     }
 
