@@ -1,6 +1,6 @@
 === Kognetiks AI Summaries ===
 Contributors: Kognetiks
-Tags: AI, Excerpts, Search
+Tags: AI, Excerpts, Search, ChatGPT, Claude
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
 Tested up to: 6.7
 Stable tag: 1.0.0
