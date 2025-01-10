@@ -145,7 +145,7 @@ function kognetiks_ai_summaries_error_log($message) {
 }
 
 // Log plugin errors to the server - Ver 1.0.0
-function log_kognetiks_ai_summaries_error() {
+function kognetiks_ai_summaries_log_error() {
 
     global $wp_filesystem;
     
@@ -192,8 +192,8 @@ function log_kognetiks_ai_summaries_error() {
 
 }
 // Register AJAX actions
-add_action('wp_ajax_log_kognetiks_ai_summaries_error', 'log_kognetiks_ai_summaries_error');
-add_action('wp_ajax_nopriv_log_kognetiks_ai_summaries_error', 'log_kognetiks_ai_summaries_error');
+add_action('wp_ajax_kognetiks_ai_summaries_log_error', 'kognetiks_ai_summaries_log_error');
+add_action('wp_ajax_nopriv_kognetiks_ai_summaries_log_error', 'kognetiks_ai_summaries_log_error');
 
 // Determine if the plugin is installed
 function kognetiks_ai_summaries_get_plugin_version() {

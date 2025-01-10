@@ -17,7 +17,14 @@ if ( ! defined( 'WPINC' ) ) {
 function kognetiks_ai_summaries_support_settings_init() {
 
     // Support settings tab
-    register_setting( 'kognetiks_ai_summaries_support', 'chatgpt_support_key' );
+    register_setting(
+        'kognetiks_ai_summaries_support',
+        'kognetiks_ai_summaries_support_key',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
 
     add_settings_section(
         'kognetiks_ai_summaries_support_section',
@@ -204,14 +211,6 @@ function kognetiks_ai_summaries_support_section_callback() {
 
         // Fallback to overview.md
         $doc_location = $kognetiks_ai_summaries_plugin_dir_path . 'documentation/overview.md';
-
-        // If the file does not exist, display an error message
-        if ( ! kognetiks_ai_summaries_file_exists_in_doc_location( $doc_location ) ) {
-            echo '<script type="text/javascript">';
-            echo 'alert("Documentation is currently not available.");';
-            echo '</script>';
-            return;
-        }
 
     }
 
