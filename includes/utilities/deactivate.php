@@ -77,19 +77,6 @@ function kognetiks_ai_summaries_uninstall(){
         // Clear the cache for the deleted options
         wp_cache_flush();
 
-        // Delete AI Summaries tables
-        // kognetiks_ai_summaries_back_trace('NOTICE', 'Deleting tables');
-        $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
-        // Execute the query to drop the table
-        $wpdb->query(
-            $wpdb->prepare(
-                "DROP TABLE IF EXISTS %s",
-                $table_name
-            )
-        );       
-        // Clear the cache for the deleted table
-        wp_cache_flush();
-
         // Delete transients
         // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Deleting transients');
         // Execute the query
@@ -137,6 +124,30 @@ function kognetiks_ai_summaries_uninstall(){
         $kognetiks_ai_summaries_upload_dir = $kognetiks_ai_summaries_upload_dir . '/kognetiks-ai-summaries';
         $wp_filesystem->rmdir($kognetiks_ai_summaries_upload_dir, true);
 
+        // Delete AI Summaries table
+        global $wpdb;
+
+        // Define the table name
+        $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+
+        // Validate the table name to ensure it meets expected criteria
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table_name)) {
+            // error_log('Unexpected table name: ' . esc_html($table_name));
+            wp_die('Invalid table name: ' . esc_html($table_name));
+        }
+
+        // Verify the table name matches the expected value
+        if ($table_name === $wpdb->prefix . 'kognetiks_ai_summaries') {
+            // Drop the table
+            $wpdb->query("DROP TABLE IF EXISTS {$table_name}");
+
+            // Clear the cache
+            wp_cache_flush();
+        } else {
+            // error_log('Unexpected table name: ' . $table_name);
+            wp_die('Invalid table name: ' . esc_html($table_name));
+        }
+    
     }
 
     // DIAG - Log the uninstall
