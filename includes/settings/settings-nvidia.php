@@ -50,6 +50,28 @@ function kognetiks_ai_summaries_nvidia_api_key_callback($args) {
 
 }
 
+// Hook into the update process for the API key
+add_action('update_option_kognetiks_ai_summaries_nvidia_api_key', 'kognetiks_ai_summaries_process_nvidia_api_key', 10, 2);
+
+// Activate AI Summaries if the API key is valid
+function kognetiks_ai_summaries_process_nvidia_api_key($old_value, $new_value) {
+
+    // Ensure the new value is sanitized
+    $new_value = sanitize_text_field($new_value);
+
+    if (!empty($new_value)) {
+        // Enable summaries if the API key is valid (not empty)
+        update_option('kognetiks_ai_summaries_enabled', 'Off');
+    } else {
+        // Disable summaries if the API key is empty
+        update_option('kognetiks_ai_summaries_enabled', 'On');
+    }
+
+    // Optionally, provide additional logging or actions
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'API key updated. Summaries enabled: ' . (!empty($new_value) ? 'On' : 'Off'));
+
+}
+
 // NVIDIA Model Section Callback
 function kognetiks_ai_summaries_nvidia_model_section_callback($args) {
 
