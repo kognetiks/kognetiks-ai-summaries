@@ -38,27 +38,39 @@ function kognetiks_ai_summaries_settings_page() {
 
     // Check reminderCount in local storage
     $reminderCount = intval(esc_attr(get_option('kognetiks_ai_summaries_reminder_count', 0)));
+    $last_reminder_date = esc_attr(get_option('kognetiks_ai_summaries_last_reminder_date', ''));
     $installation_date = esc_attr(get_option('kognetiks_ai_summaries_installation_date'));
+
     if (!$installation_date) {
         $installation_date = current_time('mysql');
         update_option('kognetiks_ai_summaries_installation_date', $installation_date);
     } else {
         $installation_date = esc_attr($installation_date);
     }
-    // Get the current date.
-    $current_date = new DateTime();
-    // Calculate the difference in days.
-    $install_date = new DateTime($installation_date);
-    $days_since_installation = $install_date->diff($current_date)->days;
 
-    // Show the message only if it has been more than 1 day and less than or equal to 11 days since installation.
-    if ($days_since_installation > 1 && $days_since_installation <= 11 & $reminderCount <= 11) {
+    // Get the current date
+    $current_date = current_time('mysql');
+    $install_date = new DateTime($installation_date);
+    $current_date_obj = new DateTime($current_date);
+    $days_since_installation = $install_date->diff($current_date_obj)->days;
+
+    // Check if the message has already been shown today
+    $today = $current_date_obj->format('Y-m-d');
+    if ($last_reminder_date === $today) {
+        // The message has already been shown today, so skip it
+        return;
+    }
+
+    // Show the message only if it has been more than 1 day and less than or equal to 11 days since installation
+    if ($days_since_installation > 1 && $days_since_installation <= 11) {
         // $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to <a href="https://wordpress.org/support/plugin/kognetiks-ai-summaries/reviews/" target="_blank">rate and review this plugin</a>. Thank you!';
         $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to rate and review this plugin. Thank you!';
         kognetiks_ai_summaries_general_admin_notice($message);
-        // Increment reminderCount and update option
+
+        // Update the last reminder date and increment reminderCount
+        update_option('kognetiks_ai_summaries_last_reminder_date', $today);
         $reminderCount++;
-        update_option('kognetiks_ai_summaries_reminder_count', $reminderCount);        
+        update_option('kognetiks_ai_summaries_reminder_count', $reminderCount);
     }
 
     // Check if the user wants to reset the plugin's settings to default
