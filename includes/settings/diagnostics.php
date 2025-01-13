@@ -148,7 +148,7 @@ function kognetiks_ai_summaries_suppress_notices_callback($args) {
     $kognetiks_ai_summaries_suppress_notices = esc_attr(get_option('kognetiks_ai_summaries_suppress_notices', 'Off'));
 
     ?>
-    <select id="chatgpt_suppress_notices_setting" name = "kognetiks_ai_summaries_suppress_notices">
+    <select id="kognetiks_ai_summaries_suppress_notices_setting" name = "kognetiks_ai_summaries_suppress_notices">
         <option value="On" <?php selected( $kognetiks_ai_summaries_suppress_notices, 'On' ); ?>><?php echo esc_html( 'On' ); ?></option>
         <option value="Off" <?php selected( $kognetiks_ai_summaries_suppress_notices, 'Off' ); ?>><?php echo esc_html( 'Off' ); ?></option>
     </select>
@@ -168,7 +168,7 @@ function kognetiks_ai_summaries_delete_data_callback($args) {
     $kognetiks_ai_summaries_delete_data = esc_attr(get_option('kognetiks_ai_summaries_delete_data', 'no'));
 
     ?>
-    <select id="chatgpt_delete_data_setting" name="kognetiks_ai_summaries_delete_data">
+    <select id="kognetiks_ai_summaries_delete_data_setting" name="kognetiks_ai_summaries_delete_data">
     <option value="no" <?php selected( $kognetiks_ai_summaries_delete_data, 'no' ); ?>><?php echo esc_html( 'DO NOT DELETE' ); ?></option>
     <option value="yes" <?php selected( $kognetiks_ai_summaries_delete_data, 'yes' ); ?>><?php echo esc_html( 'DELETE ALL DATA' ); ?></option>
     </select>

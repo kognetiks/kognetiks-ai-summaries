@@ -2,7 +2,7 @@
 /**
  * Kognetiks AI Summaries - Settings - Support Page
  *
- * This file contains the code for the Chatbot settings page.
+ * This file contains the code for the Kognetiks AI Summaries settings page.
  * It handles the support settings and other parameters.
  *
  * @package kognetiks-ai-summaries

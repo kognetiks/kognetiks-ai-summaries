@@ -6,7 +6,7 @@ The **Kognetiks AI Summaries** plugin requires proper configuration to function 
 
 1. **OpenAI API Key**:
 
-   - **Description**: This field is for your OpenAI API key, which is necessary for the plugin to access the ChatGPT functionality.
+   - **Description**: This field is for your OpenAI API key, which is necessary for the plugin to access the OpenAI API.
    - **How to obtain**: You can get your API key by signing up at [OpenAI's API keys page](https://platform.openai.com/account/api-keys).
    - **Input**: Paste your API key in the provided field.
    

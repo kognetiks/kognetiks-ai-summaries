@@ -8,7 +8,7 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kog
 
 With the **Kognetiks AI Summaries** plugin, your content - whether it’s pages, posts, or other resources - can be automatically summarized by your selected AI Engine, delivering concise, insightful responses to your site visitors.  Here's what you can expect:
 
-- **Enhanced Responses**: Automatically include AI-generated summaries of related links in chatbot replies.  
+- **Enhanced Responses**: Automatically include AI-generated summaries of related links in the Kognetiks Chatbot plugin replies.  
 - **Improved Search Results**: Replace traditional excerpts with AI summaries for a more dynamic search experience.  
 - **Customizable Summary Length**: Set the word count for summaries, from bite-sized insights to detailed overviews.
 

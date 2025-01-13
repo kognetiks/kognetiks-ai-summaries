@@ -6,7 +6,7 @@ The **Kognetiks AI Summaries** plugin requires proper configuration to function 
 
 1. **NVIDIA API Key**:
 
-   - **Description**: This field is for your NVIDIA API key, which is necessary for the plugin to access the ChatGPT functionality.
+   - **Description**: This field is for your NVIDIA API key, which is necessary for the plugin to access the NVIDIA API.
    - **How to obtain**: You can get your API key by signing up at [NVIDIA's API keys page](https://build.nvidia.com/nim).
    - **Input**: Paste your API key in the provided field.
    

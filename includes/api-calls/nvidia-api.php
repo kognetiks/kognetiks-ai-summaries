@@ -32,10 +32,10 @@ function kognetiks_ai_summaries_nvidia_api_call($api_key, $message) {
 
     // Select the NVIDIA Model
     // Get the saved model from the settings or default to "nvidia/llama-3.1-nemotron-51b-instruct"
-    $model = esc_attr(get_option('chatbot_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
+    $model = esc_attr(get_option('kognetiks_ai_summaries_nvidia_model_choice', 'nvidia/llama-3.1-nemotron-51b-instruct'));
  
     // Max tokens
-    $max_tokens = intval(esc_attr(get_option('chatbot_nvidia_max_tokens_setting', '500')));
+    $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_nvidia_max_tokens_setting', '500')));
 
     // Conversation Context - Ver 1.6.1
     $context = esc_attr(get_option('kognetiks_ai_summaries_nvidia_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));

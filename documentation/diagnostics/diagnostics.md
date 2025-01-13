@@ -47,7 +47,7 @@ The Diagnostics Settings allow you to customize the basic behavior the **Kogneti
      Sorry, a brief summary isn't available right now.  Please check back later.
      `
    - **Additional Requirements**:
-     - **Chatbot Diagnostics**: Ensure that the Chatbot Diagnostics setting is turned from `Off` to `Error` to enable the display of custom error messages.
+     - **Kogentiks AI Summaries Diagnostics**: Ensure that the Kognetiks AI Summaries Diagnostics setting is turned from `Off` to `Error` to enable the display of custom error messages.
      - **WordPress Error Logging**: You may also need to turn on WordPress error logging to fully utilize this feature.
 
 3. **Suppress Notices and Warnings**:

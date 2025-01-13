@@ -11,7 +11,7 @@ These tools are briefly described below.
 
 ## Options Exporter
 
-Export the Chatbot options to a file.  This excludes sensitive information such as your API key.
+Export the Kognetiks AI Summaries options to a file.  This excludes sensitive information such as your API key.
 
 ![Options Exporter](options-exporter.png)
 
@@ -19,13 +19,13 @@ Export the Chatbot options to a file.  This excludes sensitive information such 
 
 1. **Download Options Data**:
 
-   - Use the ```Download Options Data``` button to retrieve the chatbot options and download the file.
+   - Use the ```Download Options Data``` button to retrieve the Kognetiks AI Summaries options and download the file.
 
 ---
 
 ## Manage Error Logs:
 
-The Manage Error Logs section provides direct access to the chatbot's unique errors.  If you're experiencing a problem with the chatbot, please check the error logs to see if you can determine what might be the problem.
+The Manage Error Logs section provides direct access to the Kogentiks AI Summaries' unique errors.  If you're experiencing a problem with the Kognetiks AI Summaries, please check the error logs to see if you can determine what might be the problem.
 
 ![Manage Error Logs](manage-error-logs.png)
 

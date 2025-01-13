@@ -6,7 +6,7 @@ The **Kognetiks AI Summaries** plugin requires proper configuration to function 
 
 1. **Anthropic API Key**:
 
-   - **Description**: This field is for your Anthropic API key, which is necessary for the plugin to access the ChatGPT functionality.
+   - **Description**: This field is for your Anthropic API key, which is necessary for the plugin to access the Anthropic's API'.
    - **How to obtain**: You can get your API key by signing up at [Anthropic's API keys page](https://console.anthropic.com/).
    - **Input**: Paste your API key in the provided field.
    

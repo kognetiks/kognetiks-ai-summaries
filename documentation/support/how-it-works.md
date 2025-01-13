@@ -22,7 +22,7 @@ Here’s how it all works, step by step, using the diagram as our guide:
 
 1. **Desktop Computer or Mobile Device**:
 
-   - You, the user, interact with the chatbot using various devices like a desktop computer, a mobile phone, or a tablet.
+   - You, the user, interact with your website using various devices like a desktop computer, a mobile phone, or a tablet.
 
    - You access your website through different applications, such as web browsers (like Chrome or Safari) or client apps.
 
@@ -42,7 +42,7 @@ Here’s how it all works, step by step, using the diagram as our guide:
 
 4. **Components on the Web Server**:
 
-   - **JavaScript and PHP**: These are programming languages that help the chatbot process your request. JavaScript handles things on the user’s side, making sure the plugin responds quickly and smoothly. PHP works on the server side, managing the logic and data processing.
+   - **JavaScript and PHP**: These are programming languages that help the plugin process your request. JavaScript handles things on the user’s side, making sure the plugin responds quickly and smoothly. PHP works on the server side, managing the logic and data processing.
 
    - **SQL Database Server**: This is where the plugin stores and retrieves information. When you visit a page with an excerpt, the plugin will first look to see if an excerpt already is in the database or if not, dispatch a request to generate one.
 
