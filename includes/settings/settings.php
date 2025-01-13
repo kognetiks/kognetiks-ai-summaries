@@ -45,17 +45,20 @@ function kognetiks_ai_summaries_settings_page() {
     } else {
         $installation_date = esc_attr($installation_date);
     }
-    $current_date = current_time('mysql');
-    $days_since_installation = (strtotime($current_date) - strtotime($installation_date)) / (60 * 60 * 24);
+    // Get the current date.
+    $current_date = new DateTime();
+    // Calculate the difference in days.
+    $install_date = new DateTime($installation_date);
+    $days_since_installation = $install_date->diff($current_date)->days;
 
-    if ($days_since_installation <= 10 && $reminderCount < 10) {
+    // Show the message only if it has been more than 1 day and less than or equal to 11 days since installation.
+    if ($days_since_installation > 1 && $days_since_installation <= 11 & $reminderCount <= 11) {
         // $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to <a href="https://wordpress.org/support/plugin/kognetiks-ai-summaries/reviews/" target="_blank">rate and review this plugin</a>. Thank you!';
         $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to rate and review this plugin. Thank you!';
         kognetiks_ai_summaries_general_admin_notice($message);
-
         // Increment reminderCount and update option
         $reminderCount++;
-        update_option('kognetiks_ai_summaries_reminder_count', $reminderCount);
+        update_option('kognetiks_ai_summaries_reminder_count', $reminderCount);        
     }
 
     // Check if the user wants to reset the plugin's settings to default
