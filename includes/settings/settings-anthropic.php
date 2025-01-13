@@ -62,10 +62,10 @@ function kognetiks_ai_summaries_process_anthropic_api_key($old_value, $new_value
 
     if (!empty($new_value)) {
         // Enable summaries if the API key is valid (not empty)
-        update_option('kognetiks_ai_summaries_enabled', 'Off');
+        update_option('kognetiks_ai_summaries_enabled', 'On');
     } else {
         // Disable summaries if the API key is empty
-        update_option('kognetiks_ai_summaries_enabled', 'On');
+        update_option('kognetiks_ai_summaries_enabled', 'Off');
     }
 
     // Optionally, provide additional logging or actions
