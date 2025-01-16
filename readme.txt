@@ -2,8 +2,8 @@
 Contributors: Kognetiks
 Tags: AI, Excerpts, Search, ChatGPT, Claude
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
-Tested up to: 6.7
-Stable tag: 1.0.0
+Tested up to: 6.7.1
+Stable tag: 1.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -114,10 +114,16 @@ WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT
 
 == Changelog ==
 
+= 1.0.1 =
+
+* **TBD**: TBD
+
 = 1.0.0 =
+
 * Initial release.
 
 == Upgrade Notice ==
 
 = 1.0.0 =
+
 * Initial release.
