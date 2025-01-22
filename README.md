@@ -8,6 +8,10 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kog
 
 ## Documentation
 
+## What's new in Version 1.0.2
+
+* **TBD**: TBD
+
 ## What's new in Version 1.0.1
 
 * **DeepSeek API Integration**: Added support for DeepSeek's API to provide advanced conversational capabilities for the chatbot.
