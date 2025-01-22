@@ -13,6 +13,7 @@ This plugin relies on external AI services for generating summaries of your page
 - **OpenAI**: [Terms of Use](https://platform.openai.com/terms) | [Privacy Policy](https://openai.com/policies/privacy-policy/)
 - **NVIDIA**: [Terms of Use](https://www.nvidia.com/en-us/about-nvidia/nv-accounts/) | [Privacy Policy](https://www.nvidia.com/en-us/about-nvidia/privacy-policy/)
 - **Anthropic**: [Terms of Service](https://www.anthropic.com/legal/consumer-terms) | [Privacy Policy](https://docs.anthropic.com/en/docs/legal-center/privacy)
+- **DeepSeek**: [Terms of Use](https://chat.deepseek.com/downloads/DeepSeek%20User%20Agreement.html) | [Privacy Policy](https://chat.deepseek.com/downloads/DeepSeek%20Privacy%20Policy.html)
 
 **IMPORTANT**:
 
@@ -23,6 +24,7 @@ This plugin relies on external AI services for generating summaries of your page
     - [OpenAI API Keys](https://platform.openai.com/account/api-keys)
     - [NVIDIA API Keys](https://developer.nvidia.com/nim)
     - [Anthropic API Keys](https://www.anthropic.com/)
+    - [DeepSeek API Keys](https://platform.deepseek.com/sign_in)
 
 - By entering an API key from the AI provider of your choice and activating the plugin, you:
 

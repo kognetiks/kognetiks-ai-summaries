@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function kognetiks_ai_summaries_prod_trace($message_type = "NOTICE", $message = "No message") {
 
     // Trace production messages to the error log
-    kognetiks_ai_summaries_back_trace($message_type, $message);
+    // kognetiks_ai_summaries_back_trace($message_type, $message);
 
 }
 
