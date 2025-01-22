@@ -25,7 +25,16 @@ function kognetiks_ai_summaries_settings_page() {
 
     // Verify the nonce for tab navigation
     if (isset($_GET['kognetiks_ai_summaries_tab_nonce'])) {
-        check_admin_referer('kognetiks_ai_summaries_tab_navigation', 'kognetiks_ai_summaries_tab_nonce');
+        if (!check_admin_referer('kognetiks_ai_summaries_tab_navigation', 'kognetiks_ai_summaries_tab_nonce')) {
+            // kognetiks_ai_summaries_back_trace( 'ERROR', 'Nonce verification failed.');
+            return;
+        } else {
+            $active_tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'general';
+            // kognetiks_ai_summaries_back_trace( 'WARNING', 'Nonce verification passed. $active_tab: ' . $active_tab);
+        }
+    } else {
+        $active_tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'general';
+        // kognetiks_ai_summaries_back_trace( 'WARNING', 'Nonce verification not required. $active_tab: ' . $active_tab);
     }
 
     $active_tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'general';
@@ -54,23 +63,20 @@ function kognetiks_ai_summaries_settings_page() {
     $current_date_obj = new DateTime($current_date);
     $days_since_installation = $install_date->diff($current_date_obj)->days;
 
-    // Check if the message has already been shown today
-    $today = $current_date_obj->format('Y-m-d');
-    if ($last_reminder_date === $today) {
-        // The message has already been shown today, so skip it
-        return;
-    }
-
     // Show the message only if it has been more than 1 day and less than or equal to 11 days since installation
     if ($days_since_installation > 1 && $days_since_installation <= 11) {
-        // $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to <a href="https://wordpress.org/support/plugin/kognetiks-ai-summaries/reviews/" target="_blank">rate and review this plugin</a>. Thank you!';
-        $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to rate and review this plugin. Thank you!';
-        kognetiks_ai_summaries_general_admin_notice($message);
+        // Check if the message has already been shown today
+        $today = $current_date_obj->format('Y-m-d');
+        if ($last_reminder_date !== $today) {
+            // $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to <a href="https://wordpress.org/support/plugin/kognetiks-ai-summaries/reviews/" target="_blank">rate and review this plugin</a>. Thank you!';
+            $message = 'If you and your visitors are enjoying having AI summaries on your site, please take a moment to rate and review this plugin. Thank you!';
+            kognetiks_ai_summaries_general_admin_notice($message);
 
-        // Update the last reminder date and increment reminderCount
-        update_option('kognetiks_ai_summaries_last_reminder_date', $today);
-        $reminderCount++;
-        update_option('kognetiks_ai_summaries_reminder_count', $reminderCount);
+            // Update the last reminder date and increment reminderCount
+            update_option('kognetiks_ai_summaries_last_reminder_date', $today);
+            $reminderCount++;
+            update_option('kognetiks_ai_summaries_reminder_count', $reminderCount);
+        }
     }
 
     // Check if the user wants to reset the plugin's settings to default
@@ -81,6 +87,9 @@ function kognetiks_ai_summaries_settings_page() {
         kognetiks_ai_summaries_restore_default_settings();
     }
 
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'JUST BEFORE HTML OUTPUT $active_tab: ' . $active_tab);
+
     ?>
     <div class="wrap">
         <h1><span class="dashicons dashicons-text"></span> Kognetiks AI Summaries</h1>
@@ -90,6 +99,7 @@ function kognetiks_ai_summaries_settings_page() {
             <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'OpenAI') { ?><a href="?page=kognetiks-ai-summaries&tab=api_openai" class="nav-tab <?php echo $active_tab == 'api_openai' ? 'nav-tab-active' : ''; ?>">API/OpenAI</a> <?php } ?>
             <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'NVIDIA') { ?><a href="?page=kognetiks-ai-summaries&tab=api_nvidia" class="nav-tab <?php echo $active_tab == 'api_nvidia' ? 'nav-tab-active' : ''; ?>">API/NVIDIA</a> <?php } ?>
             <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Anthropic') { ?><a href="?page=kognetiks-ai-summaries&tab=api_anthropic" class="nav-tab <?php echo $active_tab == 'api_anthropic' ? 'nav-tab-active' : ''; ?>">API/Anthropic</a> <?php } ?>
+            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'DeepSeek') { ?><a href="?page=kognetiks-ai-summaries&tab=api_deepseek" class="nav-tab <?php echo $active_tab == 'api_deepseek' ? 'nav-tab-active' : ''; ?>">API/DeepSeek</a> <?php } ?>
             <a href="?page=kognetiks-ai-summaries&tab=diagnostics" class="nav-tab <?php echo $active_tab == 'diagnostics' ? 'nav-tab-active' : ''; ?>">Diagnostics</a>
             <a href="?page=kognetiks-ai-summaries&tab=tools" class="nav-tab <?php echo $active_tab == 'tools' ? 'nav-tab-active' : ''; ?>">Tools</a>
             <a href="?page=kognetiks-ai-summaries&tab=support" class="nav-tab <?php echo $active_tab == 'support' ? 'nav-tab-active' : ''; ?>">Support</a>
@@ -179,6 +189,25 @@ function kognetiks_ai_summaries_settings_page() {
                 // Advanced Settings
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
                 do_settings_sections('kognetiks_ai_summaries_anthropic_advanced_settings');
+                echo '</div>';
+
+            } elseif ($active_tab == 'api_deepseek' && $kognetiks_ai_summaries_ai_platform_choice == 'DeepSeek') {
+
+                settings_fields('kognetiks_ai_summaries_deepseek_settings');
+
+                // NVIDIA API Settings
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_api_deepseek_general_settings');
+                echo '</div>';
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_deepseek_model_settings');
+                echo '</div>';
+
+                // Advanced Settings
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_deepseek_advanced_settings');
                 echo '</div>';
 
 

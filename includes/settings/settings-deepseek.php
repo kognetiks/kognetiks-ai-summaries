@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function kognetiks_ai_summaries_deepseek_general_settings_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_general_settings_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_general_settings_callback');
 
     $nonce = wp_create_nonce('kognetiks_ai_summaries_support_nonce');
     $url = add_query_arg(array(
@@ -41,7 +41,7 @@ function kognetiks_ai_summaries_deepseek_general_settings_callback($args) {
 function kognetiks_ai_summaries_deepseek_api_key_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_api_key_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_api_key_callback');
 
     $api_key = esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key'));
     ?>
@@ -57,7 +57,7 @@ add_action('update_option_kognetiks_ai_summaries_deepseek_api_key', 'kognetiks_a
 function kognetiks_ai_summaries_process_deepseek_api_key($old_value, $new_value) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_process_deepseek_api_key');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_process_deepseek_api_key');
 
     // Ensure the new value is sanitized
     $new_value = sanitize_text_field($new_value);
@@ -79,7 +79,7 @@ function kognetiks_ai_summaries_process_deepseek_api_key($old_value, $new_value)
 function kognetiks_ai_summaries_deepseek_model_section_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_model_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_model_section_callback');
 
     ?>
     <p>Configure the settings for the plugin by selecting the DeepSeek model you would like to use. The plugin will use the selected model to generate responses.</p>
@@ -91,7 +91,7 @@ function kognetiks_ai_summaries_deepseek_model_section_callback($args) {
 function kognetiks_ai_summaries_deepseek_model_choice_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_model_choice_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_model_choice_callback');
   
     // Get the saved kognetiks_ai_summaries_deepseek_model_choice value or default to "deepseek-chat"
     $model_choice = esc_attr(get_option('kognetiks_ai_summaries_deepseek_model_choice', 'deepseek-chat'));
@@ -100,11 +100,11 @@ function kognetiks_ai_summaries_deepseek_model_choice_callback($args) {
     $models = kognetiks_ai_summaries_deepseek_get_models();
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
 
     // Limit the models to chat models
     $models = array_filter($models, function($model) {
-        return strpos($model['id'], 'nvidia') !== false;
+        return strpos($model['id'], 'deepseek') !== false;
     });
 
     // Check for errors
@@ -134,7 +134,7 @@ function kognetiks_ai_summaries_deepseek_model_choice_callback($args) {
 function kognetiks_ai_summaries_deepseek_advanced_settings_section_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_advanced_settings_section_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_advanced_settings_section_callback');
 
     ?>
     <p>Configure the advanced settings for the plugin. These settings are optional and can be used to fine-tune the plugin's behavior.</p>
@@ -146,7 +146,7 @@ function kognetiks_ai_summaries_deepseek_advanced_settings_section_callback($arg
 function kognetiks_ai_summaries_deepseek_max_tokens_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_max_tokens_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_max_tokens_callback');
 
     // Get the saved kognetiks_ai_summaries_openai_max_tokens_setting or default to 500
     $max_tokens = esc_attr(get_option('kognetiks_ai_summaries_deepseek_max_tokens', '500'));
@@ -168,7 +168,7 @@ function kognetiks_ai_summaries_deepseek_max_tokens_callback($args) {
 function kognetiks_ai_summaries_deepseek_temperature_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_temperature_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_temperature_callback');
 
     $temperature = esc_attr(get_option('kognetiks_ai_summaries_deepseek_temperature', 0.50));
 
@@ -188,7 +188,7 @@ function kognetiks_ai_summaries_deepseek_temperature_callback($args) {
 function kognetiks_ai_summaries_deepseek_top_p_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_top_p_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_top_p_callback');
 
     $top_p = esc_attr(get_option('kognetiks_ai_summaries_deepseek_top_p', 1.00));
 
@@ -208,7 +208,7 @@ function kognetiks_ai_summaries_deepseek_top_p_callback($args) {
 function kognetiks_ai_summaries_deepseek_base_url_callback($args) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_base_url_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_base_url_callback');
 
     $kognetiks_ai_summaries_deepseek_base_url = esc_attr(get_option('kognetiks_ai_summaries_deepseek_base_url', kognetiks_ai_summaries_get_api_base_url()));
 
@@ -222,7 +222,7 @@ function kognetiks_ai_summaries_deepseek_base_url_callback($args) {
 function kognetiks_ai_summaries_deepseek_settings_init() {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_settings_init');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_settings_init');
 
     // Add the settings section
     add_settings_section(

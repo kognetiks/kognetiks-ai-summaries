@@ -210,6 +210,27 @@ function kognetiks_ai_summaries_anthropic_get_models() {
 
 }
 
+// Function to get the Model names from DeepSeek API
+function kognetiks_ai_summaries_deepseek_get_models() {
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_get_models');
+
+    // Default model list
+    $default_model_list = array(
+        array(
+            'id' => 'deepseek-chat',
+            'object' => 'model',
+            'created' => 20251022,
+            'owned_by' => 'deepseek'
+        ),
+    );
+
+    // DeepSeek API does not have an endpoint for models
+    return $default_model_list;
+
+}
+
 // Base URL for API Calls
 function kognetiks_ai_summaries_get_api_base_url() {
 
@@ -230,6 +251,10 @@ function kognetiks_ai_summaries_get_api_base_url() {
 
         case 'Anthropic':
             return esc_attr(get_option('kognetiks_ai_summaries_anthropic_base_url', 'https://api.anthropic.com/v1'));
+            break;
+
+        case 'DeepSeek':
+            return esc_attr(get_option('kognetiks_ai_summaries_deepseek_base_url', 'https://api.deepseek.com'));
             break;
 
         default:
@@ -269,6 +294,13 @@ function kognetiks_ai_summaries_get_chat_completions_api_url() {
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: Anthropic API' );
             return kognetiks_ai_summaries_get_api_base_url() . "/messages";
+            break;
+
+        case 'DeepSeek':
+
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: DeepSeek API' );
+            return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
             break;
 
         default:

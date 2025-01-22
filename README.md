@@ -6,6 +6,13 @@ Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for cr
 
 Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
 
+## Documentation
+
+## What's new in Version 1.0.1
+
+* **DeepSeek API Integration**: Added support for DeepSeek's API to provide advanced conversational capabilities for the chatbot.
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.0.
+
 ## External Services
 
 This plugin relies on external AI services for generating summaries of your pages and posts. It sends your content to a third-party AI provider for summarization. Once summarized, the summary excerpt is stored locally in your database and is not regenerated again unless there has been a change indicated by the modification date of your content. By using this plugin, you agree to abide by each service’s terms of service and privacy policy:
@@ -34,6 +41,19 @@ This plugin relies on external AI services for generating summaries of your page
 
 **NOTE**: If no API key is provided, or if communication with the selected service fails, the plugin will not generate summaries.
 
+## License
+
+- License: GPLv3 or later
+- License URI: https://www.gnu.org/licenses/gpl-3.0.html
+
+## Support
+
+💬 Looking for **plugin support**, please visit [https://kognetiks.com/plugin-support/](https://kognetiks.com/plugin-support/).
+
 ## Disclaimer
 
 WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, and related trademarks are the property of their respective owners. Kognetiks is an independent entity and is not affiliated with, endorsed by, or sponsored by WordPress Foundation, OpenAI, NVIDIA, Anthropic or DeepSeek.
+
+## Thank you for using Kognetiks AI Summaries
+
+Visit us at [Kognetiks.com](https://kognetiks.com/) for more information.

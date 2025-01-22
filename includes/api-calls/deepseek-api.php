@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
 
     // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_deepseek_api_call');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_api_call');
 
     global $kognetiks_ai_summaries_error_responses;
 
@@ -25,9 +25,12 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     // $api_url = 'https://api.deepseek.com/chat/completions';
     $api_url = kognetiks_ai_summaries_get_chat_completions_api_url();
 
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$api_url: ' . $api_url);
+
     $headers = array(
-        'Authorization' => 'Bearer ' . $api_key,
         'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $api_key,
     );
 
     // Select the DeepSeek Model
@@ -47,7 +50,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_top_p', '1.0')));
  
     // Added Role, System, Content Static Variable - Ver 1.6.0
-    $body = array(
+    $body = json_encode(array(
         'model' => $model,
         'max_tokens' => $max_tokens,
         'messages' => array(
@@ -61,18 +64,17 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
             ),
         ),
         'stream' => false,
-    );
+    ));
 
-    $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_timeout_setting', '240')));
+    $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_timeout_setting', 240)));
 
     // DIAG - Diagnostics - Ver 2.2.2
-    // back_trace( 'NOTICE', '$body: ' . $body);
+    // back_trace( 'NOTICE', '$body: ' . print_r($body, true));
 
     // Convert the body array to JSON
     $body_json = wp_json_encode($body);
 
-    // DIAG Diagnostics - Ver 1.6.1
-    // back_trace( 'NOTICE', '$storedc: ' . $chatbot_chatgpt_kn_conversation_context);
+    // DIAG Diagnostics - Ver 1.0.1
     // back_trace( 'NOTICE', '$context: ' . $context);
     // back_trace( 'NOTICE', '$message: ' . $message);  
 
@@ -88,12 +90,15 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     
         // DIAG - Diagnostics
         prod_trace('ERROR', 'Error: ' . $response->get_error_message());
-        return isset($errorResponses['api_error']) ? $errorResponses['api_error'] : 'An API error occurred.';
+        return 'An API error occurred.';
     
     }
     
     // Retrieve and Decode Response
     $response_body = json_decode(wp_remote_retrieve_body($response));
+
+    // DIAG - Diagnostics
+    // back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
     
     // Handle API Errors
     if (isset($response_body->error)) {
@@ -109,7 +114,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     }
 
     // DIAG - Diagnostics - Ver 1.8.1
-    // back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
+    // back_trace( 'NOTICE', 'deepseek-api $response_body: ' . print_r($response_body, true));
     
     // Access response content properly
     if (isset($response_body->choices[0]->message->content) && !empty($response_body->choices[0]->message->content)) {

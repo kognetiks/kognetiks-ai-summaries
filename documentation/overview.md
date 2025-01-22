@@ -44,11 +44,10 @@ This plugin relies on external AI services for generating summaries of your page
 
 **NOTE**: If no API key is provided, or if communication with the selected service fails, the plugin will not generate summaries.
 
-## What's New in Version 1.0.0
+## What's New in Version 1.0.1
 
-What's new in Version 1.0.0
-
-- It's a new plugin!!!
+* **DeepSeek API Integration**: Added support for DeepSeek's API to provide advanced conversational capabilities for the chatbot.
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.0.
 
 ## Quick Start
 

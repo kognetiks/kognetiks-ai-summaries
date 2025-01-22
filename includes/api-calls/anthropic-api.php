@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function kognetiks_ai_summaries_anthropic_api_call($api_key, $message) {
 
     // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_anthropic_api_call');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_api_call');
 
     global $kognetiks_ai_summaries_error_responses;
 

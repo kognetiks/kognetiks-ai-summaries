@@ -100,7 +100,7 @@ add_action('upgrader_process_complete', 'kognetiks_ai_summaries_upgrade_complete
 function kognetiks_ai_summaries_enqueue_admin_scripts() {
 
     // DiAG - Diagnostics
-    kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_enqueue_admin_scripts');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_enqueue_admin_scripts');
 
     global $kognetiks_ai_summaries_plugin_version;
 
@@ -117,7 +117,7 @@ add_action('admin_enqueue_scripts', 'kognetiks_ai_summaries_enqueue_admin_script
 function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_generate_ai_summary' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_generate_ai_summary' );
 
     global $wpdb;
     global $kognetiks_ai_summaries_error_responses;
@@ -319,7 +319,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_generate_ai_summary_api' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_generate_ai_summary_api' );
 
     $content = htmlspecialchars(wp_strip_all_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
@@ -372,6 +372,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_deepseek_api_call($api_key, $message);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Response: ' . print_r($response, true));
 
             break;
             
@@ -423,7 +424,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
 function kognetiks_ai_summaries_create_ai_summary_table() {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_create_ai_summary_table' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_create_ai_summary_table' );
 
     global $wpdb;
 
@@ -457,7 +458,7 @@ function kognetiks_ai_summaries_create_ai_summary_table() {
 function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_insert_ai_summary' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_insert_ai_summary' );
 
     global $wpdb;
 
@@ -498,7 +499,7 @@ function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modi
 function kognetiks_ai_summaries_ai_summary_exists( $pid ) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_summary_exists' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_summary_exists' );
 
     global $wpdb;
    
@@ -547,7 +548,7 @@ function kognetiks_ai_summaries_ai_summary_exists( $pid ) {
 function kognetiks_ai_summaries_delete_ai_summary( $pid ) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_delete_ai_summary' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_delete_ai_summary' );
 
     global $wpdb;
 
@@ -569,7 +570,7 @@ function kognetiks_ai_summaries_delete_ai_summary( $pid ) {
 function kognetiks_ai_summaries_ai_summary_is_stale( $pid ) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_summary_is_stale' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_summary_is_stale' );
 
     global $wpdb;
            
@@ -644,7 +645,7 @@ function kognetiks_ai_summaries_ai_summary_is_stale( $pid ) {
 function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modified ) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_update_ai_summary' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_update_ai_summary' );
 
     global $wpdb;
     
@@ -671,7 +672,7 @@ function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modi
 function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_replace_excerpt_with_ai_summary');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_replace_excerpt_with_ai_summary');
 
     // Check if AI summaries are enabled
     $enabled = esc_attr(get_option('kognetiks_ai_summaries_enabled', 'Off'));
@@ -679,13 +680,13 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
     if ($enabled === 'Off') {
 
         // DIAG - Diagnostics
-        // kognetiks_ai_summaries_back_trace('NOTICE', 'AI summaries are DISABLED');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summaries are DISABLED');
         return $excerpt; // Return the default excerpt
 
     } else {
 
         // DIAG - Diagnostics
-        // kognetiks_ai_summaries_back_trace('NOTICE', 'AI summaries are ENABLED');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summaries are ENABLED');
 
     }
 

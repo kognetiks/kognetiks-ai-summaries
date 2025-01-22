@@ -118,7 +118,8 @@ WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, and relate
 
 = 1.0.1 =
 
-* **TBD**: TBD
+* **DeepSeek API Integration**: Added support for DeepSeek's API to provide advanced conversational capabilities for the chatbot.
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.0.
 
 = 1.0.0 =
 
