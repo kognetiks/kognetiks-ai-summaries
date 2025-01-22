@@ -50,7 +50,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_top_p', '1.0')));
  
     // Added Role, System, Content Static Variable - Ver 1.6.0
-    $body = json_encode(array(
+    $body = wp_json_encode(array(
         'model' => $model,
         'max_tokens' => $max_tokens,
         'messages' => array(
