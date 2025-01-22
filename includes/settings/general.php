@@ -73,6 +73,11 @@ function kognetiks_ai_summaries_ai_platform_choice_callback($args) {
         $kognetiks_ai_summaries_ai_platform_choice = 'Anthropic';
         update_option('kognetiks_ai_summaries_ai_platform_choice', 'Anthropic');
 
+    } else if ($kognetiks_ai_summaries_ai_platform_choice == 'DeepSeek') {
+
+        $kognetiks_ai_summaries_ai_platform_choice = 'DeepSeek';
+        update_option('kognetiks_ai_summaries_ai_platform_choice', 'DeepSeek');
+
     } else {
 
         $kognetiks_ai_summaries_ai_platform_choice = 'OpenAI';
@@ -85,6 +90,7 @@ function kognetiks_ai_summaries_ai_platform_choice_callback($args) {
         <option value="OpenAI" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'OpenAI' ); ?>><?php echo esc_html( 'OpenAI' ); ?></option>
         <option value="NVIDIA" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'NVIDIA' ); ?>><?php echo esc_html( 'NVIDIA' ); ?></option>
         <option value="Anthropic" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'Anthropic' ); ?>><?php echo esc_html( 'Anthropic' ); ?></option>
+        <option value="DeepSeek" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'DeepSeek' ); ?>><?php echo esc_html( 'DeepSeek' ); ?></option>
     </select>
     <?php
 
@@ -115,7 +121,9 @@ function kognetiks_ai_summaries_additional_selections_callback($args) {
         $kognetiks_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Anthropic' && esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key')) == '') {
         $kognetiks_ai_summaries_enabled = 'Off';
-   } else {
+    } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'DeepSeek' && esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key')) == '') {
+        $kognetiks_ai_summaries_enabled = 'Off';
+    } else {
         $kognetiks_ai_summaries_enabled = 'Off';
     }
 

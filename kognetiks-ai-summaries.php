@@ -3,13 +3,13 @@
  * Plugin Name: Kognetiks AI Summaries
  * Plugin URI:  https://github.com/kognetiks/kognetiks-ai-summaries
  * Description: This simple plugin adds an AI powered summaries of posts and page excerpts.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Kognetiks.com
  * Author URI:  https://www.kognetiks.com
  * License:     GPLv3 or later
  * License URI: https://www.gnu.org/licenses/gpl-30.html
  * 
- * Copyright (c) 2024 Stephen Howell
+ * Copyright (c) 2024-2025 Stephen Howell
  *  
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU
  * General Public License version 3, as published by the Free Software Foundation. You may NOT assume
@@ -31,7 +31,7 @@ $kognetiks_ai_summaries_plugin_name = 'kognetiks-ai-summaries';
 
 // Globals for plugin version
 global $kognetiks_ai_summaries_plugin_version;
-$kognetiks_ai_summaries_plugin_version = '1.0.0';
+$kognetiks_ai_summaries_plugin_version = '1.0.1';
 
 // Plugin directory path
 global $kognetiks_ai_summaries_plugin_dir_path;
@@ -48,6 +48,7 @@ global $wpdb;
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/nvidia-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/openai-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/deepseek-api.php';
 
 // Include the necessary files - Settings files
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-status.php';
@@ -57,6 +58,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/menus.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-anthropic.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-deepseek.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/tools.php';
@@ -98,7 +100,7 @@ add_action('upgrader_process_complete', 'kognetiks_ai_summaries_upgrade_complete
 function kognetiks_ai_summaries_enqueue_admin_scripts() {
 
     // DiAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_enqueue_admin_scripts');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_enqueue_admin_scripts');
 
     global $kognetiks_ai_summaries_plugin_version;
 
@@ -186,6 +188,11 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
         case 'Anthropic':
 
             $model = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+            break;
+
+        case 'DeepSeek':
+
+            $model = esc_attr(get_option('kognetiks_ai_summaries_deepseek_model_choice', 'deepseek-chat'));
             break;
 
         default:
@@ -355,6 +362,17 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_anthropic_api_call($api_key, $message);
+
+            break;
+
+        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'DeepSeek'):
+
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling DeepSeek API');
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key'));
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
+            $message = $special_instructions . $content;
+            $response = kognetiks_ai_summaries_deepseek_api_call($api_key, $message);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Response: ' . print_r($response, true));
 
             break;
             
@@ -654,7 +672,7 @@ function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modi
 function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
     // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace('NOTICE', 'kognetiks_ai_summaries_replace_excerpt_with_ai_summary');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_replace_excerpt_with_ai_summary');
 
     // Check if AI summaries are enabled
     $enabled = esc_attr(get_option('kognetiks_ai_summaries_enabled', 'Off'));
@@ -662,13 +680,13 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
     if ($enabled === 'Off') {
 
         // DIAG - Diagnostics
-        // kognetiks_ai_summaries_back_trace('NOTICE', 'AI summaries are DISABLED');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summaries are DISABLED');
         return $excerpt; // Return the default excerpt
 
     } else {
 
         // DIAG - Diagnostics
-        // kognetiks_ai_summaries_back_trace('NOTICE', 'AI summaries are ENABLED');
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summaries are ENABLED');
 
     }
 
