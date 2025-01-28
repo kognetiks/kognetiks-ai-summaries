@@ -145,8 +145,8 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     set_transient( $lock_key, true, 30 );
 
     // Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'Generating AI summary' );
-    kognetiks_ai_summaries_back_trace( 'NOTICE', '$pid: ' . $pid );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Generating AI summary' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$pid: ' . $pid );
 
      // Fetch and sanitize the content
      $cache_key = 'kognetiks_ai_summaries_post_' . $pid;
@@ -246,17 +246,17 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
             // Generate the AI categories
             $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
             // DIAG - Diagnostics
-            kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
 
             // Add the categories to the post
             kognetiks_ai_summaries_add_categories($pid, $ai_categories);
 
             // // Generate the AI tags
             $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
-            // // DIAG - Diagnostics
-            kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
 
-            // // Add the tags to the post
+            // Add the tags to the post
             kognetiks_ai_summaries_add_tags($pid, $ai_tags);
 
             break;
@@ -292,7 +292,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
                 // Generate the AI categories            
                 $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
                 // DIAG - Diagnostics
-                kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
+                // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
 
                 // Add the categories to the post
                 kognetiks_ai_summaries_add_categories($pid, $ai_categories);
@@ -300,7 +300,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
                 // Generate the AI tags
                 $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
                 // DIAG - Diagnostics
-                kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
+                // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
 
                 // Add the tags to the post
                 kognetiks_ai_summaries_add_tags($pid, $ai_tags);

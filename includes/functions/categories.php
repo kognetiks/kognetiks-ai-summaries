@@ -32,10 +32,10 @@ function kognetiks_ai_summaries_get_categories($post_id) {
 function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_add_categories');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_add_categories');
 
     if (empty($post_id) || empty($categories_string) || !is_string($categories_string)) {
-        kognetiks_ai_summaries_back_trace('ERROR', 'Invalid input: Post ID or categories string is missing/incorrect');
+        // kognetiks_ai_summaries_back_trace('ERROR', 'Invalid input: Post ID or categories string is missing/incorrect');
         return;
     }
 
@@ -54,7 +54,7 @@ function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
             $term = wp_insert_term($category_name, 'category');
             
             if (is_wp_error($term)) {
-                kognetiks_ai_summaries_back_trace('ERROR', 'Error creating category: ' . $category_name . '. Error: ' . $term->get_error_message());
+                // kognetiks_ai_summaries_back_trace('ERROR', 'Error creating category: ' . $category_name . '. Error: ' . $term->get_error_message());
                 continue;
             }
         }
@@ -67,9 +67,9 @@ function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
     $results = wp_set_post_terms($post_id, $category_ids, 'category');
 
     if (is_wp_error($results)) {
-        kognetiks_ai_summaries_back_trace('ERROR', 'Error linking categories to post ID: ' . $post_id . '. Error: ' . $results->get_error_message());
+        kognetiks_ai_summaries_prod_trace('ERROR', 'Error linking categories to post ID: ' . $post_id . '. Error: ' . $results->get_error_message());
     } else {
-        kognetiks_ai_summaries_back_trace('NOTICE', 'Successfully added categories to post ID: ' . $post_id);
+        // kognetiks_ai_summaries_back_trace('NOTICE', 'Successfully added categories to post ID: ' . $post_id);
     }
 
 }

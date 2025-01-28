@@ -43,7 +43,7 @@ function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
 
     // Validate input
     if (empty($post_id) || empty($tags_string)) {
-        kognetiks_ai_summaries_back_trace('ERROR', 'Invalid input: Post ID or tags are missing');
+        // kognetiks_ai_summaries_back_trace('ERROR', 'Invalid input: Post ID or tags are missing');
         return;
     }
 
@@ -52,7 +52,7 @@ function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
     $tags = array_map('ucwords', $tags);
 
     if (empty($tags)) {
-        kognetiks_ai_summaries_back_trace('ERROR', 'No valid tags provided after processing');
+        // kognetiks_ai_summaries_back_trace('ERROR', 'No valid tags provided after processing');
         return;
     }
 
@@ -60,9 +60,9 @@ function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
     $results = wp_set_post_tags($post_id, $tags);
 
     if (is_wp_error($results)) {
-        kognetiks_ai_summaries_back_trace('ERROR', 'Error adding tags to post ID: ' . $post_id . '. Error: ' . $results->get_error_message());
+        kognetiks_ai_summaries_prod_trace('ERROR', 'Error adding tags to post ID: ' . $post_id . '. Error: ' . $results->get_error_message());
     } else {
-        kognetiks_ai_summaries_back_trace('NOTICE', 'Successfully added tags to post ID: ' . $post_id);
+        // kognetiks_ai_summaries_back_trace('NOTICE', 'Successfully added tags to post ID: ' . $post_id);
     }
 }
 
