@@ -44,6 +44,10 @@ $kognetiks_ai_summaries_plugin_dir_url = plugin_dir_url( __FILE__ );
 // Declare globals
 global $wpdb;
 
+// Include the main functions
+require_once plugin_dir_path( __FILE__ ) . 'includes/functions/tags.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/functions/categories.php';
+
 // Include the necessary files - Main files
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/nvidia-api.php';
@@ -141,8 +145,8 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     set_transient( $lock_key, true, 30 );
 
     // Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Generating AI summary' );
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$pid: ' . $pid );
+    kognetiks_ai_summaries_back_trace( 'NOTICE', 'Generating AI summary' );
+    kognetiks_ai_summaries_back_trace( 'NOTICE', '$pid: ' . $pid );
 
      // Fetch and sanitize the content
      $cache_key = 'kognetiks_ai_summaries_post_' . $pid;
@@ -239,6 +243,22 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
             }
 
+            // Generate the AI categories
+            $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
+            // DIAG - Diagnostics
+            kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
+
+            // Add the categories to the post
+            kognetiks_ai_summaries_add_categories($pid, $ai_categories);
+
+            // // Generate the AI tags
+            $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
+            // // DIAG - Diagnostics
+            kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
+
+            // // Add the tags to the post
+            kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+
             break;
 
         default:
@@ -269,9 +289,24 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
                 }
 
-            }
+                // Generate the AI categories            
+                $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
+                // DIAG - Diagnostics
+                kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
 
-            break;
+                // Add the categories to the post
+                kognetiks_ai_summaries_add_categories($pid, $ai_categories);
+
+                // Generate the AI tags
+                $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
+                // DIAG - Diagnostics
+                kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
+
+                // Add the tags to the post
+                kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+
+                break;
+            }
 
     }
 
@@ -316,7 +351,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 }
 
 // Generate an AI summary using the appropriate API
-function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
+function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type = 'summary' ) {
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_generate_ai_summary_api' );
@@ -324,10 +359,39 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
     $content = htmlspecialchars(wp_strip_all_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
 
-    $word_count = esc_attr(get_option('kognetiks_ai_summaries_length', 55));
+    switch ( $type ) {
 
-    // Prepare special instructions if needed
-    $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or few words and just return the summary text without stating that it is a summary: ";
+        case 'summary':
+
+            // Get the desired word count from options
+            $word_count = esc_attr(get_option('kognetiks_ai_summaries_length', 55));
+
+            // Prepare special instructions if needed
+            $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or fewer words and just return the summary text without stating that it is a summary: ";
+
+            break;
+
+        case 'categories':
+
+            // Get the desired category count from options
+            $category_count = esc_attr(get_option('kognetiks_ai_summaries_category_count', 3));
+
+            // Prepare special instructions if needed
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $category_count . " one-word (no compound words) categories or fewer and just return the three categories seperated by commas with stating that these are the categories: ";
+
+            break;
+
+        case 'tags':
+
+            // Get the desired tag count from options
+            $tag_count = esc_attr(get_option('kognetiks_ai_summaries_tag_count', 3));
+
+            // Prepare special instructions if needed
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $tag_count . " one-word (no compound words) tags or fewer and just return the three tags seperated by commas with stating that these are the tags: ";
+
+            break;
+
+    }
 
     // Update the platform choice
     $kognetiks_ai_summaries_ai_platform_choice = esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice'));

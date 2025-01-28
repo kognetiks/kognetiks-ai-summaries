@@ -216,15 +216,75 @@ function kognetiks_ai_summaries_deepseek_get_models() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_get_models');
 
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key'));
+
     // Default model list
     $default_model_list = array(
         array(
             'id' => 'deepseek-chat',
             'object' => 'model',
-            'created' => 20251022,
+            'created' => null,
             'owned_by' => 'deepseek'
         ),
     );
+        
+    // Check if the API key is empty
+    if (empty($api_key)) {
+
+        return $default_model_list;
+
+    }
+
+    // Set the API URL
+    $deepseek_models_url = esc_attr(get_option('kognetiks_ai_summaries_deepseek_base_url', kognetiks_ai_summaries_get_api_base_url()));
+    $deepseek_models_url = rtrim($deepseek_models_url, '/') . '/models';
+
+    // Set headers
+    $args = array(
+        'headers' => array(
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $api_key,
+        ),
+    );
+
+    // Perform the request
+    $response = wp_remote_get($deepseek_models_url, $args);
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace('NOTICE', '$response: ' . print_r($response, true));
+    
+    // Check for errors in the response
+    if (is_wp_error($response)) {
+
+        return $default_model_list;
+
+    }
+
+    // Decode the JSON response
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    // Check if the response is valid and contains data
+    if (isset($data['data']) && is_array($data['data'])) {
+        $default_model_list = array_map(function($model) {
+            return array(
+                'id' => $model['id'],
+                'object' => $model['object'],
+                'created' => null, // Assuming 'created' is not provided in the response
+                'owned_by' => $model['owned_by']
+            );
+        }, $data['data']);
+    } else {
+        // Handle the case where the response is not valid
+        $default_model_list = array(
+            array(
+                'id' => 'deepseek-chat',
+                'object' => 'model',
+                'created' => null,
+                'owned_by' => 'deepseek'
+            ),
+        );
+    }
 
     // DeepSeek API does not have an endpoint for models
     return $default_model_list;
