@@ -291,6 +291,50 @@ function kognetiks_ai_summaries_deepseek_get_models() {
 
 }
 
+// Fetch the local models
+function kognetiks_ai_summaries_local_get_models() {
+    
+    // DiAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'chatbot_local_get_models');
+
+    // Set the API URL
+    $api_url = esc_attr(get_option('chatbot_local_base_url','http://127.0.0.1:1337/v1')) . '/models';
+
+    // Send the request
+    $response = wp_remote_get($api_url, array(
+        'headers' => array(
+            'Content-Type' => 'application/json',
+        ),
+    ));
+
+    // Check for errors
+    if (is_wp_error($response)) {
+        $error_message = $response->get_error_message();
+        // Log the error
+        prod_trace( 'ERROR', $error_message);
+        // Return a default model in teh $models array
+        $models = array('llama3.2-3b-instruct');
+        return $models;
+    }
+
+    // Get the response body
+    $response_body = json_decode(wp_remote_retrieve_body($response), true);
+
+    // DiAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
+
+    // For each model in the $response_body, add the model to return array
+    $models = array();
+    foreach ($response_body['data'] as $model) {
+        if (isset($model['status']) && $model['status'] == 'downloaded') {
+            $models[] = $model['id'];
+        }
+    }
+
+    return $models;
+    
+}
+
 // Base URL for API Calls
 function kognetiks_ai_summaries_get_api_base_url() {
 
@@ -315,6 +359,10 @@ function kognetiks_ai_summaries_get_api_base_url() {
 
         case 'DeepSeek':
             return esc_attr(get_option('kognetiks_ai_summaries_deepseek_base_url', 'https://api.deepseek.com'));
+            break;
+
+        case 'Local':
+            return esc_attr(get_option('kognetiks_ai_summaries_local_base_url', 'http://127.0.0.1:1337/v1'));
             break;
 
         default:
@@ -360,6 +408,13 @@ function kognetiks_ai_summaries_get_chat_completions_api_url() {
 
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: DeepSeek API' );
+            return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
+            break;
+
+        case 'Local':
+
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: Local API' );
             return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
             break;
 

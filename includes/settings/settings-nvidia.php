@@ -190,7 +190,7 @@ function kognetiks_ai_summaries_nvidia_top_p_callback($args) {
     $top_p = esc_attr(get_option('kognetiks_ai_summaries_nvidia_top_p', 1.00));
 
     ?>
-    <select id="kognetiks_ai_summaries_open_aitop_p" name="kognetiks_ai_summaries_nvidia_top_p">
+    <select id="kognetiks_ai_summaries_nvidia_top_p" name="kognetiks_ai_summaries_nvidia_top_p">
         <?php
         for ($i = 0.01; $i <= 1.01; $i += 0.01) {
             echo '<option value="' . esc_attr($i) . '" ' . selected($top_p, (string)$i) . '>' . esc_html($i) . '</option>';

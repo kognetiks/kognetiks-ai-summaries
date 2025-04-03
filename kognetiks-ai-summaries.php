@@ -50,9 +50,10 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/functions/categories.php';
 
 // Include the necessary files - Main files
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/deepseek-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/local-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/nvidia-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/openai-api.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/deepseek-api.php';
 
 // Include the necessary files - Settings files
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-status.php';
@@ -60,9 +61,10 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/menus.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-anthropic.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-deepseek.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-local.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-deepseek.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/tools.php';
@@ -197,6 +199,11 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
         case 'DeepSeek':
 
             $model = esc_attr(get_option('kognetiks_ai_summaries_deepseek_model_choice', 'deepseek-chat'));
+            break;
+
+        case 'Local':
+
+            $model = esc_attr(get_option('kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct'));
             break;
 
         default:
@@ -397,9 +404,9 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
     $kognetiks_ai_summaries_ai_platform_choice = esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice'));
 
     // Call the appropriate API based on the model
-    switch (true) {
+    switch ($kognetiks_ai_summaries_ai_platform_choice) {
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'OpenAI'):
+        case 'OpenAI':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling OpenAI API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_openai_api_key'));
@@ -409,7 +416,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             break;
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'NVIDIA'):
+        case 'NVIDIA':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling NVIDIA API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key'));
@@ -419,7 +426,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             break;
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'Anthropic'):
+        case 'Anthropic':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Anthropic API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key'));
@@ -429,17 +436,28 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             break;
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'DeepSeek'):
+        case 'DeepSeek':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling DeepSeek API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key'));
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_deepseek_api_call($api_key, $message);
-            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Response: ' . print_r($response, true));
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
 
             break;
-            
+
+        case 'Local':
+
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Local API');
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_local_api_key'));
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
+            $message = $special_instructions . $content;
+            $response = kognetiks_ai_summaries_local_api_call($api_key, $message);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
+
+            break;
+
         default:
 
             // DIAG - Diagnostics
@@ -523,6 +541,9 @@ function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modi
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_insert_ai_summary' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$pid: ' . $pid );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$post_modified: ' . $post_modified );
 
     global $wpdb;
 

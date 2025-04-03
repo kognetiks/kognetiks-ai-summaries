@@ -41,7 +41,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_max_tokens_setting', '1024')));
 
     // Conversation Context - Ver 1.6.1
-    $context = esc_attr(get_option('kognetiks_ai_summaries_deepseek_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
+    $context = sanitize_text_field(esc_attr(get_option('kognetiks_ai_summaries_deepseek_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.')));
 
     // Temperature - Ver 2.1.8
     $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_temperature', '0.5')));
@@ -69,14 +69,14 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_timeout_setting', 240)));
 
     // DIAG - Diagnostics - Ver 2.2.2
-    // back_trace( 'NOTICE', '$body: ' . print_r($body, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$body: ' . print_r($body, true));
 
     // Convert the body array to JSON
     $body_json = wp_json_encode($body);
 
     // DIAG Diagnostics - Ver 1.0.1
-    // back_trace( 'NOTICE', '$context: ' . $context);
-    // back_trace( 'NOTICE', '$message: ' . $message);  
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$context: ' . $context);
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$message: ' . $message);  
 
     // API Call
     $response = wp_remote_post($api_url, array(
@@ -98,7 +98,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     $response_body = json_decode(wp_remote_retrieve_body($response));
 
     // DIAG - Diagnostics
-    // back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
     
     // Handle API Errors
     if (isset($response_body->error)) {
@@ -114,7 +114,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     }
 
     // DIAG - Diagnostics - Ver 1.8.1
-    // back_trace( 'NOTICE', 'deepseek-api $response_body: ' . print_r($response_body, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'deepseek-api $response_body: ' . print_r($response_body, true));
     
     // Access response content properly
     if (isset($response_body->choices[0]->message->content) && !empty($response_body->choices[0]->message->content)) {

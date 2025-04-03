@@ -34,7 +34,7 @@ function kognetiks_ai_summaries_anthropic_api_call($api_key, $message) {
     // Options
     $model = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
     $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_max_tokens_setting', 500)));
-    $context = sanitize_text_field(esc_attr(get_option('kognetiks_ai_summaries_anthropic_conversation_context', '')));
+    $context = sanitize_text_field(esc_attr(get_option('kognetiks_ai_summaries_anthropic_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.')));
     $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_temperature', 0.5)));
     $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_top_p', 1.0)));
     $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_anthropic_timeout_setting', 240)));
