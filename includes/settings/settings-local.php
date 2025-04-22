@@ -45,6 +45,9 @@ function kognetiks_ai_summaries_local_api_key_callback($args) {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_local_api_key_callback');
 
     $api_key = esc_attr(get_option('kognetiks_ai_summaries_local_api_key'));
+    // Decrypt the API key - Ver 2.2.6
+    $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+
     ?>
     <input type="password" id="kognetiks_ai_summaries_local_api_key" name="kognetiks_ai_summaries_local_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
     <?php
@@ -238,7 +241,7 @@ function kognetiks_ai_summaries_local_settings_init() {
         'kognetiks_ai_summaries_local_api_key',
         array(
             'type'              => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
+            'sanitize_callback' => 'kognetiks_ai_summaries_sanitize_api_key',
         )
     );
 

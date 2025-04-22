@@ -100,6 +100,7 @@ function kognetiks_ai_summaries_settings_page() {
             <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'NVIDIA') { ?><a href="?page=kognetiks-ai-summaries&tab=api_nvidia" class="nav-tab <?php echo $active_tab == 'api_nvidia' ? 'nav-tab-active' : ''; ?>">API/NVIDIA</a> <?php } ?>
             <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Anthropic') { ?><a href="?page=kognetiks-ai-summaries&tab=api_anthropic" class="nav-tab <?php echo $active_tab == 'api_anthropic' ? 'nav-tab-active' : ''; ?>">API/Anthropic</a> <?php } ?>
             <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'DeepSeek') { ?><a href="?page=kognetiks-ai-summaries&tab=api_deepseek" class="nav-tab <?php echo $active_tab == 'api_deepseek' ? 'nav-tab-active' : ''; ?>">API/DeepSeek</a> <?php } ?>
+            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Mistral') { ?><a href="?page=kognetiks-ai-summaries&tab=api_mistral" class="nav-tab <?php echo $active_tab == 'api_mistral' ? 'nav-tab-active' : ''; ?>">API/Mistral</a> <?php } ?>
             <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Local') { ?><a href="?page=kognetiks-ai-summaries&tab=api_local" class="nav-tab <?php echo $active_tab == 'api_local' ? 'nav-tab-active' : ''; ?>">API/Local</a> <?php } ?>
             <a href="?page=kognetiks-ai-summaries&tab=diagnostics" class="nav-tab <?php echo $active_tab == 'diagnostics' ? 'nav-tab-active' : ''; ?>">Diagnostics</a>
             <a href="?page=kognetiks-ai-summaries&tab=tools" class="nav-tab <?php echo $active_tab == 'tools' ? 'nav-tab-active' : ''; ?>">Tools</a>
@@ -210,6 +211,24 @@ function kognetiks_ai_summaries_settings_page() {
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
                 do_settings_sections('kognetiks_ai_summaries_deepseek_advanced_settings');
                 echo '</div>';
+
+            } elseif ($active_tab == 'api_mistral' && $kognetiks_ai_summaries_ai_platform_choice == 'Mistral') {
+
+                settings_fields('kognetiks_ai_summaries_mistral_settings');
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_api_mistral_general_settings');
+                echo '</div>';
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_mistral_model_settings');
+                echo '</div>';
+
+                // Advanced Settings
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_mistral_advanced_settings');
+                echo '</div>';
+
 
             } elseif ($active_tab == 'api_local' && $kognetiks_ai_summaries_ai_platform_choice == 'Local') {
 

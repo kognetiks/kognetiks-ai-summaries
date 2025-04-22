@@ -27,11 +27,6 @@ function kognetiks_ai_summaries_local_api_call($api_key, $message) {
     // Start the model
     kognetiks_ai_summaries_local_start_model();
 
-    // API key for the local server - Typically not needed
-    $api_key = esc_attr(get_option('kognetiks_ai_summaries_local_api_key', ''));
-    // Decrypt the API key - Ver 2.2.6
-    // $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
-
     $headers = array(
         'Authorization' => 'Bearer ' . $api_key,
         'Content-Type'  => 'application/json',

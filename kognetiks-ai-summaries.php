@@ -51,6 +51,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/functions/categories.php';
 // Include the necessary files - Main files
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/deepseek-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/mistral-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/local-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/nvidia-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/openai-api.php';
@@ -63,6 +64,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/menus.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-anthropic.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-deepseek.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-local.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-mistral.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
@@ -77,6 +79,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/tools/options-exporter.php'
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/deactivate.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/globals.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/keyguard.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/links.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/models.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/notices.php';
@@ -199,6 +202,11 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
         case 'DeepSeek':
 
             $model = esc_attr(get_option('kognetiks_ai_summaries_deepseek_model_choice', 'deepseek-chat'));
+            break;
+
+        case 'Mistral':
+
+            $model = esc_attr(get_option('kognetiks_ai_summaries_mistral_model_choice', 'mistral-small-latest'));
             break;
 
         case 'Local':
@@ -410,6 +418,8 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling OpenAI API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_openai_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_openai_api_call($api_key, $message);
@@ -420,6 +430,8 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling NVIDIA API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_nvidia_api_call($api_key, $message);
@@ -430,6 +442,8 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Anthropic API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_anthropic_api_call($api_key, $message);
@@ -440,9 +454,24 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling DeepSeek API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_deepseek_api_call($api_key, $message);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
+
+            break;
+
+        case 'Mistral':
+
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Mistral API');
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_mistral_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
+            $message = $special_instructions . $content;
+            $response = kognetiks_ai_summaries_mistral_api_call($api_key, $message);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
 
             break;
@@ -451,6 +480,8 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Local API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_local_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_local_api_call($api_key, $message);
