@@ -308,7 +308,7 @@ function kognetiks_ai_summaries_mistral_get_models() {
         array(
             'id' => 'mistral-small-2503',
             'object' => 'model',
-            'created' => 1745343144,
+            'created' => 1745356399,
             'owned_by' => 'mistralai',
             'capabilities' => array(
                 'completion_chat' => 1,
@@ -367,7 +367,7 @@ function kognetiks_ai_summaries_mistral_get_models() {
     $data = json_decode($body, true);
 
     // DIAG - Diagnostics
-    kognetiks_ai_summaries_back_trace( 'NOTICE', '$data: ' . print_r($data, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$data: ' . print_r($data, true));
 
     // Check if the response is valid and contains data
     if (isset($data['data']) && is_array($data['data'])) {
@@ -385,7 +385,7 @@ function kognetiks_ai_summaries_mistral_get_models() {
             array(
                 'id' => 'mistral-small-2503',
                 'object' => 'model',
-                'created' => 1745343144,
+                'created' => 1745356399,
                 'owned_by' => 'mistralai',
                 'capabilities' => array(
                     'completion_chat' => 1,
