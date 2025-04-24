@@ -24,6 +24,7 @@ This plugin relies on external AI services for generating summaries of your page
 - **NVIDIA**: [Terms of Use](https://www.nvidia.com/en-us/about-nvidia/nv-accounts/) | [Privacy Policy](https://www.nvidia.com/en-us/about-nvidia/privacy-policy/)
 - **Anthropic**: [Terms of Service](https://www.anthropic.com/legal/consumer-terms) | [Privacy Policy](https://docs.anthropic.com/en/docs/legal-center/privacy)
 - **DeepSeek**: [Terms of Use](https://chat.deepseek.com/downloads/DeepSeek%20User%20Agreement.html) | [Privacy Policy](https://chat.deepseek.com/downloads/DeepSeek%20Privacy%20Policy.html)
+- **Mistral**: [Terms of Service](https://mistral.ai/terms#terms-of-service) | [Privacy Policy](https://mistral.ai/terms#privacy-policy)
 
 **IMPORTANT**:
 
@@ -35,6 +36,7 @@ This plugin relies on external AI services for generating summaries of your page
     - [NVIDIA API Keys](https://developer.nvidia.com/nim)
     - [Anthropic API Keys](https://www.anthropic.com/)
     - [DeepSeek API Keys](https://platform.deepseek.com/sign_in)
+    - [Mistral API Keys](https://console.mistral.ai/api-keys)
 
 - By entering an API key from the AI provider of your choice and activating the plugin, you:
 
@@ -43,6 +45,12 @@ This plugin relies on external AI services for generating summaries of your page
     - Acknowledge that your data, including text submitted, may be transferred to and processed by the AI platform.
 
 **NOTE**: If no API key is provided, or if communication with the selected service fails, the plugin will not generate summaries.
+
+## What's New in Version 1.0.2
+
+* **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for the chatbot.
+* **Local AI Server**: Added support for a local AI server to generate summaries using JAN.AI and Hugging Face GGUF models.
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.1.
 
 ## What's New in Version 1.0.1
 
@@ -70,6 +78,8 @@ This plugin relies on external AI services for generating summaries of your page
 - [API/Anthropic Settings](api-settings/api-anthropic-settings.md)
 
 - [API/DeepSeek Settings](api-settings/api-deepseek-settings.md)
+
+- [API/Mistral Settings](api-settings/api-deepseek-settings.md)
 
 - [Diagnostics](diagnostics/diagnostics.md)
 

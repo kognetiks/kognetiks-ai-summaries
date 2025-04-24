@@ -3,7 +3,7 @@
  * Plugin Name: Kognetiks AI Summaries
  * Plugin URI:  https://github.com/kognetiks/kognetiks-ai-summaries
  * Description: This simple plugin adds an AI powered summaries of posts and page excerpts.
- * Version:     1.0.1
+ * Version:     1.0.2
  * Author:      Kognetiks.com
  * Author URI:  https://www.kognetiks.com
  * License:     GPLv3 or later
@@ -31,7 +31,7 @@ $kognetiks_ai_summaries_plugin_name = 'kognetiks-ai-summaries';
 
 // Globals for plugin version
 global $kognetiks_ai_summaries_plugin_version;
-$kognetiks_ai_summaries_plugin_version = '1.0.1';
+$kognetiks_ai_summaries_plugin_version = '1.0.2';
 
 // Plugin directory path
 global $kognetiks_ai_summaries_plugin_dir_path;
@@ -44,11 +44,17 @@ $kognetiks_ai_summaries_plugin_dir_url = plugin_dir_url( __FILE__ );
 // Declare globals
 global $wpdb;
 
+// Include the main functions
+require_once plugin_dir_path( __FILE__ ) . 'includes/functions/tags.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/functions/categories.php';
+
 // Include the necessary files - Main files
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/deepseek-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/mistral-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/local-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/nvidia-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/openai-api.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/deepseek-api.php';
 
 // Include the necessary files - Settings files
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/api-status.php';
@@ -56,9 +62,11 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/menus.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-anthropic.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-deepseek.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-local.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-mistral.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-deepseek.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/tools.php';
@@ -71,6 +79,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/tools/options-exporter.php'
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/deactivate.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/diagnostics.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/globals.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/keyguard.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/links.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/models.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utilities/notices.php';
@@ -195,6 +204,16 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
             $model = esc_attr(get_option('kognetiks_ai_summaries_deepseek_model_choice', 'deepseek-chat'));
             break;
 
+        case 'Mistral':
+
+            $model = esc_attr(get_option('kognetiks_ai_summaries_mistral_model_choice', 'mistral-small-latest'));
+            break;
+
+        case 'Local':
+
+            $model = esc_attr(get_option('kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct'));
+            break;
+
         default:
 
             $model = null; // No model selected
@@ -239,6 +258,22 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
             }
 
+            // Generate the AI categories
+            $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
+
+            // Add the categories to the post
+            kognetiks_ai_summaries_add_categories($pid, $ai_categories);
+
+            // // Generate the AI tags
+            $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
+
+            // Add the tags to the post
+            kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+
             break;
 
         default:
@@ -269,9 +304,24 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
                 }
 
-            }
+                // Generate the AI categories            
+                $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
+                // DIAG - Diagnostics
+                // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
 
-            break;
+                // Add the categories to the post
+                kognetiks_ai_summaries_add_categories($pid, $ai_categories);
+
+                // Generate the AI tags
+                $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
+                // DIAG - Diagnostics
+                // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
+
+                // Add the tags to the post
+                kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+
+                break;
+            }
 
     }
 
@@ -316,7 +366,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 }
 
 // Generate an AI summary using the appropriate API
-function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
+function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type = 'summary' ) {
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_generate_ai_summary_api' );
@@ -324,58 +374,121 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content ) {
     $content = htmlspecialchars(wp_strip_all_tags($content), ENT_QUOTES, 'UTF-8');
     $content = preg_replace('/\s+/', ' ', $content);
 
-    $word_count = esc_attr(get_option('kognetiks_ai_summaries_length', 55));
+    switch ( $type ) {
 
-    // Prepare special instructions if needed
-    $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or few words and just return the summary text without stating that it is a summary: ";
+        case 'summary':
+
+            // Get the desired word count from options
+            $word_count = esc_attr(get_option('kognetiks_ai_summaries_length', 55));
+
+            // Prepare special instructions if needed
+            $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or fewer words and just return the summary text without stating that it is a summary: ";
+
+            break;
+
+        case 'categories':
+
+            // Get the desired category count from options
+            $category_count = esc_attr(get_option('kognetiks_ai_summaries_category_count', 3));
+
+            // Prepare special instructions if needed
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $category_count . " one-word (no compound words) categories or fewer and just return the three categories seperated by commas with stating that these are the categories: ";
+
+            break;
+
+        case 'tags':
+
+            // Get the desired tag count from options
+            $tag_count = esc_attr(get_option('kognetiks_ai_summaries_tag_count', 3));
+
+            // Prepare special instructions if needed
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $tag_count . " one-word (no compound words) tags or fewer and just return the three tags seperated by commas with stating that these are the tags: ";
+
+            break;
+
+    }
 
     // Update the platform choice
     $kognetiks_ai_summaries_ai_platform_choice = esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice'));
 
     // Call the appropriate API based on the model
-    switch (true) {
+    switch ($kognetiks_ai_summaries_ai_platform_choice) {
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'OpenAI'):
+        case 'OpenAI':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling OpenAI API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_openai_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_openai_api_call($api_key, $message);
 
             break;
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'NVIDIA'):
+        case 'NVIDIA':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling NVIDIA API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_nvidia_api_call($api_key, $message);
 
             break;
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'Anthropic'):
+        case 'Anthropic':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Anthropic API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_anthropic_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_anthropic_api_call($api_key, $message);
 
             break;
 
-        case str_starts_with($kognetiks_ai_summaries_ai_platform_choice, 'DeepSeek'):
+        case 'DeepSeek':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling DeepSeek API');
             $api_key = esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
             $message = $special_instructions . $content;
             $response = kognetiks_ai_summaries_deepseek_api_call($api_key, $message);
-            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Response: ' . print_r($response, true));
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
 
             break;
-            
+
+        case 'Mistral':
+
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Mistral API');
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_mistral_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
+            $message = $special_instructions . $content;
+            $response = kognetiks_ai_summaries_mistral_api_call($api_key, $message);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
+
+            break;
+
+        case 'Local':
+
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Local API');
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_local_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
+            $message = $special_instructions . $content;
+            $response = kognetiks_ai_summaries_local_api_call($api_key, $message);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
+
+            break;
+
         default:
 
             // DIAG - Diagnostics
@@ -459,6 +572,9 @@ function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modi
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_insert_ai_summary' );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$pid: ' . $pid );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$post_modified: ' . $post_modified );
 
     global $wpdb;
 

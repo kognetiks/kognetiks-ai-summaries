@@ -1,8 +1,8 @@
 <?php
 /**
- * Kognetiks AI Summaries - DeepSeek API - Ver 1.0.1
+ * Kognetiks AI Summaries - Mistral API - Ver 1.0.1
  *
- * This file contains the code for the DeepSeek API calls.
+ * This file contains the code for the Mistral API calls.
  *
  * 
  * @package kognetiks-ai-summaries
@@ -13,16 +13,16 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Call the DeepSeek API without trappings
-function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
+// Call the Mistral API without trappings
+function kognetiks_ai_summaries_mistral_api_call($api_key, $message) {
 
     // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_api_call');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_mistral_api_call');
 
     global $kognetiks_ai_summaries_error_responses;
 
-    // The current DeepSeek API URL endpoint for chat completions
-    // $api_url = 'https://api.deepseek.com/chat/completions';
+    // The current Mistral API URL endpoint for chat completions
+    // $api_url = 'https://api.mistral.com/chat/completions';
     $api_url = kognetiks_ai_summaries_get_chat_completions_api_url();
 
     // DIAG - Diagnostics
@@ -33,21 +33,21 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
         'Authorization' => 'Bearer ' . $api_key,
     );
 
-    // Select the DeepSeek Model
-    // Get the saved model from the settings or default to "deepseek-chat"
-    $model = esc_attr(get_option('kognetiks_ai_summaries_deepseek_model_choice', 'deepseek-chat'));
+    // Select the Mistral Model
+    // Get the saved model from the settings or default to "mistral-small-latest"
+    $model = esc_attr(get_option('kognetiks_ai_summaries_mistral_model_choice', 'mistral-small-latest'));
  
     // Max tokens
-    $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_max_tokens_setting', '1024')));
+    $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_mistral_max_tokens_setting', '1024')));
 
     // Conversation Context - Ver 1.6.1
-    $context = sanitize_text_field(esc_attr(get_option('kognetiks_ai_summaries_deepseek_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.')));
+    $context = sanitize_text_field(esc_attr(get_option('kognetiks_ai_summaries_mistral_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.')));
 
     // Temperature - Ver 2.1.8
-    $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_temperature', '0.5')));
+    $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_mistral_temperature', '0.5')));
 
     // Top P - Ver 2.1.8
-    $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_top_p', '1.0')));
+    $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_mistral_top_p', '1.0')));
  
     // Added Role, System, Content Static Variable - Ver 1.6.0
     $body = wp_json_encode(array(
@@ -66,7 +66,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
         'stream' => false,
     ));
 
-    $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_deepseek_timeout_setting', 240)));
+    $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_mistral_timeout_setting', 240)));
 
     // DIAG - Diagnostics - Ver 2.2.2
     // kognetiks_ai_summaries_back_trace( 'NOTICE', '$body: ' . print_r($body, true));
@@ -114,7 +114,7 @@ function kognetiks_ai_summaries_deepseek_api_call($api_key, $message) {
     }
 
     // DIAG - Diagnostics - Ver 1.8.1
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'deepseek-api $response_body: ' . print_r($response_body, true));
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'mistral-api $response_body: ' . print_r($response_body, true));
     
     // Access response content properly
     if (isset($response_body->choices[0]->message->content) && !empty($response_body->choices[0]->message->content)) {

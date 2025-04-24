@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 function kognetiks_ai_summaries_prod_trace($message_type = "NOTICE", $message = "No message") {
 
     // Trace production messages to the error log
-    // kognetiks_ai_summaries_back_trace($message_type, $message);
+    kognetiks_ai_summaries_back_trace($message_type, $message);
 
 }
 
@@ -60,7 +60,8 @@ function kognetiks_ai_summaries_back_trace($message_type = "NOTICE", $message = 
     }
 
     $backtrace = debug_backtrace();
-    $caller = isset($backtrace[1]) ? $backtrace[1] : null; // Get the second element from the backtrace array
+    // $caller = isset($backtrace[1]) ? $backtrace[1] : null; // Get the second element from the backtrace array
+    $caller = isset($backtrace[0]) ? $backtrace[0] : null; // Get the second element from the backtrace array
 
     if ($caller) {
         $file = isset($caller['file']) ? basename($caller['file']) : 'unknown';

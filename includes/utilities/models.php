@@ -20,6 +20,8 @@ function kognetiks_ai_summaries_openai_get_models() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_openai_get_models');
 
     $api_key = esc_attr(get_option('kognetiks_ai_summaries_openai_api_key'));
+    // Decrypt the API key - Ver 2.2.6
+    $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
 
     // Default model list
     $default_model_list = array(
@@ -96,6 +98,8 @@ function kognetiks_ai_summaries_nvidia_get_models() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_nvidia_get_models');
 
     $api_key = esc_attr(get_option('kognetiks_ai_summaries_nvidia_api_key'));
+    // Decrypt the API key - Ver 2.2.6
+    $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
 
     // Default model list
     $default_model_list = array(
@@ -216,19 +220,239 @@ function kognetiks_ai_summaries_deepseek_get_models() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_deepseek_get_models');
 
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key'));
+    // Decrypt the API key - Ver 2.2.6
+    $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+
     // Default model list
     $default_model_list = array(
         array(
             'id' => 'deepseek-chat',
             'object' => 'model',
-            'created' => 20251022,
+            'created' => null,
             'owned_by' => 'deepseek'
         ),
     );
+        
+    // Check if the API key is empty
+    if (empty($api_key)) {
+
+        return $default_model_list;
+
+    }
+
+    // Set the API URL
+    $deepseek_models_url = esc_attr(get_option('kognetiks_ai_summaries_deepseek_base_url', kognetiks_ai_summaries_get_api_base_url()));
+    $deepseek_models_url = rtrim($deepseek_models_url, '/') . '/models';
+
+    // Set headers
+    $args = array(
+        'headers' => array(
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $api_key,
+        ),
+    );
+
+    // Perform the request
+    $response = wp_remote_get($deepseek_models_url, $args);
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace('NOTICE', '$response: ' . print_r($response, true));
+    
+    // Check for errors in the response
+    if (is_wp_error($response)) {
+
+        return $default_model_list;
+
+    }
+
+    // Decode the JSON response
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    // Check if the response is valid and contains data
+    if (isset($data['data']) && is_array($data['data'])) {
+        $default_model_list = array_map(function($model) {
+            return array(
+                'id' => $model['id'],
+                'object' => $model['object'],
+                'created' => null, // Assuming 'created' is not provided in the response
+                'owned_by' => $model['owned_by']
+            );
+        }, $data['data']);
+    } else {
+        // Handle the case where the response is not valid
+        $default_model_list = array(
+            array(
+                'id' => 'deepseek-chat',
+                'object' => 'model',
+                'created' => null,
+                'owned_by' => 'deepseek'
+            ),
+        );
+    }
 
     // DeepSeek API does not have an endpoint for models
     return $default_model_list;
 
+}
+
+// Function to get the Model names from Mistral API
+function kognetiks_ai_summaries_mistral_get_models() {
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_mistral_get_models');
+
+    // Default model list
+    $default_model_list = array(
+        array(
+            'id' => 'mistral-small-2503',
+            'object' => 'model',
+            'created' => 1745356399,
+            'owned_by' => 'mistralai',
+            'capabilities' => array(
+                'completion_chat' => 1,
+                'completion_fim' => '',
+                'function_calling' => 1,
+                'fine_tuning' => '',
+                'vision' => 1,
+                'classification' => ''
+            ),
+            'name' => 'mistral-small-2503',
+            'description' => 'Official mistral-small-2503 Mistral AI model',
+            'max_context_length' => 131072,
+            'aliases' => array('mistral-small-latest'),
+            'deprecation' => '',
+            'default_model_temperature' => 0.3,
+            'type' => 'base'
+        )
+    );
+
+    // Retrieve the API key
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_mistral_api_key'));
+    // Decrypt the API key - Ver 2.2.6
+    $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+
+    // Check if the API key is empty
+    if (empty($api_key)) {
+
+        return $default_model_list;
+
+    }
+
+    // Set the API URL
+    $mistral_models_url = esc_attr(get_option('kognetiks_ai_summaries_mistral_base_url', kognetiks_ai_summaries_get_api_base_url()));
+    $mistral_models_url = rtrim($mistral_models_url, '/') . '/models';
+
+    // Set headers
+    $args = array(
+        'headers' => array(
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $api_key,
+        ),
+    );
+
+    // Perform the request
+    $response = wp_remote_get($mistral_models_url, $args);
+
+    // Check for errors in the response
+    if (is_wp_error($response)) {
+
+        return $default_model_list;
+
+    }
+
+    // Decode the JSON response
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$data: ' . print_r($data, true));
+
+    // Check if the response is valid and contains data
+    if (isset($data['data']) && is_array($data['data'])) {
+        $default_model_list = array_map(function($model) {
+            return array(
+                'id' => $model['id'],
+                'object' => $model['object'],
+                'created' => null,
+                'owned_by' => $model['owned_by']
+            );
+        }, $data['data']);
+    } else {
+        // Handle the case where the response is not valid
+        $default_model_list = array(
+            array(
+                'id' => 'mistral-small-2503',
+                'object' => 'model',
+                'created' => 1745356399,
+                'owned_by' => 'mistralai',
+                'capabilities' => array(
+                    'completion_chat' => 1,
+                    'completion_fim' => '',
+                    'function_calling' => 1,
+                    'fine_tuning' => '',
+                    'vision' => 1,
+                    'classification' => ''
+                ),
+                'name' => 'mistral-small-2503',
+                'description' => 'Official mistral-small-2503 Mistral AI model',
+                'max_context_length' => 131072,
+                'aliases' => array('mistral-small-latest'),
+                'deprecation' => '',
+                'default_model_temperature' => 0.3,
+                'type' => 'base'
+            ),
+        );
+    }
+
+    // Return the default model list
+    return $default_model_list;
+
+}
+
+// Fetch the local models
+function kognetiks_ai_summaries_local_get_models() {
+    
+    // DiAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'chatbot_local_get_models');
+
+    // Set the API URL
+    $api_url = esc_attr(get_option('chatbot_local_base_url','http://127.0.0.1:1337/v1')) . '/models';
+
+    // Send the request
+    $response = wp_remote_get($api_url, array(
+        'headers' => array(
+            'Content-Type' => 'application/json',
+        ),
+    ));
+
+    // Check for errors
+    if (is_wp_error($response)) {
+        $error_message = $response->get_error_message();
+        // Log the error
+        prod_trace( 'ERROR', $error_message);
+        // Return a default model in teh $models array
+        $models = array('llama3.2-3b-instruct');
+        return $models;
+    }
+
+    // Get the response body
+    $response_body = json_decode(wp_remote_retrieve_body($response), true);
+
+    // DiAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
+
+    // For each model in the $response_body, add the model to return array
+    $models = array();
+    foreach ($response_body['data'] as $model) {
+        if (isset($model['status']) && $model['status'] == 'downloaded') {
+            $models[] = $model['id'];
+        }
+    }
+
+    return $models;
+    
 }
 
 // Base URL for API Calls
@@ -255,6 +479,14 @@ function kognetiks_ai_summaries_get_api_base_url() {
 
         case 'DeepSeek':
             return esc_attr(get_option('kognetiks_ai_summaries_deepseek_base_url', 'https://api.deepseek.com'));
+            break;
+
+        case 'Mistral':
+            return esc_attr(get_option('kognetiks_ai_summaries_mistral_base_url', 'https://api.mistral.ai/v1'));
+            break;
+
+        case 'Local':
+            return esc_attr(get_option('kognetiks_ai_summaries_local_base_url', 'http://127.0.0.1:1337/v1'));
             break;
 
         default:
@@ -300,6 +532,20 @@ function kognetiks_ai_summaries_get_chat_completions_api_url() {
 
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: DeepSeek API' );
+            return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
+            break;
+
+        case 'Mistral':
+
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: Mistral API' );
+            return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
+            break;
+
+        case 'Local':
+
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: Local API' );
             return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
             break;
 

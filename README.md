@@ -4,9 +4,15 @@
 
 Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other content — effortlessly enhancing user experience and site navigation.
 
-Powered by industry-leading AI platforms like OpenAI, NVIDIA, and Anthropic, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
+Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic and DeepSeek, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
 
 ## Documentation
+
+## What's new in Version 1.0.2
+
+* **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for the chatbot.
+* **Local AI Server**: Added support for a local AI server to generate summaries using JAN.AI and Hugging Face GGUF models.
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.1.
 
 ## What's new in Version 1.0.1
 
@@ -21,10 +27,11 @@ This plugin relies on external AI services for generating summaries of your page
 - **NVIDIA**: [Terms of Use](https://www.nvidia.com/en-us/about-nvidia/nv-accounts/) | [Privacy Policy](https://www.nvidia.com/en-us/about-nvidia/privacy-policy/)
 - **Anthropic**: [Terms of Service](https://www.anthropic.com/legal/consumer-terms) | [Privacy Policy](https://docs.anthropic.com/en/docs/legal-center/privacy)
 - **DeepSeek**: [Terms of Use](https://chat.deepseek.com/downloads/DeepSeek%20User%20Agreement.html) | [Privacy Policy](https://chat.deepseek.com/downloads/DeepSeek%20Privacy%20Policy.html)
+- **Mistral**: [Terms of Service](https://mistral.ai/terms#terms-of-service) | [Privacy Policy](https://mistral.ai/terms#privacy-policy)
 
 **IMPORTANT**:
 
-- This plugin requires an API key from OpenAI, NVIDIA, or Anthropic to function. Without an API key, the plugin cannot process summaries.
+- This plugin requires an API key from OpenAI, NVIDIA, Anthropic or DeepSeek to function. Without an API key, the plugin cannot process summaries.
 
 - Obtain API keys here:
 
@@ -32,6 +39,7 @@ This plugin relies on external AI services for generating summaries of your page
     - [NVIDIA API Keys](https://developer.nvidia.com/nim)
     - [Anthropic API Keys](https://www.anthropic.com/)
     - [DeepSeek API Keys](https://platform.deepseek.com/sign_in)
+    - [Mistral API Keys](https://console.mistral.ai/api-keys)
 
 - By entering an API key from the AI provider of your choice and activating the plugin, you:
 
