@@ -8,6 +8,10 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic and Deep
 
 ## Documentation
 
+## What's new in Version 1.0.3
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.2.
+
 ## What's new in Version 1.0.2
 
 * **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for the chatbot.

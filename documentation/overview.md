@@ -46,6 +46,10 @@ This plugin relies on external AI services for generating summaries of your page
 
 **NOTE**: If no API key is provided, or if communication with the selected service fails, the plugin will not generate summaries.
 
+## What's New in Version 1.0.3
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.2.
+
 ## What's New in Version 1.0.2
 
 * **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for the chatbot.

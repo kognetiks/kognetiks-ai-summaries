@@ -3,7 +3,7 @@ Contributors: Kognetiks
 Tags: AI, Excerpts, Search, ChatGPT, Claude
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
 Tested up to: 6.8
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,10 @@ WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, J
 5. Support
 
 == Changelog ==
+
+= 1.0.3 - Released TBD =
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.2.
 
 = 1.0.2 - Released 2025-04-24 =
 
