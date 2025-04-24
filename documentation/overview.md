@@ -48,6 +48,7 @@ This plugin relies on external AI services for generating summaries of your page
 
 ## What's New in Version 1.0.2
 
+* **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for the chatbot.
 * **Local AI Server**: Added support for a local AI server to generate summaries using JAN.AI and Hugging Face GGUF models.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.1.
 

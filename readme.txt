@@ -127,7 +127,7 @@ WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, J
 
 == Changelog ==
 
-= 1.0.2 =
+= 1.0.2 - Released 2025-04-24 =
 
 * **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for the chatbot.
 * **Local AI Server**: Added support for a local AI server to generate summaries using JAN.AI and Hugging Face GGUF models.
