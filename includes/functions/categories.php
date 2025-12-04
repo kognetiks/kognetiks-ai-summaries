@@ -39,9 +39,39 @@ function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
         return;
     }
 
+    // Remove "Categories: " prefix if present - Ver 1.0.3
+    $categories_string = preg_replace('/^Categories:\s*/i', '', $categories_string);
+    $categories_string = trim($categories_string);
+
     // Convert the comma-separated string into an array and upcase the first letter of each category
     $categories = array_map('trim', explode(',', $categories_string));
-    $categories = array_map('ucwords', $categories);
+    
+    // Remove "Categories: " prefix from individual category names if present
+    $categories = array_map(function($category) {
+        return preg_replace('/^Categories:\s*/i', '', trim($category));
+    }, $categories);
+    
+    // Apply proper case with acronym handling - Ver 1.0.3
+    // Check if the function exists (from tools.php)
+    if (function_exists('kognetiks_ai_summaries_convert_to_proper_case_with_acronyms')) {
+        $categories = array_map('kognetiks_ai_summaries_convert_to_proper_case_with_acronyms', $categories);
+    } else {
+        // Fallback to ucwords if function not available
+        $categories = array_map('ucwords', $categories);
+    }
+    
+    // Filter out "Uncategorized" category - Ver 1.0.3
+    $categories = array_filter($categories, function($category) {
+        return strcasecmp(trim($category), 'Uncategorized') !== 0;
+    });
+    
+    // Re-index array after filtering
+    $categories = array_values($categories);
+    
+    // If no valid categories remain, exit early
+    if (empty($categories)) {
+        return;
+    }
     
     $category_ids = [];
     

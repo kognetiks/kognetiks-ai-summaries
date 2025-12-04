@@ -444,6 +444,17 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
     }
 
+    // Remove unwanted prefixes for categories and tags
+    $ai_summary = preg_replace('/^These Are The Categories:\s*/i', '', $ai_summary);
+    $ai_summary = preg_replace('/^These Are The Tags:\s*/i', '', $ai_summary);
+    $ai_summary = preg_replace('/^These are the categories:\s*/i', '', $ai_summary);
+    $ai_summary = preg_replace('/^These are the tags:\s*/i', '', $ai_summary);
+    // Remove "Categories: " prefix - Ver 1.0.3
+    $ai_summary = preg_replace('/^Categories:\s*/i', '', $ai_summary);
+    // Remove "Tags: " prefix - Ver 1.0.3
+    $ai_summary = preg_replace('/^Tags:\s*/i', '', $ai_summary);
+    $ai_summary = trim($ai_summary);
+
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
 
@@ -481,7 +492,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
             $category_count = esc_attr(get_option('kognetiks_ai_summaries_category_count', 3));
 
             // Prepare special instructions if needed
-            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $category_count . " one-word (no compound words) categories or fewer and just return the three categories seperated by commas with stating that these are the categories: ";
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $category_count . " one-word (no compound words) categories or fewer and just return the categories separated by commas without stating that these are the categories: ";
 
             break;
 
@@ -491,7 +502,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
             $tag_count = esc_attr(get_option('kognetiks_ai_summaries_tag_count', 3));
 
             // Prepare special instructions if needed
-            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $tag_count . " one-word (no compound words) tags or fewer and just return the three tags seperated by commas with stating that these are the tags: ";
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $tag_count . " one-word (no compound words) tags or fewer and just return the tags separated by commas without stating that these are the tags: ";
 
             break;
 
@@ -629,6 +640,17 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
     // REMOVE EXTRA SPACES
     $response = preg_replace('/\s+/', ' ', $response);
+
+    // REMOVE UNWANTED PREFIXES - Strip "These Are The Categories:" or "These Are The Tags:" prefixes
+    $response = preg_replace('/^These Are The Categories:\s*/i', '', $response);
+    $response = preg_replace('/^These Are The Tags:\s*/i', '', $response);
+    $response = preg_replace('/^These are the categories:\s*/i', '', $response);
+    $response = preg_replace('/^These are the tags:\s*/i', '', $response);
+    // Remove "Categories: " prefix - Ver 1.0.3
+    $response = preg_replace('/^Categories:\s*/i', '', $response);
+    // Remove "Tags: " prefix - Ver 1.0.3
+    $response = preg_replace('/^Tags:\s*/i', '', $response);
+    $response = trim($response);
 
     // Return the AI summary
     return $response;

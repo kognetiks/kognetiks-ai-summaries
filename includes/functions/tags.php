@@ -49,7 +49,29 @@ function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
 
     // Convert the comma-separated string into an array and apply proper case to the tags
     $tags = array_map('trim', explode(',', $tags_string));
-    $tags = array_map('ucwords', $tags);
+    
+    // Apply proper case with acronym handling - Ver 1.0.3
+    // Check if the function exists (from tools.php)
+    if (function_exists('kognetiks_ai_summaries_convert_to_proper_case_with_acronyms')) {
+        $tags = array_map('kognetiks_ai_summaries_convert_to_proper_case_with_acronyms', $tags);
+    } else {
+        // Fallback to ucwords if function not available
+        $tags = array_map('ucwords', $tags);
+    }
+
+    // Filter out em dash "—" and other invalid tag values - Ver 1.0.3
+    $tags = array_filter($tags, function($tag) {
+        $tag = trim($tag);
+        // Remove em dash (—), en dash (–), regular dash (-), and empty strings
+        return !empty($tag) && 
+               $tag !== '—' && 
+               $tag !== '–' && 
+               $tag !== '-' &&
+               mb_strlen($tag) > 0;
+    });
+    
+    // Re-index array after filtering
+    $tags = array_values($tags);
 
     if (empty($tags)) {
         // kognetiks_ai_summaries_back_trace('ERROR', 'No valid tags provided after processing');
