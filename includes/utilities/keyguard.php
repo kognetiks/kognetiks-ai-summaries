@@ -154,6 +154,9 @@ function kognetiks_ai_summaries_decrypt_api_key($data, $option_name = null) {
             case 'Mistral':
                 $option_name = 'kognetiks_ai_summaries_mistral_api_key';
                 break;
+            case 'Google':
+                $option_name = 'kognetiks_ai_summaries_google_gemini_api_key';
+                break;
             case 'Azure OpenAI':
                 $option_name = 'kognetiks_ai_summaries_azure_api_key';
                 break;

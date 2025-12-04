@@ -2,7 +2,7 @@
 Contributors: Kognetiks
 Tags: AI, Excerpts, Search, ChatGPT, Claude
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 1.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
