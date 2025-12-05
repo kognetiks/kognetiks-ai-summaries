@@ -154,6 +154,10 @@ function kognetiks_ai_summaries_cleanup_tools_callback() {
                 $count = isset($_GET['count']) ? intval(wp_unslash($_GET['count'])) : 0;
                 echo '<div class="notice notice-success is-dismissible"><p>Empty tags have been deleted. Removed: ' . esc_html($count) . ' tags.</p></div>';
                 break;
+            case 'delete_orphaned':
+                $count = isset($_GET['count']) ? intval(wp_unslash($_GET['count'])) : 0;
+                echo '<div class="notice notice-success is-dismissible"><p>Orphaned AI summaries have been deleted. Removed: ' . esc_html($count) . ' summaries.</p></div>';
+                break;
         }
     }
 
@@ -176,7 +180,7 @@ function kognetiks_ai_summaries_cleanup_tools_callback() {
             <tr>
                 <th scope="row">Refresh All Summaries</th>
                 <td>
-                    <p>This will regenerate summaries for all posts that have AI summaries. This may take a while.</p>
+                    <p>This will regenerate summaries for all posts that have AI summaries. This may take a while. This can also be expensive if you are on an AI Platform where there is a cost for tokens. <b>Therefore, exercise caution.</b></p>
                     <p>
                         <a href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=kognetiks_ai_summaries_refresh_all_summaries'), 'kognetiks_ai_summaries_cleanup_action')); ?>" 
                            class="button button-secondary" 
@@ -221,6 +225,19 @@ function kognetiks_ai_summaries_cleanup_tools_callback() {
                            class="button button-secondary" 
                            onclick="return confirm('Are you sure you want to delete all empty tags? This action cannot be undone.');">
                             Delete Empty Tags
+                        </a>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Delete Orphaned AI Summaries</th>
+                <td>
+                    <p>This will permanently delete all AI summaries for posts that no longer exist.</p>
+                    <p>
+                        <a href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=kognetiks_ai_summaries_delete_orphaned_summaries'), 'kognetiks_ai_summaries_cleanup_action')); ?>" 
+                           class="button button-secondary" 
+                           onclick="return confirm('Are you sure you want to delete all orphaned AI summaries? This action cannot be undone.');">
+                            Delete Orphaned AI Summaries
                         </a>
                     </p>
                 </td>
@@ -500,6 +517,7 @@ add_action('admin_post_kognetiks_ai_summaries_refresh_all_summaries', 'kognetiks
 add_action('admin_post_kognetiks_ai_summaries_proper_case_categories_tags', 'kognetiks_ai_summaries_handle_proper_case_categories_tags');
 add_action('admin_post_kognetiks_ai_summaries_delete_empty_categories', 'kognetiks_ai_summaries_handle_delete_empty_categories');
 add_action('admin_post_kognetiks_ai_summaries_delete_empty_tags', 'kognetiks_ai_summaries_handle_delete_empty_tags');
+add_action('admin_post_kognetiks_ai_summaries_delete_orphaned_summaries', 'kognetiks_ai_summaries_handle_delete_orphaned_summaries');
 
 // Handle delete all summaries action
 function kognetiks_ai_summaries_handle_delete_all_summaries() {
@@ -691,6 +709,74 @@ function kognetiks_ai_summaries_handle_delete_empty_tags() {
     // Add nonce to redirect URL for security
     $redirect_url = add_query_arg(array(
         'cleanup_success' => 'delete_empty_tags',
+        'count' => $count,
+        '_wpnonce' => wp_create_nonce('kognetiks_ai_summaries_cleanup_success')
+    ), admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools'));
+    
+    wp_safe_redirect($redirect_url);
+    exit;
+}
+
+// Delete orphaned AI summaries (summaries for posts that no longer exist)
+function kognetiks_ai_summaries_delete_orphaned_summaries() {
+    
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_delete_orphaned_summaries' );
+    
+    global $wpdb;
+    
+    $count = 0;
+    
+    // Get all post IDs that have AI summaries
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    
+    // Validate table name to prevent SQL injection
+    $validated_table = kognetiks_ai_summaries_validate_table_name($table_name);
+    if ($validated_table === false) {
+        return 0;
+    }
+    
+    // Use esc_sql() to escape the validated table name
+    $post_ids = $wpdb->get_col("SELECT post_id FROM `" . esc_sql($validated_table) . "`");
+    
+    // Check each post ID to see if the post still exists
+    foreach ($post_ids as $post_id) {
+        $post = get_post($post_id);
+        
+        // If post doesn't exist, delete the orphaned summary
+        if (!$post) {
+            kognetiks_ai_summaries_delete_ai_summary($post_id);
+            
+            // Clear cache for this post
+            wp_cache_delete('kognetiks_ai_summaries_' . $post_id);
+            
+            $count++;
+        }
+    }
+    
+    // Clear all caches after cleanup
+    wp_cache_flush();
+    
+    return $count;
+}
+
+// Handle delete orphaned summaries action
+function kognetiks_ai_summaries_handle_delete_orphaned_summaries() {
+    
+    // Check nonce and permissions
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_cleanup_action')) {
+        wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
+    }
+    
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('You do not have permission to perform this action.', 'kognetiks-ai-summaries'));
+    }
+    
+    $count = kognetiks_ai_summaries_delete_orphaned_summaries();
+    
+    // Add nonce to redirect URL for security
+    $redirect_url = add_query_arg(array(
+        'cleanup_success' => 'delete_orphaned',
         'count' => $count,
         '_wpnonce' => wp_create_nonce('kognetiks_ai_summaries_cleanup_success')
     ), admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools'));
