@@ -22,3 +22,4 @@ logs/*
 !logs/index.php
 
 # Ignore specific files
+GIT-COMMANDS.md

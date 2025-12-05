@@ -7,7 +7,7 @@ Stable tag: 1.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Kogentiks AI Summaries - Effortless Excerpts, Power by Intelligence.
+Kognetiks AI Summaries - Effortless Excerpts, Power by Intelligence.
 
 == Description ==
 
@@ -28,11 +28,12 @@ This plugin relies on external AI services for generating summaries of your page
 - **Anthropic**: [Terms of Service](https://www.anthropic.com/legal/consumer-terms) | [Privacy Policy](https://docs.anthropic.com/en/docs/legal-center/privacy)
 - **DeepSeek**: [Terms of Use](https://chat.deepseek.com/downloads/DeepSeek%20User%20Agreement.html) | [Privacy Policy](https://chat.deepseek.com/downloads/DeepSeek%20Privacy%20Policy.html)
 - **Mistral**: [Terms of Service](https://mistral.ai/terms#terms-of-service) | [Privacy Policy](https://mistral.ai/terms#privacy-policy)
+- **Google**: [Terms of Use](https://ai.google.dev/gemini-api/terms) | [Privacy Policy](https://policies.google.com/privacy)
 - **JAN.AI**: [About](https://jan.ai/about) | [Privacy Policy](https://jan.ai/docs/privacy-policy)
 
 **IMPORTANT**:
 
-- This plugin requires an API key from OpenAI, NVIDIA, Anthropic or DeepSeek to function. Without an API key, the plugin cannot process summaries.
+- This plugin requires an API key from one of the supported AI platforms (OpenAI, NVIDIA, Anthropic, DeepSeek, Mistral, Google, or Local) to function. Without an API key, the plugin cannot process summaries.
 
 - Obtain API keys here:
 
@@ -40,7 +41,9 @@ This plugin relies on external AI services for generating summaries of your page
     - [NVIDIA API Keys](https://developer.nvidia.com/nim)
     - [Anthropic API Keys](https://www.anthropic.com/)
     - [DeepSeek API Keys](https://platform.deepseek.com/sign_in)
-    - [Mistral API Keys](https://mistral.ai/api-keys)
+    - [Google API Keys](https://aistudio.google.com/api-keys)
+    - [Mistral API Keys](https://console.mistral.ai/api-keys)
+    - [Local API Key](https://www.jan.ai/docs/desktop/api-server)
 
 - By entering an API key from the AI provider of your choice and activating the plugin, you:
 
@@ -54,14 +57,14 @@ This plugin relies on external AI services for generating summaries of your page
 
 **Installing the Kognetiks AI Summaries Plugin on Your Site**
 
-1. From the `General` tab on the **Kognetiks AI Summaries** settings page, select from one of three AI Platform Choices: `OpenAI` (the default), `NVIDIA`, or `Anthropic`.
+1. From the `General` tab on the **Kognetiks AI Summaries** settings page, select from one of seven AI Platform Choices: `OpenAI` (the default), `NVIDIA`, `Anthropic`, `DeepSeek`, `Mistral`, `Google`, or `Local`.
 
 2. Before you can `Turn AI Summaries` to `On`, you'll need to set up an account with the AI Platform vendor of your choice.  The plugin is very efficient when it comes to generating AI excerpts of your content.
 
-    - The plugin will only generate a summary of a page, port or other published content once.  But, it will check to see if the content has been updated or modified.  If the page or post has changed since the last time the summary was generated, a new summary will be created.  This makes incorporating AI generated excerpts very cost affordable.
+    - The plugin will only generate a summary of a page, post or other published content once.  But, it will check to see if the content has been updated or modified.  If the page or post has changed since the last time the summary was generated, a new summary will be created.  This makes incorporating AI generated excerpts very cost affordable.
     - AI generated excerpts appear where ever WordPress would present an excerpt on your site.  It **does not** replace any hand-crafted excepts you might have added to posts, pages or other content.  AI summaries are in addition to these excerpts and are stored in a separate table on your site.  Once generated, they won't be regenerated unless the content has been updated.
 
-3. From the `API/OpenAI`, `API/NVIDIA`, or `API/Anthropic` tab (depending on the `AI Platform Choice` you made on the `General` tab), enter your `API Key`, then click the `Save Settings` button at the bottom of the page.
+3. From the `API/OpenAI`, `API/NVIDIA`, `API/Anthropic`, `API/DeepSeek`, `API/Mistral`, `API/Google` or `API/Local` tab (depending on the `AI Platform Choice` you made on the `General` tab), enter your `API Key`, then click the `Save Settings` button at the bottom of the page.
 
 4. Once you have saved your API key, the list of currently available models from the AI Platform vendor of your choice will be available in the `Model Choice` pull down menu.  In most cases, the `Model Choice` will default to the latest model.  If you changes models, remember to click the `Save Settings` button at the bottom of the page.
 
@@ -105,6 +108,14 @@ Sign up with one of the following AI platforms to obtain your API key:
 
     [See API/Mistral Settings](api-settings/api-mistral-settings.md)
 
+- **Google**
+
+    [See API/Google Settings](api-settings/api-google-settings.md)
+
+- **Local**
+
+    [See API/Local Server Settings](api-settings/api-local-server-settings.md)
+
 **Does the plugin support multiple languages?**
 
 Yes, the **Kognetiks AI Summaries** plugin supports multiple languages, allowing you to cater to a diverse audience.
@@ -115,7 +126,7 @@ With the **Kognetiks AI Summaries** installed, you're now equipped to offer a mo
 
 == Disclaimer ==
 
-WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, Jan.ai and related trademarks are the property of their respective owners. Kognetiks is an independent entity and is not affiliated with, endorsed by, or sponsored by WordPress Foundation, OpenAI, NVIDIA, Anthropic or DeepSeek.
+WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT, and related trademarks are the property of OpenAI. NVIDIA, NIM, and related trademarks are the property of NVIDIA. Anthropic, Claude, and related trademarks are the property of Anthropic. DeepSeek and related trademarks are the property of DeepSeek. Mistral and related trademarks are the property of Mistral. Google Gemini and related trademarks are the property of Google. JAN.AI and related trademarks are the property of JAN.AI. Kognetiks is an independent entity and is not affiliated with, endorsed by, or sponsored by WordPress Foundation, OpenAI, NVIDIA, Anthropic, DeepSeek, Mistral, Google, JAN.AI.
 
 == Screenshots ==
 
@@ -127,19 +138,20 @@ WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, J
 
 == Changelog ==
 
-= 1.0.3 - Released TBD =
+= 1.0.3 - Released 2025-12-05 =
 
+* **Google Gemini API Integration**: Added support for Google Gemini's API to provide advanced conversational capabilities for summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.2.
 
 = 1.0.2 - Released 2025-04-24 =
 
-* **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for the chatbot.
+* **Mistral API Integration**: Added support for Mistral's API to provide advanced conversational capabilities for summaries.
 * **Local AI Server**: Added support for a local AI server to generate summaries using JAN.AI and Hugging Face GGUF models.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.1.
 
 = 1.0.1 =
 
-* **DeepSeek API Integration**: Added support for DeepSeek's API to provide advanced conversational capabilities for the chatbot.
+* **DeepSeek API Integration**: Added support for DeepSeek's API to provide advanced conversational capabilities for summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.0.
 
 = 1.0.0 =

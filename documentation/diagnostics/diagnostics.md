@@ -47,7 +47,7 @@ The Diagnostics Settings allow you to customize the basic behavior the **Kogneti
      Sorry, a brief summary isn't available right now.  Please check back later.
      `
    - **Additional Requirements**:
-     - **Kogentiks AI Summaries Diagnostics**: Ensure that the Kognetiks AI Summaries Diagnostics setting is turned from `Off` to `Error` to enable the display of custom error messages.
+     - **Kognetiks AI Summaries Diagnostics**: Ensure that the Kognetiks AI Summaries Diagnostics setting is turned from `Off` to `Error` to enable the display of custom error messages.
      - **WordPress Error Logging**: You may also need to turn on WordPress error logging to fully utilize this feature.
 
 3. **Suppress Notices and Warnings**:
@@ -66,11 +66,11 @@ The Diagnostics Settings allow you to customize the basic behavior the **Kogneti
 
 2. Review the **System and Plugin Information** to ensure compatibility and identify the current versions in use.
 
-3. Check the **API Test Results** to confirm a successful connection to the OpenAI API.
+3. Check the **API Test Results** to confirm a successful connection to your selected AI platform's API.
 
 4. Set the **Plugin Diagnostics** level based on your need for error and performance logging.
 
-5. Add a **Customer Error Message** if needed to match your preferences.
+5. Add a **Custom Error Message** if needed to match your preferences.
 
 6. Toggle **Suppress Notices and Warnings** to `On` or `Off` as desired.
 
