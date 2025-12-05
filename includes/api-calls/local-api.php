@@ -138,7 +138,7 @@ function kognetiks_ai_summaries_local_start_model() {
     // DiAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'chatbot_local_start_model');
 
-    global $chatbot_local_model_status;
+    global $kognetiks_ai_summaries_local_model_status;
 
     // Get the model choice
     $model = esc_attr(get_option('chatbot_local_model_choice', 'llama3.2-3b-instruct'));
@@ -170,7 +170,7 @@ function kognetiks_ai_summaries_local_start_model() {
         // Log the error
         prod_trace( 'ERROR', $error_message);
         // Set the model status
-        $chatbot_local_model_status = 'error';
+        $kognetiks_ai_summaries_local_model_status = 'error';
         return $response;
     }
 
@@ -181,7 +181,7 @@ function kognetiks_ai_summaries_local_start_model() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response_body: ' . $response_body);
 
     // Set the model status
-    $chatbot_local_model_status = 'started';
+    $kognetiks_ai_summaries_local_model_status = 'started';
 
     return $response_body;
     

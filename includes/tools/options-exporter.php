@@ -19,7 +19,7 @@ function kognetiks_ai_summaries_download_options_data() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_download_options_data');
 
     // Verify nonce for security
-    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'kognetiks_ai_summaries_download_options_data')) {
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_download_options_data')) {
         wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
     }
 

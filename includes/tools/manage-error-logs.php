@@ -219,7 +219,7 @@ function kognetiks_ai_summaries_handle_log_actions() {
             if (file_exists($file_path)) {
 
                 wp_delete_file($file_path);
-                wp_redirect(admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools')); // Redirect to plugin page
+                wp_safe_redirect(admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools')); // Redirect to plugin page
 
                 exit;
 
@@ -270,7 +270,7 @@ function kognetiks_ai_summaries_handle_log_actions() {
                 }
             }
 
-            wp_redirect(admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools')); // Redirect to plugin page
+            wp_safe_redirect(admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools')); // Redirect to plugin page
 
             exit;
 

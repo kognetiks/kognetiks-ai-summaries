@@ -131,8 +131,9 @@ function kognetiks_ai_summaries_cleanup_tools_callback() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_cleanup_tools_callback' );
 
     // Display success messages if actions were performed
-    if (isset($_GET['cleanup_success'])) {
-        $action = sanitize_text_field($_GET['cleanup_success']);
+    // Security: Verify nonce to prevent spoofed success messages
+    if (isset($_GET['cleanup_success']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_cleanup_success')) {
+        $action = sanitize_text_field(wp_unslash($_GET['cleanup_success']));
         switch ($action) {
             case 'delete_all':
                 echo '<div class="notice notice-success is-dismissible"><p>All AI summaries have been deleted.</p></div>';
@@ -141,16 +142,16 @@ function kognetiks_ai_summaries_cleanup_tools_callback() {
                 echo '<div class="notice notice-success is-dismissible"><p>All AI summaries are being refreshed. This may take some time.</p></div>';
                 break;
             case 'proper_case':
-                $cats = isset($_GET['cats']) ? intval($_GET['cats']) : 0;
-                $tags = isset($_GET['tags']) ? intval($_GET['tags']) : 0;
+                $cats = isset($_GET['cats']) ? intval(wp_unslash($_GET['cats'])) : 0;
+                $tags = isset($_GET['tags']) ? intval(wp_unslash($_GET['tags'])) : 0;
                 echo '<div class="notice notice-success is-dismissible"><p>Categories and tags have been converted to Proper Case. Updated: ' . esc_html($cats) . ' categories, ' . esc_html($tags) . ' tags.</p></div>';
                 break;
             case 'delete_empty_categories':
-                $count = isset($_GET['count']) ? intval($_GET['count']) : 0;
+                $count = isset($_GET['count']) ? intval(wp_unslash($_GET['count'])) : 0;
                 echo '<div class="notice notice-success is-dismissible"><p>Empty categories have been deleted. Removed: ' . esc_html($count) . ' categories.</p></div>';
                 break;
             case 'delete_empty_tags':
-                $count = isset($_GET['count']) ? intval($_GET['count']) : 0;
+                $count = isset($_GET['count']) ? intval(wp_unslash($_GET['count'])) : 0;
                 echo '<div class="notice notice-success is-dismissible"><p>Empty tags have been deleted. Removed: ' . esc_html($count) . ' tags.</p></div>';
                 break;
         }
@@ -504,17 +505,22 @@ add_action('admin_post_kognetiks_ai_summaries_delete_empty_tags', 'kognetiks_ai_
 function kognetiks_ai_summaries_handle_delete_all_summaries() {
     
     // Check nonce and permissions
-    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'kognetiks_ai_summaries_cleanup_action')) {
-        wp_die('Security check failed');
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_cleanup_action')) {
+        wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
     }
     
     if (!current_user_can('manage_options')) {
-        wp_die('You do not have permission to perform this action');
+        wp_die(esc_html__('You do not have permission to perform this action.', 'kognetiks-ai-summaries'));
     }
     
     kognetiks_ai_summaries_delete_all_summaries();
     
-    wp_redirect(add_query_arg('cleanup_success', 'delete_all', admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools')));
+    // Add nonce to redirect URL for security
+    $redirect_url = add_query_arg(array(
+        'cleanup_success' => 'delete_all',
+        '_wpnonce' => wp_create_nonce('kognetiks_ai_summaries_cleanup_success')
+    ), admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools'));
+    wp_safe_redirect($redirect_url);
     exit;
 }
 
@@ -522,17 +528,22 @@ function kognetiks_ai_summaries_handle_delete_all_summaries() {
 function kognetiks_ai_summaries_handle_refresh_all_summaries() {
     
     // Check nonce and permissions
-    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'kognetiks_ai_summaries_cleanup_action')) {
-        wp_die('Security check failed');
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_cleanup_action')) {
+        wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
     }
     
     if (!current_user_can('manage_options')) {
-        wp_die('You do not have permission to perform this action');
+        wp_die(esc_html__('You do not have permission to perform this action.', 'kognetiks-ai-summaries'));
     }
     
     kognetiks_ai_summaries_refresh_all_summaries();
     
-    wp_redirect(add_query_arg('cleanup_success', 'refresh_all', admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools')));
+    // Add nonce to redirect URL for security
+    $redirect_url = add_query_arg(array(
+        'cleanup_success' => 'refresh_all',
+        '_wpnonce' => wp_create_nonce('kognetiks_ai_summaries_cleanup_success')
+    ), admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools'));
+    wp_safe_redirect($redirect_url);
     exit;
 }
 
@@ -540,23 +551,25 @@ function kognetiks_ai_summaries_handle_refresh_all_summaries() {
 function kognetiks_ai_summaries_handle_proper_case_categories_tags() {
     
     // Check nonce and permissions
-    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'kognetiks_ai_summaries_cleanup_action')) {
-        wp_die('Security check failed');
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_cleanup_action')) {
+        wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
     }
     
     if (!current_user_can('manage_options')) {
-        wp_die('You do not have permission to perform this action');
+        wp_die(esc_html__('You do not have permission to perform this action.', 'kognetiks-ai-summaries'));
     }
     
     $result = kognetiks_ai_summaries_convert_to_proper_case();
     
+    // Add nonce to redirect URL for security
     $redirect_url = add_query_arg(array(
         'cleanup_success' => 'proper_case',
         'cats' => $result['categories'],
-        'tags' => $result['tags']
+        'tags' => $result['tags'],
+        '_wpnonce' => wp_create_nonce('kognetiks_ai_summaries_cleanup_success')
     ), admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools'));
     
-    wp_redirect($redirect_url);
+    wp_safe_redirect($redirect_url);
     exit;
 }
 
@@ -640,22 +653,24 @@ function kognetiks_ai_summaries_delete_empty_tags() {
 function kognetiks_ai_summaries_handle_delete_empty_categories() {
     
     // Check nonce and permissions
-    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'kognetiks_ai_summaries_cleanup_action')) {
-        wp_die('Security check failed');
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_cleanup_action')) {
+        wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
     }
     
     if (!current_user_can('manage_options')) {
-        wp_die('You do not have permission to perform this action');
+        wp_die(esc_html__('You do not have permission to perform this action.', 'kognetiks-ai-summaries'));
     }
     
     $count = kognetiks_ai_summaries_delete_empty_categories();
     
+    // Add nonce to redirect URL for security
     $redirect_url = add_query_arg(array(
         'cleanup_success' => 'delete_empty_categories',
-        'count' => $count
+        'count' => $count,
+        '_wpnonce' => wp_create_nonce('kognetiks_ai_summaries_cleanup_success')
     ), admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools'));
     
-    wp_redirect($redirect_url);
+    wp_safe_redirect($redirect_url);
     exit;
 }
 
@@ -663,21 +678,23 @@ function kognetiks_ai_summaries_handle_delete_empty_categories() {
 function kognetiks_ai_summaries_handle_delete_empty_tags() {
     
     // Check nonce and permissions
-    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'kognetiks_ai_summaries_cleanup_action')) {
-        wp_die('Security check failed');
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_cleanup_action')) {
+        wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
     }
     
     if (!current_user_can('manage_options')) {
-        wp_die('You do not have permission to perform this action');
+        wp_die(esc_html__('You do not have permission to perform this action.', 'kognetiks-ai-summaries'));
     }
     
     $count = kognetiks_ai_summaries_delete_empty_tags();
     
+    // Add nonce to redirect URL for security
     $redirect_url = add_query_arg(array(
         'cleanup_success' => 'delete_empty_tags',
-        'count' => $count
+        'count' => $count,
+        '_wpnonce' => wp_create_nonce('kognetiks_ai_summaries_cleanup_success')
     ), admin_url('admin.php?page=kognetiks-ai-summaries&tab=tools'));
     
-    wp_redirect($redirect_url);
+    wp_safe_redirect($redirect_url);
     exit;
 }
