@@ -143,7 +143,7 @@ function kognetiks_ai_summaries_additional_selections_callback($args) {
         $kognetiks_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Mistral' && esc_attr(get_option('kognetiks_ai_summaries_mistral_api_key')) == '') {
         $kognetiks_ai_summaries_enabled = 'Off';
-    } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Google' && esc_attr(get_option('kognetiks_ai_summaries_google_gemini_api_key')) == '') {
+    } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Google' && esc_attr(get_option('kognetiks_ai_summaries_google_api_key')) == '') {
         $kognetiks_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Local' && esc_attr(get_option('kognetiks_ai_summaries_local_api_key')) == '') {
         $kognetiks_ai_summaries_enabled = 'Off';

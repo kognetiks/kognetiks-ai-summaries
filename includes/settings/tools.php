@@ -82,7 +82,7 @@ function kognetiks_ai_summaries_options_exporter_button_callback() {
         <p>Use the button (below) to retrieve the plugin options and download the file.</p>
         <?php
             if (is_admin()) {
-                $header = '<a class="button button-primary" href="' . esc_url(admin_url('admin-post.php?action=kognetiks_ai_summaries_download_options_data')) . '">Download Options Data</a>';
+                $header = '<a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=kognetiks_ai_summaries_download_options_data'), 'kognetiks_ai_summaries_download_options_data')) . '">Download Options Data</a>';
                 echo wp_kses_post($header);
             }
         ?>
@@ -143,15 +143,15 @@ function kognetiks_ai_summaries_cleanup_tools_callback() {
             case 'proper_case':
                 $cats = isset($_GET['cats']) ? intval($_GET['cats']) : 0;
                 $tags = isset($_GET['tags']) ? intval($_GET['tags']) : 0;
-                echo '<div class="notice notice-success is-dismissible"><p>Categories and tags have been converted to Proper Case. Updated: ' . $cats . ' categories, ' . $tags . ' tags.</p></div>';
+                echo '<div class="notice notice-success is-dismissible"><p>Categories and tags have been converted to Proper Case. Updated: ' . esc_html($cats) . ' categories, ' . esc_html($tags) . ' tags.</p></div>';
                 break;
             case 'delete_empty_categories':
                 $count = isset($_GET['count']) ? intval($_GET['count']) : 0;
-                echo '<div class="notice notice-success is-dismissible"><p>Empty categories have been deleted. Removed: ' . $count . ' categories.</p></div>';
+                echo '<div class="notice notice-success is-dismissible"><p>Empty categories have been deleted. Removed: ' . esc_html($count) . ' categories.</p></div>';
                 break;
             case 'delete_empty_tags':
                 $count = isset($_GET['count']) ? intval($_GET['count']) : 0;
-                echo '<div class="notice notice-success is-dismissible"><p>Empty tags have been deleted. Removed: ' . $count . ' tags.</p></div>';
+                echo '<div class="notice notice-success is-dismissible"><p>Empty tags have been deleted. Removed: ' . esc_html($count) . ' tags.</p></div>';
                 break;
         }
     }
@@ -307,6 +307,29 @@ function kognetiks_ai_summaries_tools_settings_init() {
 }
 add_action('admin_init', 'kognetiks_ai_summaries_tools_settings_init');
 
+// Validate and sanitize table name to prevent SQL injection
+function kognetiks_ai_summaries_validate_table_name($table_name) {
+    
+    global $wpdb;
+    
+    // Expected table name pattern
+    $expected_table = $wpdb->prefix . 'kognetiks_ai_summaries';
+    
+    // Validate that the table name matches the expected pattern
+    if ($table_name !== $expected_table) {
+        kognetiks_ai_summaries_prod_trace( 'ERROR', 'Invalid table name provided: ' . esc_html($table_name) );
+        return false;
+    }
+    
+    // Additional validation: ensure table name contains only safe characters
+    if (!preg_match('/^[a-zA-Z0-9_]+$/', str_replace($wpdb->prefix, '', $table_name))) {
+        kognetiks_ai_summaries_prod_trace( 'ERROR', 'Table name contains invalid characters: ' . esc_html($table_name) );
+        return false;
+    }
+    
+    return $table_name;
+}
+
 // Delete all AI summaries from the database
 function kognetiks_ai_summaries_delete_all_summaries() {
     
@@ -317,7 +340,15 @@ function kognetiks_ai_summaries_delete_all_summaries() {
     
     // Delete all rows from the AI summaries table
     $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
-    $result = $wpdb->query("DELETE FROM {$table_name}");
+    
+    // Validate table name to prevent SQL injection
+    $validated_table = kognetiks_ai_summaries_validate_table_name($table_name);
+    if ($validated_table === false) {
+        return false;
+    }
+    
+    // Since we've validated the table name against a whitelist, we can safely use it with backticks
+    $result = $wpdb->query("DELETE FROM `" . esc_sql($validated_table) . "`");
     
     // Clear all caches
     wp_cache_flush();
@@ -341,7 +372,15 @@ function kognetiks_ai_summaries_refresh_all_summaries() {
     
     // Get all post IDs that have AI summaries
     $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
-    $post_ids = $wpdb->get_col("SELECT post_id FROM {$table_name}");
+    
+    // Validate table name to prevent SQL injection
+    $validated_table = kognetiks_ai_summaries_validate_table_name($table_name);
+    if ($validated_table === false) {
+        return 0;
+    }
+    
+    // Use esc_sql() to escape the validated table name
+    $post_ids = $wpdb->get_col("SELECT post_id FROM `" . esc_sql($validated_table) . "`");
     
     $count = 0;
     $max_posts = 50; // Limit to prevent timeout - process in batches

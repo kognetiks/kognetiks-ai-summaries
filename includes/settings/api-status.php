@@ -206,7 +206,7 @@ function kognetiks_ai_summaries_test_api_status() {
         case 'Google':
 
             update_option('kognetiks_ai_summaries_api_status', 'API Error Type: Status Unknown');
-            $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_gemini_api_key', 'NOT SET'));
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_api_key', 'NOT SET'));
             // Decrypt the API key - Ver 2.2.6
             $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
 

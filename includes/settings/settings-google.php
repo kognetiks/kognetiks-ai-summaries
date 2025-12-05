@@ -38,29 +38,29 @@ function kognetiks_ai_summaries_google_gemini_general_settings_callback($args) {
 }
 
 // API key field callback
-function kognetiks_ai_summaries_google_gemini_api_key_callback($args) {
+function kognetiks_ai_summaries_google_api_key_callback($args) {
 
     // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_google_gemini_api_key_callback');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_google_api_key_callback');
 
-    $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_gemini_api_key'));
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_api_key'));
     // Decrypt the API key - Ver 2.2.6
     $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
 
     ?>
-    <input type="password" id="kognetiks_ai_summaries_google_gemini_api_key" name="kognetiks_ai_summaries_google_gemini_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
+    <input type="password" id="kognetiks_ai_summaries_google_api_key" name="kognetiks_ai_summaries_google_api_key" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text"  autocomplete="off">
     <?php
 
 }
 
 // Hook into the update process for the API key
-add_action('update_option_kognetiks_ai_summaries_google_gemini_api_key', 'kognetiks_ai_summaries_process_google_gemini_api_key', 10, 2);
+add_action('update_option_kognetiks_ai_summaries_google_api_key', 'kognetiks_ai_summaries_process_google_api_key', 10, 2);
 
 // Activate AI Summaries if the API key is valid
-function kognetiks_ai_summaries_process_google_gemini_api_key($old_value, $new_value) {
+function kognetiks_ai_summaries_process_google_api_key($old_value, $new_value) {
 
     // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_process_google_gemini_api_key');
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_process_google_api_key');
 
     // Ensure the new value is sanitized
     $new_value = sanitize_text_field($new_value);
@@ -255,7 +255,7 @@ function kognetiks_ai_summaries_google_gemini_settings_init() {
     // Google Gemini API Key and Model settings
     register_setting(
         'kognetiks_ai_summaries_google_gemini_settings',
-        'kognetiks_ai_summaries_google_gemini_api_key',
+        'kognetiks_ai_summaries_google_api_key',
         array(
             'type'              => 'string',
             'sanitize_callback' => 'kognetiks_ai_summaries_sanitize_api_key',
@@ -279,9 +279,9 @@ function kognetiks_ai_summaries_google_gemini_settings_init() {
     );
 
     add_settings_field(
-        'kognetiks_ai_summaries_google_gemini_api_key',
+        'kognetiks_ai_summaries_google_api_key',
         'Google Gemini API Key',
-        'kognetiks_ai_summaries_google_gemini_api_key_callback',
+        'kognetiks_ai_summaries_google_api_key_callback',
         'kognetiks_ai_summaries_google_gemini_model_settings',
         'kognetiks_ai_summaries_google_gemini_model_section'
     );

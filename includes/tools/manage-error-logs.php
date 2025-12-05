@@ -107,6 +107,11 @@ function kognetiks_ai_summaries_handle_log_actions() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_handle_log_actions');
 
+    // Security: Check user capabilities
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('Unauthorized access.', 'kognetiks-ai-summaries'));
+    }
+
     global $wp_filesystem;
 
     if (!isset($_GET['action']) || !isset($_GET['_wpnonce'])) {
@@ -146,6 +151,13 @@ function kognetiks_ai_summaries_handle_log_actions() {
             // Find the file in the logs directory in the uploads folder
             $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
             $file_path = $kognetiks_ai_summaries_logs_dir . $file;
+
+            // Security: Ensure the resolved path is within the logs directory to prevent directory traversal
+            $real_path = realpath($file_path);
+            $real_logs_dir = realpath($kognetiks_ai_summaries_logs_dir);
+            if (!$real_path || !$real_logs_dir || strpos($real_path, $real_logs_dir) !== 0) {
+                wp_die(esc_html__('Invalid file path.', 'kognetiks-ai-summaries'));
+            }
 
             if (file_exists($file_path)) {
 
@@ -194,6 +206,13 @@ function kognetiks_ai_summaries_handle_log_actions() {
             $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
             $file_path = $kognetiks_ai_summaries_logs_dir . $file;
             
+            // Security: Ensure the resolved path is within the logs directory to prevent directory traversal
+            $real_path = realpath($file_path);
+            $real_logs_dir = realpath($kognetiks_ai_summaries_logs_dir);
+            if (!$real_path || !$real_logs_dir || strpos($real_path, $real_logs_dir) !== 0) {
+                wp_die(esc_html__('Invalid file path.', 'kognetiks-ai-summaries'));
+            }
+            
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_handle_log_actions - delete_log: ' . $file . ' - File Path: ' . $file_path);
 
@@ -226,11 +245,23 @@ function kognetiks_ai_summaries_handle_log_actions() {
            
             // Find the file in the logs directory in the uploads folder
             $kognetiks_ai_summaries_logs_dir = kognetiks_ai_summaries_create_directory_and_index_file( 'logs' );
+            $real_logs_dir = realpath($kognetiks_ai_summaries_logs_dir);
+            
+            if (!$real_logs_dir) {
+                wp_die(esc_html__('Invalid logs directory.', 'kognetiks-ai-summaries'));
+            }
+            
             $files = array_diff(scandir($kognetiks_ai_summaries_logs_dir), array('..', '.'));
 
             foreach ($files as $file) {
 
                 $file_path = $kognetiks_ai_summaries_logs_dir . $file;
+                
+                // Security: Ensure the resolved path is within the logs directory to prevent directory traversal
+                $real_path = realpath($file_path);
+                if (!$real_path || strpos($real_path, $real_logs_dir) !== 0) {
+                    continue; // Skip invalid paths
+                }
 
                 if (file_exists($file_path)) {
 
@@ -251,9 +282,7 @@ function kognetiks_ai_summaries_handle_log_actions() {
 
     }
 }
-add_action('admin_post_nopriv_kognetiks_ai_summaries_download_log', 'kognetiks_ai_summaries_handle_log_actions');
+// Security: Only allow authenticated administrators to access log actions
 add_action('admin_post_kognetiks_ai_summaries_download_log', 'kognetiks_ai_summaries_handle_log_actions');
-add_action('admin_post_nopriv_kognetiks_ai_summaries_delete_log', 'kognetiks_ai_summaries_handle_log_actions');
 add_action('admin_post_kognetiks_ai_summaries_delete_log', 'kognetiks_ai_summaries_handle_log_actions');
-add_action('admin_post_nopriv_kognetiks_ai_summaries_delete_all_logs', 'kognetiks_ai_summaries_handle_log_actions');
 add_action('admin_post_kognetiks_ai_summaries_delete_all_logs', 'kognetiks_ai_summaries_handle_log_actions');

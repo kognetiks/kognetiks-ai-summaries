@@ -579,7 +579,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
         case 'Google':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Google Gemini API');
-            $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_gemini_api_key'));
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_api_key'));
             // Decrypt the API key - Ver 2.2.6
             $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');

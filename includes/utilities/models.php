@@ -417,7 +417,7 @@ function kognetiks_ai_summaries_google_gemini_get_models() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_google_gemini_get_models');
 
-    $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_gemini_api_key'));
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_api_key'));
     // Decrypt the API key - Ver 2.2.6
     $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
 

@@ -23,3 +23,5 @@ logs/*
 
 # Ignore specific files
 GIT-COMMANDS.md
+RECOMMENDATIONS.md
+
