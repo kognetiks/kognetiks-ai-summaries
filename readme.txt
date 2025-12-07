@@ -138,7 +138,7 @@ WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT
 
 == Changelog ==
 
-= 1.0.3 - Released 2025-12-05 =
+= 1.0.3 - Released 2025-12-07 =
 
 * **Google Gemini API Integration**: Added support for Google Gemini's API to provide advanced conversational capabilities for summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.2.

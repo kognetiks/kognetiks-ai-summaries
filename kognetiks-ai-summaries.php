@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Kognetiks AI Summaries
  * Plugin URI:  https://github.com/kognetiks/kognetiks-ai-summaries
- * Description: This simple plugin adds an AI powered summaries of posts and page excerpts.
+ * Description: This simple plugin adds AI-powered summaries of posts and page excerpts.
  * Version:     1.0.3
  * Author:      Kognetiks.com
  * Author URI:  https://www.kognetiks.com
@@ -666,7 +666,9 @@ function kognetiks_ai_summaries_create_ai_summary_table() {
     global $wpdb;
 
     // If table exists, return
-    if ( $wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}kognetiks_ai_summaries'") == "{$wpdb->prefix}kognetiks_ai_summaries" ) {
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    // Using esc_sql for table name validation (table name is safe as it's constructed from $wpdb->prefix)
+    if ( $wpdb->get_var( "SHOW TABLES LIKE '" . esc_sql( $table_name ) . "'" ) == $table_name ) {
         return;
     }
 
