@@ -52,6 +52,7 @@ This plugin relies on external AI services for generating summaries of your page
 
 ## What's New in Version 1.0.4
 
+* **Post Excerpt Replacement**: Added support for replacing the post_excerpt field in the posts table with AI generated summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after relase of version 1.0.3.
 
 ## What's New in Version 1.0.3

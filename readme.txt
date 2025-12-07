@@ -140,6 +140,7 @@ WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT
 
 = 1.0.4 - Released TBD =
 
+* **Post Excerpt Replacement**: Added support for replacing the post_excerpt field in the posts table with AI generated summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.3.
 
 = 1.0.3 - Released 2025-12-07 =

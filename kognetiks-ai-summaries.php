@@ -693,6 +693,77 @@ function kognetiks_ai_summaries_create_ai_summary_table() {
 
 }
 
+// Helper function to update post_excerpt based on setting
+function kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary ) {
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_update_post_excerpt' );
+
+    // Get the replacement setting
+    $replacement_setting = esc_attr(get_option('kognetiks_ai_summaries_post_excerpt_replacement', 'Do Not Replace'));
+
+    // If setting is "Do Not Replace", don't update post_excerpt
+    if ( $replacement_setting === 'Do Not Replace' ) {
+        return;
+    }
+
+    // Get the current post
+    $post = get_post( $pid );
+    if ( ! $post ) {
+        return;
+    }
+
+    // Get the current post_excerpt
+    $current_excerpt = $post->post_excerpt;
+
+    // Determine if we should update
+    $should_update = false;
+    if ( $replacement_setting === 'Replace' ) {
+        $should_update = true;
+    } elseif ( $replacement_setting === 'Replace if Blank' ) {
+        // Only update if post_excerpt is empty or blank
+        if ( empty( trim( $current_excerpt ) ) ) {
+            $should_update = true;
+        }
+    }
+
+    // Update post_excerpt if needed
+    if ( $should_update ) {
+        // Use the provided summary (which is the full summary from the database)
+        $full_summary = $ai_summary;
+        
+        // Remove unwanted prefixes that might be in the summary
+        $full_summary = preg_replace('/^These Are The Categories:\s*/i', '', $full_summary);
+        $full_summary = preg_replace('/^These Are The Tags:\s*/i', '', $full_summary);
+        $full_summary = preg_replace('/^These are the categories:\s*/i', '', $full_summary);
+        $full_summary = preg_replace('/^These are the tags:\s*/i', '', $full_summary);
+        $full_summary = preg_replace('/^Categories:\s*/i', '', $full_summary);
+        $full_summary = preg_replace('/^Tags:\s*/i', '', $full_summary);
+        $full_summary = trim($full_summary);
+        
+        // Get the desired excerpt length from options
+        $ai_summary_length = intval( esc_attr( get_option( 'kognetiks_ai_summaries_length', 55 ) ) );
+
+        // Trim the AI summary to the specified length
+        $trimmed_summary = wp_trim_words( $full_summary, $ai_summary_length, '' );
+
+        // Check if the text was trimmed by comparing the original and trimmed versions
+        if ( str_word_count( $full_summary ) > $ai_summary_length ) {
+            // Remove trailing punctuation if present
+            $trimmed_summary = rtrim($trimmed_summary, '.,!?;:');
+            // Append ellipsis
+            $trimmed_summary .= '...';
+        }
+
+        // Update the post_excerpt
+        wp_update_post( array(
+            'ID' => $pid,
+            'post_excerpt' => $trimmed_summary
+        ) );
+    }
+
+}
+
 // Insert or update an AI summary in the AI summary table
 function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modified ) {
 
@@ -729,6 +800,9 @@ function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modi
 
         // DIAG - Diagnostics
         // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary successfully inserted or updated.' );
+
+        // Update post_excerpt based on setting
+        kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary );
 
     }
 
@@ -906,6 +980,9 @@ function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modi
     // Handle any errors
     if ( $wpdb->last_error ) {
         kognetiks_ai_summaries_prod_trace( 'ERROR', 'Error updating AI summary in table' );
+    } else {
+        // Update post_excerpt based on setting
+        kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary );
     }
 
 }
@@ -953,6 +1030,19 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
 
     // If AI summary exists and is valid, use it
     if ( ! empty( $ai_summary ) && kognetiks_ai_summaries_validate_ai_summary( $ai_summary ) ) {
+
+        // Get the full AI summary from database for post_excerpt update
+        $full_ai_summary = kognetiks_ai_summaries_ai_summary_exists( $post->ID );
+        
+        // Check if post_excerpt should be updated based on setting
+        if ( ! empty( $full_ai_summary ) && kognetiks_ai_summaries_validate_ai_summary( $full_ai_summary ) ) {
+            $replacement_setting = esc_attr(get_option('kognetiks_ai_summaries_post_excerpt_replacement', 'Do Not Replace'));
+            
+            // Only update if setting is "Replace" or "Replace if Blank"
+            if ( $replacement_setting === 'Replace' || $replacement_setting === 'Replace if Blank' ) {
+                kognetiks_ai_summaries_update_post_excerpt( $post->ID, $full_ai_summary );
+            }
+        }
 
         // Get the desired excerpt length from options
         $ai_summary_length = intval( esc_attr( get_option( 'kognetiks_ai_summaries_length', 55 ) ) );

@@ -10,6 +10,7 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic, DeepSee
 
 ## What's new in Version 1.0.4
 
+* **Post Excerpt Replacement**: Added support for replacing the post_excerpt field in the posts table with AI generated summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.3.
 
 ## What's new in Version 1.0.3

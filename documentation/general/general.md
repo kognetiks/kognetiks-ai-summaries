@@ -29,6 +29,13 @@ The General Settings allow you to customize the basic behavior the Kognetiks AI 
    - **Default Value**: By default this value will be set to `55` words.
    - **Note**: The summary generated could be slight less or slightly more depending on the complexity of your content and the capabilities of the AI model you've selected.
 
+3. **Post Excerpt Replacement"**":
+
+   - **Description**: Control how the post_excerpt field in the posts table is handled when adding or updating AI summaries.
+   - **Default Value**: By default this value will be set to `Do Not Replace`.
+   - **Options**: `Do Not Replace`, `Replace`, and `Replace if Blank`.
+   - **Note**: The default is `Do Not Replace`, which means the post_excerpt field will not be modified when AI summaries are added or updated. `Replace` will add or update the post_excerpt field and overwrite any excerpt already present. `Replace if Blank` will add an AI generated summary should the post_excerpt field be empty.
+
 ---
 
 * **[Back to the Overview](/overview.md)**

@@ -123,6 +123,7 @@ function kognetiks_ai_summaries_additional_selections_section_callback($args) {
     ?>
     <p>Turn AI Summaries on/off for your site. <b>NOTE</b>: The default is off until you configure the plugin with a valid API key.</p>
     <p>Select the general length of the AI summaries in words. <b>NOTE</b>: The default is 55 words, however fewer or more words may be included in the summary based on analysis of the content by the AI platform of your choice.</p>
+    <p>Control how the post_excerpt field in the posts table is handled when adding or updating AI summaries. <b>NOTE</b>: The default is "Do Not Replace", which means the post_excerpt field will not be modified when AI summaries are added or updated.</p>
     <?php
 
 }
@@ -175,6 +176,25 @@ function kognetiks_ai_summaries_length_callback() {
         }
         ?>
     </select>
+    <?php
+
+}
+
+// Post Excerpt Replacement callback
+function kognetiks_ai_summaries_post_excerpt_replacement_callback() {
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_post_excerpt_replacement_callback');
+
+    $value = esc_attr(get_option('kognetiks_ai_summaries_post_excerpt_replacement', 'Do Not Replace'));
+
+    ?>
+    <select id="kognetiks_ai_summaries_post_excerpt_replacement" name="kognetiks_ai_summaries_post_excerpt_replacement">
+        <option value="Replace" <?php selected( $value, 'Replace' ); ?>><?php echo esc_html( 'Replace' ); ?></option>
+        <option value="Do Not Replace" <?php selected( $value, 'Do Not Replace' ); ?>><?php echo esc_html( 'Do Not Replace' ); ?></option>
+        <option value="Replace if Blank" <?php selected( $value, 'Replace if Blank' ); ?>><?php echo esc_html( 'Replace if Blank' ); ?></option>
+    </select>
+    <p class="description">Control how the post_excerpt field in the posts table is handled when adding or updating AI summaries.</p>
     <?php
 
 }
@@ -234,6 +254,16 @@ function kognetiks_ai_summaries_general_settings_init() {
         )
     );
 
+    // Post Excerpt Replacement Setting with sanitization
+    register_setting(
+        'kognetiks_ai_summaries_general_settings',
+        'kognetiks_ai_summaries_post_excerpt_replacement',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
     add_settings_section(
         'kognetiks_ai_summaries_additional_selections_section',
         'AI Summary Settings',
@@ -253,6 +283,14 @@ function kognetiks_ai_summaries_general_settings_init() {
         'kognetiks_ai_summaries_length',
         'AI Summaries Length (Words)',
         'kognetiks_ai_summaries_length_callback',
+        'kognetiks_ai_summaries_additional_selections_settings',
+        'kognetiks_ai_summaries_additional_selections_section'
+    );
+
+    add_settings_field(
+        'kognetiks_ai_summaries_post_excerpt_replacement',
+        'Post Excerpt Replacement',
+        'kognetiks_ai_summaries_post_excerpt_replacement_callback',
         'kognetiks_ai_summaries_additional_selections_settings',
         'kognetiks_ai_summaries_additional_selections_section'
     );
