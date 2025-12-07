@@ -1,9 +1,9 @@
 === Kognetiks AI Summaries ===
 Contributors: Kognetiks
-Tags: AI, Excerpts, Search, ChatGPT, Claude
+Tags: AI, Excerpts, Search, SEO, AEO
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
 Tested up to: 6.9
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -137,6 +137,10 @@ WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT
 5. Support
 
 == Changelog ==
+
+= 1.0.4 - Released TBD =
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.3.
 
 = 1.0.3 - Released 2025-12-07 =
 

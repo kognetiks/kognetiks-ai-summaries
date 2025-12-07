@@ -50,6 +50,10 @@ This plugin relies on external AI services for generating summaries of your page
 
 **NOTE**: If no API key is provided, or if communication with the selected service fails, the plugin will not generate summaries.
 
+## What's New in Version 1.0.4
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after relase of version 1.0.3.
+
 ## What's New in Version 1.0.3
 
 * **Google Gemini API Integration**: Added support for Google Gemini's API to provide advanced conversational capabilities for summaries.

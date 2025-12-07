@@ -8,6 +8,10 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic, DeepSee
 
 ## Documentation
 
+## What's new in Version 1.0.4
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.3.
+
 ## What's new in Version 1.0.3
 
 * **Google Gemini API Integration**: Added support for Google Gemini's API to provide advanced conversational capabilities for summaries.
