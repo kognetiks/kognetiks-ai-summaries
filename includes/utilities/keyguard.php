@@ -128,14 +128,14 @@ function kognetiks_ai_summaries_decrypt_api_key($data, $option_name = null) {
 
     // Fix the JSON before decrypting.
     $data = html_entity_decode($data);
-    // error_log('kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_decrypt_api_key() - $data: ' . print_r($data, true));
+    // kognetiks_ai_summaries_back_trace( 'WARNING', 'kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_decrypt_api_key() - $data: ' . print_r($data, true));
     
     // Attempt to decode the data as JSON.
     $decoded = json_decode($data, true);
     
     // If not in the expected JSON format, assume it's plain text.
     if (!is_array($decoded) || !isset($decoded['iv']) || !isset($decoded['encrypted'])) {
-        // error_log('kognetiks_ai_summaries - keyguard.php: Plaintext detected.');
+        // // kognetiks_ai_summaries_back_trace( 'WARNING', 'kognetiks_ai_summaries - keyguard.php: Plaintext detected.');
 
         $kognetiks_ai_summaries_ai_platform_choice = esc_attr( get_option('kognetiks_ai_summaries_ai_platform_choice') );
         switch ($kognetiks_ai_summaries_ai_platform_choice) {
@@ -154,6 +154,9 @@ function kognetiks_ai_summaries_decrypt_api_key($data, $option_name = null) {
             case 'Mistral':
                 $option_name = 'kognetiks_ai_summaries_mistral_api_key';
                 break;
+            case 'Google':
+                $option_name = 'kognetiks_ai_summaries_google_api_key';
+                break;
             case 'Azure OpenAI':
                 $option_name = 'kognetiks_ai_summaries_azure_api_key';
                 break;
@@ -168,7 +171,7 @@ function kognetiks_ai_summaries_decrypt_api_key($data, $option_name = null) {
         if (!empty($option_name)) {
             $encrypted_value = kognetiks_ai_summaries_encrypt_api_key($data);
             update_option($option_name, $encrypted_value);
-            // error_log('kognetiks_ai_summaries - keyguard.php: Updated option ' . $option_name . ' with encrypted value.');
+            // // kognetiks_ai_summaries_back_trace( 'WARNING', 'kognetiks_ai_summaries - keyguard.php: Updated option ' . $option_name . ' with encrypted value.');
         }
         // Return the plain text.
         return $data;
@@ -176,9 +179,9 @@ function kognetiks_ai_summaries_decrypt_api_key($data, $option_name = null) {
     
     // Otherwise, use the stored keyguard to decrypt.
     $keyguard = kognetiks_ai_summaries_generate_and_store_keyguard();
-    // error_log('kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_decrypt_api_key() - $keyguard: ' . $keyguard);
+    // // kognetiks_ai_summaries_back_trace( 'WARNING', 'kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_decrypt_api_key() - $keyguard: ' . $keyguard);
     $decrypted_key = kognetiks_ai_summaries_decrypt_api_key_with_key($data, $keyguard);
-    // error_log('kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_decrypt_api_key() - $decrypted_key: ' . $decrypted_key);
+    // // kognetiks_ai_summaries_back_trace( 'WARNING', 'kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_decrypt_api_key() - $decrypted_key: ' . $decrypted_key);
     return $decrypted_key;
 
 }
@@ -244,11 +247,13 @@ function kognetiks_ai_summaries_fetch_stored_api_keys($chatbot_ai_platform_choic
         'kognetiks_ai_summaries_anthropic_api_key' => esc_attr( get_option('kognetiks_ai_summaries_anthropic_api_key') ),
         'kognetiks_ai_summaries_deepseek_api_key' => esc_attr( get_option('kognetiks_ai_summaries_deepseek_api_key') ),
         'kognetiks_ai_summaries_mistral_api_key' => esc_attr( get_option('kognetiks_ai_summaries_mistral_api_key') ),
+        'kognetiks_ai_summaries_google_api_key' => esc_attr( get_option('kognetiks_ai_summaries_google_api_key') ),
         'kognetiks_ai_summaries_azure_api_key' => esc_attr( get_option('kognetiks_ai_summaries_azure_api_key') ),
+        'kognetiks_ai_summaries_local_api_key' => esc_attr( get_option('kognetiks_ai_summaries_local_api_key') ),
     );
 
     // DIAG - Diagnostics
-    // error_log('kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_fetch_stored_api_keys() - $stored_keys: ' . print_r($stored_keys, true));
+    // // kognetiks_ai_summaries_back_trace( 'WARNING', 'kognetiks_ai_summaries - keyguard.php: kognetiks_ai_summaries_fetch_stored_api_keys() - $stored_keys: ' . print_r($stored_keys, true));
 
     return $stored_keys;
 
@@ -269,8 +274,12 @@ function kognetiks_ai_summaries_update_stored_api_key($key_id, $new_encrypted_va
         update_option('kognetiks_ai_summaries_deepseek_api_key', $new_encrypted_value);
     } elseif ($key_id == 'kognetiks_ai_summaries_mistral_api_key') {
         update_option('kognetiks_ai_summaries_mistral_api_key', $new_encrypted_value);
+    } elseif ($key_id == 'kognetiks_ai_summaries_google_api_key') {
+        update_option('kognetiks_ai_summaries_google_api_key', $new_encrypted_value);
     } elseif ($key_id == 'kognetiks_ai_summaries_azure_api_key') {
         update_option('kognetiks_ai_summaries_azure_api_key', $new_encrypted_value);
+    } elseif ($key_id == 'kognetiks_ai_summaries_local_api_key') {
+        update_option('kognetiks_ai_summaries_local_api_key', $new_encrypted_value);
     }
 
 }

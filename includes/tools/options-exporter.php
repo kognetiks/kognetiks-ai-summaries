@@ -18,6 +18,11 @@ function kognetiks_ai_summaries_download_options_data() {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_download_options_data');
 
+    // Verify nonce for security
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_download_options_data')) {
+        wp_die(esc_html__('Security check failed.', 'kognetiks-ai-summaries'));
+    }
+
     global $wp_filesystem;
     global $wpdb;
 
@@ -42,7 +47,17 @@ function kognetiks_ai_summaries_download_options_data() {
 
     if ($options === false) {
         global $wpdb;
-        $options = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE 'kognetiks_ai_summaries%' AND option_name NOT LIKE '%api_key%'", ARRAY_A);
+        // Use $wpdb->prepare() for consistency and security best practices
+        // Table name is safe as it uses $wpdb->prefix
+        $table_name = $wpdb->prefix . 'options';
+        $options = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM `" . esc_sql($table_name) . "` WHERE option_name LIKE %s AND option_name NOT LIKE %s",
+                'kognetiks_ai_summaries%',
+                '%api_key%'
+            ),
+            ARRAY_A
+        );
         wp_cache_set($cache_key, $options);
     }
 

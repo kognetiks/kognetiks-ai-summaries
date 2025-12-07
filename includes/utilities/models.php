@@ -411,6 +411,113 @@ function kognetiks_ai_summaries_mistral_get_models() {
 
 }
 
+// Function to get the Model names from Google Gemini API
+function kognetiks_ai_summaries_google_gemini_get_models() {
+
+    // DIAG - Diagnostics
+    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_google_gemini_get_models');
+
+    $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_api_key'));
+    // Decrypt the API key - Ver 2.2.6
+    $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+
+    // Default model list
+    $default_model_list = array(
+        array(
+            'id' => 'gemini-2.5-flash',
+            'object' => 'model',
+            'created' => null,
+            'owned_by' => 'google',
+        ),
+        array(
+            'id' => 'gemini-2.5-pro',
+            'object' => 'model',
+            'created' => null,
+            'owned_by' => 'google',
+        ),
+    );
+
+    // Check if the API key is empty
+    if (empty($api_key)) {
+        return $default_model_list;
+    }
+
+    // Get the base URL from Google settings or default
+    $google_base_url = esc_attr(get_option('kognetiks_ai_summaries_google_gemini_base_url', 'https://generativelanguage.googleapis.com/v1beta'));
+    $google_base_url = rtrim($google_base_url, '/');
+    
+    // Remove /models if present to ensure we have just the base URL
+    if (substr($google_base_url, -7) === '/models') {
+        $google_base_url = substr($google_base_url, 0, -7);
+    }
+
+    // Google API endpoint for listing models
+    $google_models_url = $google_base_url . '/models';
+    
+    // Add API key as query parameter
+    $google_models_url = add_query_arg('key', $api_key, $google_models_url);
+
+    // Set headers
+    $args = array(
+        'headers' => array(
+            'Content-Type' => 'application/json',
+        ),
+    );
+
+    // Perform the request
+    $response = wp_remote_get($google_models_url, $args);
+
+    // Check for errors in the response
+    if (is_wp_error($response)) {
+        return $default_model_list;
+    }
+
+    // Decode the JSON response
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+
+    // Check for API errors
+    if (isset($data['error'])) {
+        return $default_model_list;
+    }
+
+    // Extract and return the models
+    // Google API returns models in a 'models' array
+    if (isset($data['models']) && is_array($data['models'])) {
+        $models = array();
+        foreach ($data['models'] as $model) {
+            // Only include models that support generateContent
+            if (isset($model['supportedGenerationMethods']) && 
+                in_array('generateContent', $model['supportedGenerationMethods'])) {
+                // Extract model name - Google returns "models/gemini-2.5-flash" format
+                $model_name = $model['name'] ?? $model['displayName'] ?? '';
+                // Remove "models/" prefix if present to store just the model identifier
+                if (strpos($model_name, 'models/') === 0) {
+                    $model_name = substr($model_name, 7); // Remove "models/" prefix
+                }
+                $models[] = array(
+                    'id' => $model_name,
+                    'object' => 'model',
+                    'created' => null,
+                    'owned_by' => 'google',
+                );
+            }
+        }
+        
+        // If we got valid models, return them; otherwise return default
+        if (!empty($models)) {
+            // Sort the models by name
+            usort($models, function ($a, $b) {
+                return $a['id'] <=> $b['id'];
+            });
+            return $models;
+        }
+    }
+
+    // Return default model list if API call failed or returned no valid models
+    return $default_model_list;
+
+}
+
 // Fetch the local models
 function kognetiks_ai_summaries_local_get_models() {
     
@@ -485,6 +592,10 @@ function kognetiks_ai_summaries_get_api_base_url() {
             return esc_attr(get_option('kognetiks_ai_summaries_mistral_base_url', 'https://api.mistral.ai/v1'));
             break;
 
+        case 'Google':
+            return esc_attr(get_option('kognetiks_ai_summaries_google_gemini_base_url', 'https://generativelanguage.googleapis.com/v1beta'));
+            break;
+
         case 'Local':
             return esc_attr(get_option('kognetiks_ai_summaries_local_base_url', 'http://127.0.0.1:1337/v1'));
             break;
@@ -540,6 +651,15 @@ function kognetiks_ai_summaries_get_chat_completions_api_url() {
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: Mistral API' );
             return kognetiks_ai_summaries_get_api_base_url() . "/chat/completions";
+            break;
+
+        case 'Google':
+
+            // DIAG - Diagnostics
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_get_chat_completions_api_url: Google API' );
+            // Note: Google uses a different endpoint format (/models/{model}:generateContent)
+            // This function is not used by Google API calls, but included for consistency
+            return kognetiks_ai_summaries_get_api_base_url() . "/models";
             break;
 
         case 'Local':

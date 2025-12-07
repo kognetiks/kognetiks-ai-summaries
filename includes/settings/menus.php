@@ -10,7 +10,7 @@
 
  // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-    die;
+    die();
 }
 
 // Use a number lower than default (10), e.g., 5.

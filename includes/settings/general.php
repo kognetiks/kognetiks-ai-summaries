@@ -83,6 +83,11 @@ function kognetiks_ai_summaries_ai_platform_choice_callback($args) {
         $kognetiks_ai_summaries_ai_platform_choice = 'Mistral';
         update_option('kognetiks_ai_summaries_ai_platform_choice', 'Mistral');
 
+    } else if ($kognetiks_ai_summaries_ai_platform_choice == 'Google') {
+
+        $kognetiks_ai_summaries_ai_platform_choice = 'Google';
+        update_option('kognetiks_ai_summaries_ai_platform_choice', 'Google');
+
     } else if ($kognetiks_ai_summaries_ai_platform_choice == 'Local') {
 
         $kognetiks_ai_summaries_ai_platform_choice = 'Local';
@@ -102,6 +107,7 @@ function kognetiks_ai_summaries_ai_platform_choice_callback($args) {
         <option value="Anthropic" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'Anthropic' ); ?>><?php echo esc_html( 'Anthropic' ); ?></option>
         <option value="DeepSeek" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'DeepSeek' ); ?>><?php echo esc_html( 'DeepSeek' ); ?></option>
         <option value="Mistral" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'Mistral' ); ?>><?php echo esc_html( 'Mistral' ); ?></option>
+        <option value="Google" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'Google' ); ?>><?php echo esc_html( 'Google' ); ?></option>
         <option value="Local" <?php selected( $kognetiks_ai_summaries_ai_platform_choice, 'Local' ); ?>><?php echo esc_html( 'Local' ); ?></option>
     </select>
     <?php
@@ -136,6 +142,8 @@ function kognetiks_ai_summaries_additional_selections_callback($args) {
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'DeepSeek' && esc_attr(get_option('kognetiks_ai_summaries_deepseek_api_key')) == '') {
         $kognetiks_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Mistral' && esc_attr(get_option('kognetiks_ai_summaries_mistral_api_key')) == '') {
+        $kognetiks_ai_summaries_enabled = 'Off';
+    } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Google' && esc_attr(get_option('kognetiks_ai_summaries_google_api_key')) == '') {
         $kognetiks_ai_summaries_enabled = 'Off';
     } elseif (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice')) == 'Local' && esc_attr(get_option('kognetiks_ai_summaries_local_api_key')) == '') {
         $kognetiks_ai_summaries_enabled = 'Off';

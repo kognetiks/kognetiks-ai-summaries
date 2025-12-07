@@ -148,6 +148,11 @@ function kognetiks_ai_summaries_error_log($message) {
 // Log plugin errors to the server - Ver 1.0.0
 function kognetiks_ai_summaries_log_error() {
 
+    // Security: Check user capabilities
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('Unauthorized access.', 'kognetiks-ai-summaries'));
+    }
+
     global $wp_filesystem;
     
     if (isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'kognetiks_ai_summaries_diagnostics_action')) {
@@ -193,8 +198,8 @@ function kognetiks_ai_summaries_log_error() {
 
 }
 // Register AJAX actions
+// Security: Only allow authenticated administrators to log errors
 add_action('wp_ajax_kognetiks_ai_summaries_log_error', 'kognetiks_ai_summaries_log_error');
-add_action('wp_ajax_nopriv_kognetiks_ai_summaries_log_error', 'kognetiks_ai_summaries_log_error');
 
 // Determine if the plugin is installed
 function kognetiks_ai_summaries_get_plugin_version() {

@@ -2,12 +2,12 @@
 /*
  * Plugin Name: Kognetiks AI Summaries
  * Plugin URI:  https://github.com/kognetiks/kognetiks-ai-summaries
- * Description: This simple plugin adds an AI powered summaries of posts and page excerpts.
- * Version:     1.0.2
+ * Description: This simple plugin adds AI-powered summaries of posts and page excerpts.
+ * Version:     1.0.3
  * Author:      Kognetiks.com
  * Author URI:  https://www.kognetiks.com
  * License:     GPLv3 or later
- * License URI: https://www.gnu.org/licenses/gpl-30.html
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * 
  * Copyright (c) 2024-2025 Stephen Howell
  *  
@@ -31,7 +31,7 @@ $kognetiks_ai_summaries_plugin_name = 'kognetiks-ai-summaries';
 
 // Globals for plugin version
 global $kognetiks_ai_summaries_plugin_version;
-$kognetiks_ai_summaries_plugin_version = '1.0.2';
+$kognetiks_ai_summaries_plugin_version = '1.0.3';
 
 // Plugin directory path
 global $kognetiks_ai_summaries_plugin_dir_path;
@@ -51,8 +51,9 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/functions/categories.php';
 // Include the necessary files - Main files
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/anthropic-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/deepseek-api.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/mistral-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/google-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/local-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/mistral-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/nvidia-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api-calls/openai-api.php';
 
@@ -63,6 +64,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/general.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/menus.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-anthropic.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-deepseek.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-google.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-local.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-mistral.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
@@ -122,6 +124,54 @@ function kognetiks_ai_summaries_enqueue_admin_scripts() {
 }
 add_action('admin_enqueue_scripts', 'kognetiks_ai_summaries_enqueue_admin_scripts');
 
+// Validate AI summary response to ensure it's not an error or placeholder text
+function kognetiks_ai_summaries_validate_ai_summary( $summary ) {
+    
+    if ( empty( $summary ) || ! is_string( $summary ) ) {
+        return false;
+    }
+    
+    // Check if it's the ERROR string
+    if ( $summary === 'ERROR' ) {
+        return false;
+    }
+    
+    // Check if it's an error response from the error_responses array
+    global $kognetiks_ai_summaries_error_responses;
+    if ( in_array( $summary, $kognetiks_ai_summaries_error_responses, true ) ) {
+        return false;
+    }
+    
+    // Check for common error messages
+    $error_patterns = array(
+        'An API error occurred',
+        'An error occurred',
+        'Error:',
+        'Please check Settings',
+        'No valid response',
+        'No response received',
+        'Understood. Please provide',
+        'Please provide the content',
+        'I understand',
+        'I\'m ready',
+        'How can I help',
+        'What would you like',
+    );
+    
+    foreach ( $error_patterns as $pattern ) {
+        if ( stripos( $summary, $pattern ) !== false ) {
+            return false;
+        }
+    }
+    
+    // Check if the summary is too short (likely not a real summary)
+    if ( str_word_count( $summary ) < 5 ) {
+        return false;
+    }
+    
+    return true;
+}
+
 // Return an AI summary for the page or post
 function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
@@ -142,6 +192,12 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
         // DIAG - Diagnostics
         // kognetiks_ai_summaries_back_trace( 'NOTICE', "AI summary generation for Post ID {$pid} is already in progress." );
 
+        // Try to get existing summary from database if available
+        $existing_summary = kognetiks_ai_summaries_ai_summary_exists($pid);
+        if ( ! empty( $existing_summary ) && kognetiks_ai_summaries_validate_ai_summary( $existing_summary ) ) {
+            return $existing_summary;
+        }
+        
         return null; // Exit early to prevent duplicate processing
 
     }
@@ -209,6 +265,11 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
             $model = esc_attr(get_option('kognetiks_ai_summaries_mistral_model_choice', 'mistral-small-latest'));
             break;
 
+        case 'Google':
+
+            $model = esc_attr(get_option('kognetiks_ai_summaries_google_gemini_model_choice', 'gemini-2.5-flash'));
+            break;
+
         case 'Local':
 
             $model = esc_attr(get_option('kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct'));
@@ -225,10 +286,24 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     // Check for an existing AI summary
     $ai_summary = kognetiks_ai_summaries_ai_summary_exists($pid);
     
+    // Validate existing summary - if it's invalid, treat it as if it doesn't exist
+    if ( ! empty( $ai_summary ) && ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary ) ) {
+        // Delete the invalid summary from database
+        kognetiks_ai_summaries_delete_ai_summary( $pid );
+        // Clear cache
+        wp_cache_delete( 'kognetiks_ai_summaries_' . $pid );
+        // Set to null to trigger regeneration
+        $ai_summary = null;
+    }
+    
     // Handle a generation error from earlier summarization
     if ($ai_summary == 'An API error occurred.') {
-        // Try to generate a new AI summary
-        $ai_summary = false;
+        // Delete the error summary from database
+        kognetiks_ai_summaries_delete_ai_summary( $pid );
+        // Clear cache
+        wp_cache_delete( 'kognetiks_ai_summaries_' . $pid );
+        // Set to null to trigger regeneration
+        $ai_summary = null;
     }
 
     switch ($ai_summary) {
@@ -240,20 +315,21 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
             $ai_summary = kognetiks_ai_summaries_generate_ai_summary_api($model, $content);
 
-            if ($ai_summary == 'ERROR') {
+            // Validate the AI summary response
+            if ($ai_summary == 'ERROR' || ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary )) {
 
                 // DIAG - Diagnostics
-                // kognetiks_ai_summaries_back_trace( 'NOTICE', 'An API error occurred.' );
+                // kognetiks_ai_summaries_back_trace( 'NOTICE', 'An API error occurred or invalid response received.' );
 
                 // Release the lock
                 delete_transient( $lock_key );
 
-                // Return an error response
-                return $kognetiks_ai_summaries_error_responses[array_rand($kognetiks_ai_summaries_error_responses)];
+                // Return null to indicate failure (don't return error message as it might be used as excerpt)
+                return null;
 
             } else {
 
-                // Insert the AI summary
+                // Insert the AI summary only if it's valid
                 kognetiks_ai_summaries_insert_ai_summary($pid, $ai_summary, $post_modified);
 
             }
@@ -286,20 +362,21 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
                 // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary is stale' );
                 $ai_summary = kognetiks_ai_summaries_generate_ai_summary_api($model, $content);
 
-                if ($ai_summary == 'ERROR') {
+                // Validate the AI summary response
+                if ($ai_summary == 'ERROR' || ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary )) {
 
                     // DIAG - Diagnostics
-                    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'An API error occurred.' );
+                    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'An API error occurred or invalid response received.' );
     
                     // Release the lock
                     delete_transient( $lock_key );
                     
-                    // Return an error response
-                    return $kognetiks_ai_summaries_error_responses[array_rand($kognetiks_ai_summaries_error_responses)];
+                    // Return null to indicate failure (don't return error message as it might be used as excerpt)
+                    return null;
     
                 } else {
 
-                    // Update the AI summary
+                    // Update the AI summary only if it's valid
                     kognetiks_ai_summaries_update_ai_summary($pid, $ai_summary, $post_modified);
 
                 }
@@ -323,6 +400,18 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
                 break;
             }
 
+    }
+
+    // Final validation check - ensure we have a valid summary before processing
+    if ( empty( $ai_summary ) || ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary ) ) {
+        
+        // DIAG - Diagnostics
+        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Invalid or empty AI summary, returning null' );
+        
+        // Release the lock
+        delete_transient( $lock_key );
+        
+        return null;
     }
 
     // Get the desired excerpt length from options
@@ -354,6 +443,17 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
         $ai_summary = substr($ai_summary, 26);
 
     }
+
+    // Remove unwanted prefixes for categories and tags
+    $ai_summary = preg_replace('/^These Are The Categories:\s*/i', '', $ai_summary);
+    $ai_summary = preg_replace('/^These Are The Tags:\s*/i', '', $ai_summary);
+    $ai_summary = preg_replace('/^These are the categories:\s*/i', '', $ai_summary);
+    $ai_summary = preg_replace('/^These are the tags:\s*/i', '', $ai_summary);
+    // Remove "Categories: " prefix - Ver 1.0.3
+    $ai_summary = preg_replace('/^Categories:\s*/i', '', $ai_summary);
+    // Remove "Tags: " prefix - Ver 1.0.3
+    $ai_summary = preg_replace('/^Tags:\s*/i', '', $ai_summary);
+    $ai_summary = trim($ai_summary);
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
@@ -392,7 +492,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
             $category_count = esc_attr(get_option('kognetiks_ai_summaries_category_count', 3));
 
             // Prepare special instructions if needed
-            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $category_count . " one-word (no compound words) categories or fewer and just return the three categories seperated by commas with stating that these are the categories: ";
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $category_count . " one-word (no compound words) categories or fewer and just return the categories separated by commas without stating that these are the categories: ";
 
             break;
 
@@ -402,7 +502,7 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
             $tag_count = esc_attr(get_option('kognetiks_ai_summaries_tag_count', 3));
 
             // Prepare special instructions if needed
-            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $tag_count . " one-word (no compound words) tags or fewer and just return the three tags seperated by commas with stating that these are the tags: ";
+            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $tag_count . " one-word (no compound words) tags or fewer and just return the tags separated by commas without stating that these are the tags: ";
 
             break;
 
@@ -476,6 +576,19 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
             break;
 
+        case 'Google':
+
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Google Gemini API');
+            $api_key = esc_attr(get_option('kognetiks_ai_summaries_google_api_key'));
+            // Decrypt the API key - Ver 2.2.6
+            $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding special instructions to the content');
+            $message = $special_instructions . $content;
+            $response = kognetiks_ai_summaries_google_api_call($api_key, $message);
+            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$Response: ' . print_r($response, true));
+
+            break;
+
         case 'Local':
 
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Calling Local API');
@@ -528,6 +641,17 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
     // REMOVE EXTRA SPACES
     $response = preg_replace('/\s+/', ' ', $response);
 
+    // REMOVE UNWANTED PREFIXES - Strip "These Are The Categories:" or "These Are The Tags:" prefixes
+    $response = preg_replace('/^These Are The Categories:\s*/i', '', $response);
+    $response = preg_replace('/^These Are The Tags:\s*/i', '', $response);
+    $response = preg_replace('/^These are the categories:\s*/i', '', $response);
+    $response = preg_replace('/^These are the tags:\s*/i', '', $response);
+    // Remove "Categories: " prefix - Ver 1.0.3
+    $response = preg_replace('/^Categories:\s*/i', '', $response);
+    // Remove "Tags: " prefix - Ver 1.0.3
+    $response = preg_replace('/^Tags:\s*/i', '', $response);
+    $response = trim($response);
+
     // Return the AI summary
     return $response;
 
@@ -542,7 +666,9 @@ function kognetiks_ai_summaries_create_ai_summary_table() {
     global $wpdb;
 
     // If table exists, return
-    if ( $wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}kognetiks_ai_summaries'") == "{$wpdb->prefix}kognetiks_ai_summaries" ) {
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    // Using esc_sql for table name validation (table name is safe as it's constructed from $wpdb->prefix)
+    if ( $wpdb->get_var( "SHOW TABLES LIKE '" . esc_sql( $table_name ) . "'" ) == $table_name ) {
         return;
     }
 
@@ -825,8 +951,8 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
     // Attempt to generate or retrieve the AI summary
     $ai_summary = kognetiks_ai_summaries_generate_ai_summary( $post->ID );
 
-    // If AI summary exists, use it
-    if ( ! empty( $ai_summary ) ) {
+    // If AI summary exists and is valid, use it
+    if ( ! empty( $ai_summary ) && kognetiks_ai_summaries_validate_ai_summary( $ai_summary ) ) {
 
         // Get the desired excerpt length from options
         $ai_summary_length = intval( esc_attr( get_option( 'kognetiks_ai_summaries_length', 55 ) ) );
@@ -836,7 +962,7 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
 
     } else {
 
-        // AI summary not available, proceed with default excerpt generation
+        // AI summary not available or invalid, proceed with default excerpt generation
 
         $excerpt = $post->post_excerpt;
 
