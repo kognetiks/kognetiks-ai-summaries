@@ -23,21 +23,24 @@ function kognetiks_ai_summaries_settings_page() {
         return;
     }
 
-    // Verify the nonce for tab navigation
-    if (isset($_GET['kognetiks_ai_summaries_tab_nonce'])) {
-        if (!check_admin_referer('kognetiks_ai_summaries_tab_navigation', 'kognetiks_ai_summaries_tab_nonce')) {
-            // kognetiks_ai_summaries_back_trace( 'ERROR', 'Nonce verification failed.');
-            return;
-        } else {
-            $active_tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'general';
-            // kognetiks_ai_summaries_back_trace( 'WARNING', 'Nonce verification passed. $active_tab: ' . $active_tab);
-        }
-    } else {
-        $active_tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'general';
-        // kognetiks_ai_summaries_back_trace( 'WARNING', 'Nonce verification not required. $active_tab: ' . $active_tab);
-    }
+    // Tabs
+    $tabs = array(
+        'general'   => 'General',
+        'api'       => 'API/OpenAI',
+        'summaries' => 'Summaries',
+        // ...
+    );
 
-    $active_tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'general';
+    // Default tab
+    $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
+
+    // Verify nonce for tab navigation only if nonce is present
+    if ( isset( $_GET['kognetiks_ai_summaries_tab_nonce'] ) ) {
+        if ( ! check_admin_referer( 'kognetiks_ai_summaries_tab_navigation', 'kognetiks_ai_summaries_tab_nonce' ) ) {
+            // Nonce failed, fall back to general (or just return)
+            $active_tab = 'general';
+        }
+    }
     $settings_updated = isset($_GET['settings-updated']) ? sanitize_text_field(wp_unslash($_GET['settings-updated'])) : '';
 
     if ($settings_updated) {
@@ -94,20 +97,54 @@ function kognetiks_ai_summaries_settings_page() {
     <div class="wrap">
         <h1><span class="dashicons dashicons-text"></span> Kognetiks AI Summaries</h1>
 
-        <h2 class="nav-tab-wrapper">
-            <a href="?page=kognetiks-ai-summaries&tab=general" class="nav-tab <?php echo $active_tab == 'general' ? 'nav-tab-active' : ''; ?>">General</a>
-            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'OpenAI') { ?><a href="?page=kognetiks-ai-summaries&tab=api_openai" class="nav-tab <?php echo $active_tab == 'api_openai' ? 'nav-tab-active' : ''; ?>">API/OpenAI</a> <?php } ?>
-            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'NVIDIA') { ?><a href="?page=kognetiks-ai-summaries&tab=api_nvidia" class="nav-tab <?php echo $active_tab == 'api_nvidia' ? 'nav-tab-active' : ''; ?>">API/NVIDIA</a> <?php } ?>
-            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Anthropic') { ?><a href="?page=kognetiks-ai-summaries&tab=api_anthropic" class="nav-tab <?php echo $active_tab == 'api_anthropic' ? 'nav-tab-active' : ''; ?>">API/Anthropic</a> <?php } ?>
-            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'DeepSeek') { ?><a href="?page=kognetiks-ai-summaries&tab=api_deepseek" class="nav-tab <?php echo $active_tab == 'api_deepseek' ? 'nav-tab-active' : ''; ?>">API/DeepSeek</a> <?php } ?>
-            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Mistral') { ?><a href="?page=kognetiks-ai-summaries&tab=api_mistral" class="nav-tab <?php echo $active_tab == 'api_mistral' ? 'nav-tab-active' : ''; ?>">API/Mistral</a> <?php } ?>
-            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Google') { ?><a href="?page=kognetiks-ai-summaries&tab=api_google" class="nav-tab <?php echo $active_tab == 'api_google' ? 'nav-tab-active' : ''; ?>">API/Google</a> <?php } ?>
-            <?php if (esc_attr(get_option('kognetiks_ai_summaries_ai_platform_choice', 'OpenAI')) == 'Local') { ?><a href="?page=kognetiks-ai-summaries&tab=api_local" class="nav-tab <?php echo $active_tab == 'api_local' ? 'nav-tab-active' : ''; ?>">API/Local</a> <?php } ?>
-            <a href="?page=kognetiks-ai-summaries&tab=diagnostics" class="nav-tab <?php echo $active_tab == 'diagnostics' ? 'nav-tab-active' : ''; ?>">Diagnostics</a>
-            <a href="?page=kognetiks-ai-summaries&tab=tools" class="nav-tab <?php echo $active_tab == 'tools' ? 'nav-tab-active' : ''; ?>">Tools</a>
-            <a href="?page=kognetiks-ai-summaries&tab=support" class="nav-tab <?php echo $active_tab == 'support' ? 'nav-tab-active' : ''; ?>">Support</a>
-       </h2>
+        <?php
+        $platform = get_option( 'kognetiks_ai_summaries_ai_platform_choice', 'OpenAI' );
+        $platform = is_string( $platform ) ? $platform : 'OpenAI';
 
+        $api_tabs = array(
+            'OpenAI'     => array( 'tab' => 'api_openai',    'label' => 'API/OpenAI' ),
+            'NVIDIA'     => array( 'tab' => 'api_nvidia',    'label' => 'API/NVIDIA' ),
+            'Anthropic'  => array( 'tab' => 'api_anthropic', 'label' => 'API/Anthropic' ),
+            'DeepSeek'   => array( 'tab' => 'api_deepseek',  'label' => 'API/DeepSeek' ),
+            'Mistral'    => array( 'tab' => 'api_mistral',   'label' => 'API/Mistral' ),
+            'Google'     => array( 'tab' => 'api_google',    'label' => 'API/Google' ),
+            'Local'      => array( 'tab' => 'api_local',     'label' => 'API/Local' ),
+        );
+
+        $base_url = admin_url( 'admin.php?page=kognetiks-ai-summaries' );
+
+        $tabs = array(
+            'general'     => array( 'label' => 'General',     'href' => add_query_arg( 'tab', 'general', $base_url ) ),
+            'summaries'   => array( 'label' => 'Summaries',   'href' => add_query_arg( 'tab', 'summaries', $base_url ) ),
+            'diagnostics' => array( 'label' => 'Diagnostics', 'href' => add_query_arg( 'tab', 'diagnostics', $base_url ) ),
+            'tools'       => array( 'label' => 'Tools',       'href' => add_query_arg( 'tab', 'tools', $base_url ) ),
+            'support'     => array( 'label' => 'Support',     'href' => add_query_arg( 'tab', 'support', $base_url ) ),
+        );
+
+        // Inject the one visible API tab right after General (matches your current behavior).
+        if ( isset( $api_tabs[ $platform ] ) ) {
+            $api = $api_tabs[ $platform ];
+            $tabs = array_slice( $tabs, 0, 1, true )
+                + array(
+                    $api['tab'] => array(
+                        'label' => $api['label'],
+                        'href'  => add_query_arg( 'tab', $api['tab'], $base_url ),
+                    ),
+                )
+                + array_slice( $tabs, 1, null, true );
+        }
+        ?>
+
+        <h2 class="nav-tab-wrapper">
+            <?php foreach ( $tabs as $tab_key => $tab ) : ?>
+                <a
+                    href="<?php echo esc_url( $tab['href'] ); ?>"
+                    class="nav-tab <?php echo ( $active_tab === $tab_key ) ? 'nav-tab-active' : ''; ?>"
+                >
+                    <?php echo esc_html( $tab['label'] ); ?>
+                </a>
+            <?php endforeach; ?>
+        </h2>
 
        <form id="kognetiks-ai-summaries-settings-form" action="options.php" method="post">
             <?php
@@ -265,6 +302,22 @@ function kognetiks_ai_summaries_settings_page() {
                 do_settings_sections('kognetiks_ai_summaries_local_advanced_settings');
                 echo '</div>';
 
+
+            } elseif ($active_tab == 'summaries') {
+
+                settings_fields('kognetiks_ai_summaries_summaries_settings');
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_summaries_settings');
+                echo '</div>';
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_summaries_taxonomy_settings');
+                echo '</div>';
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_summaries_post_types_settings');
+                echo '</div>';
 
             } elseif ($active_tab == 'tools') {
 

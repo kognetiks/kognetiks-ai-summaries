@@ -70,6 +70,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-mistral.p
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-nvidia.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-openai.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/settings-summaries.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/support.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings/tools.php';
 
@@ -175,11 +176,37 @@ function kognetiks_ai_summaries_validate_ai_summary( $summary ) {
 // Return an AI summary for the page or post
 function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_generate_ai_summary' );
+    // TEMP INSTRUMENTATION - remove after debugging
+    if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+        error_log( '[KAS_DEBUG] kognetiks_ai_summaries_generate_ai_summary ENTER pid=' . (int) $pid );
+    }
 
     global $wpdb;
     global $kognetiks_ai_summaries_error_responses;
+
+    // Gate by post type: only generate for enabled post types.
+    $post = get_post( $pid );
+    if ( ! $post ) {
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: post not found pid=' . (int) $pid );
+        }
+        return null;
+    }
+    $enabled_types = get_option( 'kognetiks_ai_summaries_enabled_post_types', null );
+    if ( null === $enabled_types || ! is_array( $enabled_types ) ) {
+        $enabled_types = function_exists( 'kognetiks_ai_summaries_default_enabled_post_types' ) ? kognetiks_ai_summaries_default_enabled_post_types() : array( 'post' => 1, 'page' => 1 );
+    }
+    $gen_cat = get_option( 'kognetiks_ai_summaries_generate_categories', 1 );
+    $gen_tag = get_option( 'kognetiks_ai_summaries_generate_tags', 1 );
+    if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+        error_log( '[KAS_DEBUG] toggles enabled_post_types=' . wp_json_encode( $enabled_types ) . ' generate_categories=' . $gen_cat . ' generate_tags=' . $gen_tag );
+    }
+    if ( 1 !== (int) ( $enabled_types[ $post->post_type ] ?? 0 ) ) {
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: post_type not enabled pid=' . (int) $pid . ' post_type=' . $post->post_type );
+        }
+        return null;
+    }
 
     // Check that the table exists, if not create it
     kognetiks_ai_summaries_create_ai_summary_table();
@@ -189,15 +216,22 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
     if ( get_transient( $lock_key ) ) {
 
-        // DIAG - Diagnostics
-        // kognetiks_ai_summaries_back_trace( 'NOTICE', "AI summary generation for Post ID {$pid} is already in progress." );
+        // TEMP INSTRUMENTATION
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+            error_log( '[KAS_DEBUG] generate_ai_summary LOCK set for pid=' . (int) $pid );
+        }
 
         // Try to get existing summary from database if available
         $existing_summary = kognetiks_ai_summaries_ai_summary_exists($pid);
         if ( ! empty( $existing_summary ) && kognetiks_ai_summaries_validate_ai_summary( $existing_summary ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+                error_log( '[KAS_DEBUG] generate_ai_summary RETURN existing (lock) pid=' . (int) $pid );
+            }
             return $existing_summary;
         }
-        
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: lock, no valid existing pid=' . (int) $pid );
+        }
         return null; // Exit early to prevent duplicate processing
 
     }
@@ -213,25 +247,33 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
      $cache_key = 'kognetiks_ai_summaries_post_' . $pid;
      $row = wp_cache_get($cache_key);
      
-     if ($row === false) {
+    if ($row === false) {
 
-         $post = get_post($pid);
+        $post = get_post($pid);
      
-         if ($post) {
+        if ($post) {
 
-             $row = (object) [
-                 'post_content' => $post->post_content,
-                 'post_modified' => $post->post_modified,
-             ];
-             wp_cache_set($cache_key, $row);
+            $row = (object) [
+                'post_content' => $post->post_content,
+                'post_modified' => $post->post_modified,
+            ];
+            wp_cache_set($cache_key, $row);
 
-         } else {
+        } else {
 
-             $row = null;
+            $row = null;
 
-         }
+        }
 
-     }
+    }
+
+    if ( ! $row || ! is_object( $row ) || ! isset( $row->post_content, $row->post_modified ) ) {
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
+            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: missing row/post_content/post_modified pid=' . (int) $pid );
+        }
+        delete_transient( $lock_key );
+        return null;
+    }
 
     $content = $row->post_content;
     $post_modified = $row->post_modified;
@@ -334,21 +376,17 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
             }
 
-            // Generate the AI categories
-            $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
-            // DIAG - Diagnostics
-            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
+            // Generate the AI categories (if enabled)
+            if ( 1 === (int) get_option( 'kognetiks_ai_summaries_generate_categories', 1 ) ) {
+                $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
+                kognetiks_ai_summaries_add_categories($pid, $ai_categories);
+            }
 
-            // Add the categories to the post
-            kognetiks_ai_summaries_add_categories($pid, $ai_categories);
-
-            // // Generate the AI tags
-            $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
-            // DIAG - Diagnostics
-            // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
-
-            // Add the tags to the post
-            kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+            // Generate the AI tags (if enabled)
+            if ( 1 === (int) get_option( 'kognetiks_ai_summaries_generate_tags', 1 ) ) {
+                $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
+                kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+            }
 
             break;
 
@@ -381,21 +419,17 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
                 }
 
-                // Generate the AI categories            
-                $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
-                // DIAG - Diagnostics
-                // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_categories: ' . $ai_categories );
+                // Generate the AI categories (if enabled)
+                if ( 1 === (int) get_option( 'kognetiks_ai_summaries_generate_categories', 1 ) ) {
+                    $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
+                    kognetiks_ai_summaries_add_categories($pid, $ai_categories);
+                }
 
-                // Add the categories to the post
-                kognetiks_ai_summaries_add_categories($pid, $ai_categories);
-
-                // Generate the AI tags
-                $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
-                // DIAG - Diagnostics
-                // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_tags: ' . $ai_tags );
-
-                // Add the tags to the post
-                kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+                // Generate the AI tags (if enabled)
+                if ( 1 === (int) get_option( 'kognetiks_ai_summaries_generate_tags', 1 ) ) {
+                    $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
+                    kognetiks_ai_summaries_add_tags($pid, $ai_tags);
+                }
 
                 break;
             }
