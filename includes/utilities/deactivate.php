@@ -132,7 +132,7 @@ function kognetiks_ai_summaries_uninstall(){
 
         // Validate the table name to ensure it meets expected criteria
         if (!preg_match('/^[a-zA-Z0-9_]+$/', $table_name)) {
-            // error_log('Unexpected table name: ' . esc_html($table_name));
+            // kognetiks_ai_summaries_back_trace( 'ERROR', 'Unexpected table name: ' . esc_html($table_name) );
             wp_die('Invalid table name: ' . esc_html($table_name));
         }
 
@@ -144,7 +144,7 @@ function kognetiks_ai_summaries_uninstall(){
             // Clear the cache
             wp_cache_flush();
         } else {
-            // error_log('Unexpected table name: ' . $table_name);
+            // kognetiks_ai_summaries_back_trace( 'ERROR', 'Unexpected table name: ' . $table_name );
             wp_die('Invalid table name: ' . esc_html($table_name));
         }
     

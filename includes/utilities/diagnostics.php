@@ -13,7 +13,7 @@ if ( ! defined( 'WPINC' ) ) {
     die();
 }
 
-// Production Back Trace Function - Ver 1.0.0
+// Production Back Trace Function - Ver 1.0.4
 function kognetiks_ai_summaries_prod_trace($message_type = "NOTICE", $message = "No message") {
 
     // Trace production messages to the error log
@@ -21,7 +21,7 @@ function kognetiks_ai_summaries_prod_trace($message_type = "NOTICE", $message = 
 
 }
 
-// Back Trace Function - Ver 1.0.0
+// Back Trace Function - Ver 1.0.4
 function kognetiks_ai_summaries_back_trace($message_type = "NOTICE", $message = "No message") {
 
     // Usage Instructions
@@ -46,20 +46,20 @@ function kognetiks_ai_summaries_back_trace($message_type = "NOTICE", $message = 
     // kognetiks_ai_summaries_back_trace( 'SUCCESS', 'Some message');
 
     // Check if diagnostics is On
-    $kognetiks_ai_summaries_diagnostics = esc_attr(get_option('kognetiks_ai_summaries_diagnostics', 'Off'));
+    $kognetiks_ai_summaries_diagnostics = get_option( 'kognetiks_ai_summaries_diagnostics', 'Off' );
+    $kognetiks_ai_summaries_diagnostics = is_string( $kognetiks_ai_summaries_diagnostics ) ? $kognetiks_ai_summaries_diagnostics : 'Off';
+    $kognetiks_ai_summaries_diagnostics = sanitize_text_field( $kognetiks_ai_summaries_diagnostics );
 
-    $kognetiks_ai_summaries_diagnostics = esc_attr(get_option('kognetiks_ai_summaries_diagnostics', 'Error'));
     if ('Off' === $kognetiks_ai_summaries_diagnostics) {
         return;
     }
 
     // Belt and suspenders - make sure the value is either Off or Error
-    if ('On' === $kognetiks_ai_summaries_diagnostics) {
+    if ( 'On' === $kognetiks_ai_summaries_diagnostics ) {
         $kognetiks_ai_summaries_diagnostics = 'Error';
-        update_option('kognetiks_ai_summaries_diagnostics', $kognetiks_ai_summaries_diagnostics);
     }
 
-    $backtrace = debug_backtrace();
+    $backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 2 );
     // $caller = isset($backtrace[1]) ? $backtrace[1] : null; // Get the second element from the backtrace array
     $caller = isset($backtrace[0]) ? $backtrace[0] : null; // Get the second element from the backtrace array
 
@@ -95,29 +95,24 @@ function kognetiks_ai_summaries_back_trace($message_type = "NOTICE", $message = 
     // Check for other levels and print messages accordingly
     if ('Error' === $kognetiks_ai_summaries_diagnostics) {
         // Print all types of messages
-        error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
         kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
     } elseif (in_array($kognetiks_ai_summaries_diagnostics, ['Success', 'Failure'])) {
         // Print only SUCCESS and FAILURE messages
         if (in_array($message_type, ['SUCCESS', 'FAILURE'])) {
-            error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
             kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
     } elseif ('Warning' === $kognetiks_ai_summaries_diagnostics) {
         // Print only ERROR and WARNING messages
         if (in_array($message_type, ['ERROR', 'WARNING'])) {
-            error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
             kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
     } elseif ('Notice' === $kognetiks_ai_summaries_diagnostics) {
         // Print ERROR, WARNING, and NOTICE messages
         if (in_array($message_type, ['ERROR', 'WARNING', 'NOTICE'])) {
-            error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
             kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
         }
     } elseif ('Debug' === $kognetiks_ai_summaries_diagnostics) {
         // Print all types of messages
-        error_log("[Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]");
         kognetiks_ai_summaries_error_log( "[". $date_time ."] [Kognetiks AI Summaries] [". $file ."] [". $function ."] [". $line  ."] [". $message_type ."] [" .$message ."]" );
     }
 

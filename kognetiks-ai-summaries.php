@@ -33,6 +33,11 @@ $kognetiks_ai_summaries_plugin_name = 'kognetiks-ai-summaries';
 global $kognetiks_ai_summaries_plugin_version;
 $kognetiks_ai_summaries_plugin_version = '1.0.4';
 
+// DB schema version for upgrade routine (bump when table/index/column changes)
+if ( ! defined( 'KOGNETIKS_AI_SUMMARIES_DB_VERSION' ) ) {
+	define( 'KOGNETIKS_AI_SUMMARIES_DB_VERSION', 1 );
+}
+
 // Plugin directory path
 global $kognetiks_ai_summaries_plugin_dir_path;
 $kognetiks_ai_summaries_plugin_dir_path = plugin_dir_path( __FILE__ );
@@ -109,6 +114,9 @@ register_deactivation_hook(__FILE__, 'kognetiks_ai_summaries_deactivate');
 register_uninstall_hook(__FILE__, 'kognetiks_ai_summaries_uninstall');
 add_action('upgrader_process_complete', 'kognetiks_ai_summaries_upgrade_completed', 10, 2);
 
+// DB schema upgrade on admin only (never on front-end; dbDelta not in hot paths)
+add_action('admin_init', 'kognetiks_ai_summaries_maybe_upgrade_db');
+
 function kognetiks_ai_summaries_enqueue_admin_scripts() {
 
     // DiAG - Diagnostics
@@ -176,20 +184,12 @@ function kognetiks_ai_summaries_validate_ai_summary( $summary ) {
 // Return an AI summary for the page or post
 function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
-    // TEMP INSTRUMENTATION - remove after debugging
-    if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-        error_log( '[KAS_DEBUG] kognetiks_ai_summaries_generate_ai_summary ENTER pid=' . (int) $pid );
-    }
-
     global $wpdb;
     global $kognetiks_ai_summaries_error_responses;
 
     // Gate by post type: only generate for enabled post types.
     $post = get_post( $pid );
     if ( ! $post ) {
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: post not found pid=' . (int) $pid );
-        }
         return null;
     }
     $enabled_types = get_option( 'kognetiks_ai_summaries_enabled_post_types', null );
@@ -198,13 +198,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     }
     $gen_cat = get_option( 'kognetiks_ai_summaries_generate_categories', 1 );
     $gen_tag = get_option( 'kognetiks_ai_summaries_generate_tags', 1 );
-    if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-        error_log( '[KAS_DEBUG] toggles enabled_post_types=' . wp_json_encode( $enabled_types ) . ' generate_categories=' . $gen_cat . ' generate_tags=' . $gen_tag );
-    }
     if ( 1 !== (int) ( $enabled_types[ $post->post_type ] ?? 0 ) ) {
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: post_type not enabled pid=' . (int) $pid . ' post_type=' . $post->post_type );
-        }
         return null;
     }
 
@@ -216,22 +210,15 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
     if ( get_transient( $lock_key ) ) {
 
-        // TEMP INSTRUMENTATION
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-            error_log( '[KAS_DEBUG] generate_ai_summary LOCK set for pid=' . (int) $pid );
-        }
+        kognetiks_ai_summaries_prod_trace( 'NOTICE', 'Generate lock active pid=' . (int) $pid );
 
         // Try to get existing summary from database if available
         $existing_summary = kognetiks_ai_summaries_ai_summary_exists($pid);
         if ( ! empty( $existing_summary ) && kognetiks_ai_summaries_validate_ai_summary( $existing_summary ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-                error_log( '[KAS_DEBUG] generate_ai_summary RETURN existing (lock) pid=' . (int) $pid );
-            }
+            kognetiks_ai_summaries_prod_trace( 'NOTICE', 'Returning existing summary (lock) pid=' . (int) $pid );
             return $existing_summary;
         }
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: lock, no valid existing pid=' . (int) $pid );
-        }
+        kognetiks_ai_summaries_prod_trace( 'WARNING', 'Lock active but no valid existing summary pid=' . (int) $pid );
         return null; // Exit early to prevent duplicate processing
 
     }
@@ -268,9 +255,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     }
 
     if ( ! $row || ! is_object( $row ) || ! isset( $row->post_content, $row->post_modified ) ) {
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) {
-            error_log( '[KAS_DEBUG] generate_ai_summary RETURN NULL: missing row/post_content/post_modified pid=' . (int) $pid );
-        }
+        kognetiks_ai_summaries_prod_trace( 'WARNING', 'Missing row or post_content/post_modified pid=' . (int) $pid );
         delete_transient( $lock_key );
         return null;
     }
@@ -360,20 +345,13 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
             // Validate the AI summary response
             if ($ai_summary == 'ERROR' || ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary )) {
 
-                // DIAG - Diagnostics
-                // kognetiks_ai_summaries_back_trace( 'NOTICE', 'An API error occurred or invalid response received.' );
-
-                // Release the lock
+                kognetiks_ai_summaries_prod_trace( 'ERROR', 'API error or invalid summary (new) pid=' . (int) $pid );
                 delete_transient( $lock_key );
-
-                // Return null to indicate failure (don't return error message as it might be used as excerpt)
                 return null;
 
             } else {
 
-                // Insert the AI summary only if it's valid
                 kognetiks_ai_summaries_insert_ai_summary($pid, $ai_summary, $post_modified);
-
             }
 
             // Generate the AI categories (if enabled)
@@ -382,7 +360,6 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
                 kognetiks_ai_summaries_add_categories($pid, $ai_categories);
             }
 
-            // Generate the AI tags (if enabled)
             if ( 1 === (int) get_option( 'kognetiks_ai_summaries_generate_tags', 1 ) ) {
                 $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
                 kognetiks_ai_summaries_add_tags($pid, $ai_tags);
@@ -403,29 +380,20 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
                 // Validate the AI summary response
                 if ($ai_summary == 'ERROR' || ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary )) {
 
-                    // DIAG - Diagnostics
-                    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'An API error occurred or invalid response received.' );
-    
-                    // Release the lock
+                    kognetiks_ai_summaries_prod_trace( 'ERROR', 'API error or invalid summary (stale refresh) pid=' . (int) $pid );
                     delete_transient( $lock_key );
-                    
-                    // Return null to indicate failure (don't return error message as it might be used as excerpt)
                     return null;
-    
+
                 } else {
 
-                    // Update the AI summary only if it's valid
                     kognetiks_ai_summaries_update_ai_summary($pid, $ai_summary, $post_modified);
-
                 }
 
-                // Generate the AI categories (if enabled)
                 if ( 1 === (int) get_option( 'kognetiks_ai_summaries_generate_categories', 1 ) ) {
                     $ai_categories = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'categories');
                     kognetiks_ai_summaries_add_categories($pid, $ai_categories);
                 }
 
-                // Generate the AI tags (if enabled)
                 if ( 1 === (int) get_option( 'kognetiks_ai_summaries_generate_tags', 1 ) ) {
                     $ai_tags = kognetiks_ai_summaries_generate_ai_summary_api($model, $content, 'tags');
                     kognetiks_ai_summaries_add_tags($pid, $ai_tags);
@@ -438,13 +406,8 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
     // Final validation check - ensure we have a valid summary before processing
     if ( empty( $ai_summary ) || ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary ) ) {
-        
-        // DIAG - Diagnostics
-        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Invalid or empty AI summary, returning null' );
-        
-        // Release the lock
+        kognetiks_ai_summaries_prod_trace( 'WARNING', 'Invalid or empty summary after switch pid=' . (int) $pid );
         delete_transient( $lock_key );
-        
         return null;
     }
 
@@ -492,9 +455,7 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', '$ai_summary: ' . $ai_summary );
 
-    // Release the lock
     delete_transient( $lock_key );
-
     return $ai_summary;
 
 }
@@ -691,20 +652,10 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
 
 }
 
-// Create the AI summary table if it does not exist
-function kognetiks_ai_summaries_create_ai_summary_table() {
-
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_create_ai_summary_table' );
+// Run dbDelta for AI summary table (create or alter). Only called from upgrade routine or create_ai_summary_table when table missing in admin.
+function kognetiks_ai_summaries_run_db_schema_upgrade() {
 
     global $wpdb;
-
-    // If table exists, return
-    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
-    // Using esc_sql for table name validation (table name is safe as it's constructed from $wpdb->prefix)
-    if ( $wpdb->get_var( "SHOW TABLES LIKE '" . esc_sql( $table_name ) . "'" ) == $table_name ) {
-        return;
-    }
 
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -717,27 +668,52 @@ function kognetiks_ai_summaries_create_ai_summary_table() {
         UNIQUE KEY unique_post_id (post_id)
     ) $charset_collate;";
 
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta( $sql );
 
-    // Handle any errors
     if ( $wpdb->last_error ) {
-        kognetiks_ai_summaries_prod_trace( 'ERROR', 'Error creating AI summary table' );
+        kognetiks_ai_summaries_prod_trace( 'ERROR', 'Error creating/upgrading AI summary table' );
+    }
+}
+
+// Ensure AI summary table exists. Fast path: exists check only; create via dbDelta only when missing and in admin context (never during get_the_excerpt).
+function kognetiks_ai_summaries_create_ai_summary_table() {
+
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    if ( $wpdb->get_var( "SHOW TABLES LIKE '" . esc_sql( $table_name ) . "'" ) === $table_name ) {
+        return;
     }
 
+    // Table missing: only run dbDelta in admin so it never runs during get_the_excerpt (front-end).
+    if ( ! is_admin() ) {
+        return;
+    }
+
+    kognetiks_ai_summaries_run_db_schema_upgrade();
+}
+
+// Run DB schema upgrade when version option is lower than current (activation + admin_init only).
+function kognetiks_ai_summaries_maybe_upgrade_db() {
+
+    $current = (int) get_option( 'kognetiks_ai_summaries_db_version', 0 );
+
+    if ( $current >= KOGNETIKS_AI_SUMMARIES_DB_VERSION ) {
+        return;
+    }
+
+    kognetiks_ai_summaries_run_db_schema_upgrade();
+    update_option( 'kognetiks_ai_summaries_db_version', KOGNETIKS_AI_SUMMARIES_DB_VERSION );
 }
 
 // Helper function to update post_excerpt based on setting
 function kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary ) {
 
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_update_post_excerpt' );
-
-    // Get the replacement setting
     $replacement_setting = esc_attr(get_option('kognetiks_ai_summaries_post_excerpt_replacement', 'Do Not Replace'));
 
-    // If setting is "Do Not Replace", don't update post_excerpt
     if ( $replacement_setting === 'Do Not Replace' ) {
+        kognetiks_ai_summaries_prod_trace( 'NOTICE', 'Excerpt update skipped (Do Not Replace) pid=' . (int) $pid );
         return;
     }
 
@@ -789,7 +765,6 @@ function kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary ) {
             $trimmed_summary .= '...';
         }
 
-        // Update the post_excerpt
         wp_update_post( array(
             'ID' => $pid,
             'post_excerpt' => $trimmed_summary
@@ -834,6 +809,11 @@ function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modi
 
         // DIAG - Diagnostics
         // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary successfully inserted or updated.' );
+
+        wp_cache_delete( 'kognetiks_ai_summaries_ai_modified_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_post_modified_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_post_' . $pid );
 
         // Update post_excerpt based on setting
         kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary );
@@ -912,84 +892,70 @@ function kognetiks_ai_summaries_delete_ai_summary( $pid ) {
 
         kognetiks_ai_summaries_prod_trace( 'ERROR', 'Error deleting AI summary from table' );
 
+    } else {
+
+        wp_cache_delete( 'kognetiks_ai_summaries_ai_modified_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_post_modified_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_post_' . $pid );
+
     }
 
 }
 
 // Check if an AI summary is stale
 function kognetiks_ai_summaries_ai_summary_is_stale( $pid ) {
+	$pid = (int) $pid;
+	if ( $pid <= 0 ) {
+		return false;
+	}
 
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_ai_summary_is_stale' );
+	global $wpdb;
 
-    global $wpdb;
-           
-    // Fetch post_modified from ai_summaries table
-    $cache_key = 'kognetiks_ai_summaries_post_modified_' . $pid;
-    $row = wp_cache_get($cache_key);
-    
-    if ($row === false) {
+	// Cache keys must be distinct.
+	$cache_key_ai   = 'kognetiks_ai_summaries_ai_modified_' . $pid;
+	$cache_key_post = 'kognetiks_ai_summaries_post_modified_' . $pid;
 
-        $row = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", 
-                $pid
-            )
-        );
-    
-        if ($row) {
+	// 1) AI summary modified (from summaries table)
+	$ai_modified = wp_cache_get( $cache_key_ai );
+	if ( false === $ai_modified ) {
+		$table = $wpdb->prefix . 'kognetiks_ai_summaries';
+		$ai_modified = $wpdb->get_var(
+			$wpdb->prepare( "SELECT post_modified FROM {$table} WHERE post_id = %d LIMIT 1", $pid )
+		);
+		// Cache with short TTL (~60s) to avoid repeated queries.
+		wp_cache_set( $cache_key_ai, (string) $ai_modified, '', 60 );
+	}
 
-            wp_cache_set($cache_key, $row);
+	// No AI row means "not stale" (generator should treat this as "needs generation" elsewhere).
+	if ( empty( $ai_modified ) ) {
+		return false;
+	}
 
-        }
+	// 2) Post modified (from wp_posts)
+	$post_modified = wp_cache_get( $cache_key_post );
+	if ( false === $post_modified ) {
+		$post_modified = $wpdb->get_var(
+			$wpdb->prepare( "SELECT post_modified FROM {$wpdb->posts} WHERE ID = %d LIMIT 1", $pid )
+		);
+		// Cache with short TTL (~60s).
+		wp_cache_set( $cache_key_post, (string) $post_modified, '', 60 );
+	}
 
-    }
+	if ( empty( $post_modified ) ) {
+		return false;
+	}
 
-    if ( ! $row ) {
-        // AI summary doesn't exist; it's stale by default
-        return true;
-    }
+	$ai_ts   = strtotime( $ai_modified );
+	$post_ts = strtotime( $post_modified );
 
-    $ai_post_modified = $row->post_modified;
+	if ( ! $ai_ts || ! $post_ts ) {
+		return false;
+	}
 
-    // Fetch post_modified from posts table
-    $cache_key = 'kognetiks_ai_summaries_post_modified_' . $pid;
-    $post_modified = wp_cache_get($cache_key);
-    
-    if ($post_modified === false) {
-
-        $row = $wpdb->get_row(
-            $wpdb->prepare("SELECT post_modified FROM {$wpdb->posts} WHERE ID = %d", $pid)
-        );
-    
-        if ($row) {
-
-            $post_modified = $row->post_modified;
-            wp_cache_set($cache_key, $post_modified);
-
-        }
-
-    }
-
-    // Compare the dates
-
-    if ( isset( $ai_post_modified->post_modified ) && isset( $post_modified->post_modified ) ) {
-        if ( strtotime( $ai_post_modified->post_modified ) < strtotime( $post_modified->post_modified ) ) {
-            // DIAG - Diagnostics
-            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary is stale' );
-            return true;
-        } else {
-            // DIAG - Diagnostics
-            // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary is not stale' );
-            return false;
-        }
-    } else {
-        // DIAG - Diagnostics
-        // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary is not stale' );
-        return false;
-    }
-
+	return $post_ts > $ai_ts;
 }
+
 
 // Update an AI summary in the AI summary table
 function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modified ) {
@@ -1015,6 +981,10 @@ function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modi
     if ( $wpdb->last_error ) {
         kognetiks_ai_summaries_prod_trace( 'ERROR', 'Error updating AI summary in table' );
     } else {
+        wp_cache_delete( 'kognetiks_ai_summaries_ai_modified_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_post_modified_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_' . $pid );
+        wp_cache_delete( 'kognetiks_ai_summaries_post_' . $pid );
         // Update post_excerpt based on setting
         kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary );
     }
@@ -1065,14 +1035,10 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
     // If AI summary exists and is valid, use it
     if ( ! empty( $ai_summary ) && kognetiks_ai_summaries_validate_ai_summary( $ai_summary ) ) {
 
-        // Get the full AI summary from database for post_excerpt update
         $full_ai_summary = kognetiks_ai_summaries_ai_summary_exists( $post->ID );
-        
-        // Check if post_excerpt should be updated based on setting
+
         if ( ! empty( $full_ai_summary ) && kognetiks_ai_summaries_validate_ai_summary( $full_ai_summary ) ) {
             $replacement_setting = esc_attr(get_option('kognetiks_ai_summaries_post_excerpt_replacement', 'Do Not Replace'));
-            
-            // Only update if setting is "Replace" or "Replace if Blank"
             if ( $replacement_setting === 'Replace' || $replacement_setting === 'Replace if Blank' ) {
                 kognetiks_ai_summaries_update_post_excerpt( $post->ID, $full_ai_summary );
             }

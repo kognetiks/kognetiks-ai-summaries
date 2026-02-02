@@ -81,6 +81,11 @@ function kognetiks_ai_summaries_upgrade() {
     // DIAG - Diagnotics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_upgrade');
 
+    // DB schema upgrade (table creation/updates via dbDelta)
+    if ( function_exists( 'kognetiks_ai_summaries_maybe_upgrade_db' ) ) {
+        kognetiks_ai_summaries_maybe_upgrade_db();
+    }
+
     // Removed obsolete or replaced options
     // None at this time - Ver 1.0.0
 

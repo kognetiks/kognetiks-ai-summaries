@@ -411,26 +411,18 @@ function kognetiks_ai_summaries_refresh_all_summaries() {
             break;
         }
         
-        // Delete the existing summary to force regeneration
         kognetiks_ai_summaries_delete_ai_summary($post_id);
-        
-        // Clear cache for this post
         wp_cache_delete('kognetiks_ai_summaries_' . $post_id);
-        
-        // Trigger regeneration by calling the summary function
+
         $post = get_post($post_id);
         if ($post) {
-            // Force regeneration by calling the generate function
             kognetiks_ai_summaries_generate_ai_summary($post_id);
-            
-            // Get the full AI summary from database to update post_excerpt if needed
+
             $full_ai_summary = kognetiks_ai_summaries_ai_summary_exists($post_id);
-            
-            // Update post_excerpt based on setting (the function handles all three options: Replace, Do Not Replace, Replace if Blank)
             if ( ! empty( $full_ai_summary ) && kognetiks_ai_summaries_validate_ai_summary( $full_ai_summary ) ) {
                 kognetiks_ai_summaries_update_post_excerpt( $post_id, $full_ai_summary );
             }
-            
+
             $count++;
         }
     }

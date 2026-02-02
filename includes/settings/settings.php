@@ -101,6 +101,8 @@ function kognetiks_ai_summaries_settings_page() {
         $platform = get_option( 'kognetiks_ai_summaries_ai_platform_choice', 'OpenAI' );
         $platform = is_string( $platform ) ? $platform : 'OpenAI';
 
+        kognetiks_ai_summaries_back_trace( 'NOTICE', '$platform: ' . $platform );
+
         $api_tabs = array(
             'OpenAI'     => array( 'tab' => 'api_openai',    'label' => 'API/OpenAI' ),
             'NVIDIA'     => array( 'tab' => 'api_nvidia',    'label' => 'API/NVIDIA' ),
