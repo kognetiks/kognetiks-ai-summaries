@@ -385,6 +385,9 @@ function kognetiks_ai_summaries_refresh_all_summaries() {
     
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_refresh_all_summaries' );
+
+    // Bypass per-request generation limit for bulk refresh
+    add_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
     
     global $wpdb;
     

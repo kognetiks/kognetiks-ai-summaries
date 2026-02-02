@@ -99,6 +99,8 @@ This plugin relies on external AI services for generating summaries of your page
 
 - [API/Local Server Settings](api-settings/api-local-server-settings.md)
 
+- [Summaries](summaries/summaries.md)
+
 - [Diagnostics](diagnostics/diagnostics.md)
 
 - [Tools](tools/tools.md)

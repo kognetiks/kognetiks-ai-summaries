@@ -117,6 +117,9 @@ add_action('upgrader_process_complete', 'kognetiks_ai_summaries_upgrade_complete
 // DB schema upgrade on admin only (never on front-end; dbDelta not in hot paths)
 add_action('admin_init', 'kognetiks_ai_summaries_maybe_upgrade_db');
 
+// Clear caches when a post is saved so stale check and content use fresh data on next excerpt request
+add_action('save_post', 'kognetiks_ai_summaries_clear_post_caches_on_save', 10, 1);
+
 function kognetiks_ai_summaries_enqueue_admin_scripts() {
 
     // DiAG - Diagnostics
@@ -151,7 +154,7 @@ function kognetiks_ai_summaries_validate_ai_summary( $summary ) {
         return false;
     }
     
-    // Check for common error messages
+    // Check for common error messages (including API error phrases - never write these to excerpt)
     $error_patterns = array(
         'An API error occurred',
         'An error occurred',
@@ -159,6 +162,10 @@ function kognetiks_ai_summaries_validate_ai_summary( $summary ) {
         'Please check Settings',
         'No valid response',
         'No response received',
+        'temporary issue with the API',
+        'try your request again',
+        'try again later',
+        'give it another shot',
         'Understood. Please provide',
         'Please provide the content',
         'I understand',
@@ -179,6 +186,67 @@ function kognetiks_ai_summaries_validate_ai_summary( $summary ) {
     }
     
     return true;
+}
+
+/**
+ * Check if a string looks like an API error (for categories/tags - no word count check).
+ * Valid category/tag responses are short comma-separated words; errors are long sentences.
+ *
+ * @param string $string The string to check.
+ * @return bool True if the string appears to be an API error.
+ */
+function kognetiks_ai_summaries_is_api_error_response( $string ) {
+    if ( empty( $string ) || ! is_string( $string ) ) {
+        return true;
+    }
+    $string = trim( $string );
+    if ( $string === 'ERROR' ) {
+        return true;
+    }
+    global $kognetiks_ai_summaries_error_responses;
+    if ( in_array( $string, $kognetiks_ai_summaries_error_responses, true ) ) {
+        return true;
+    }
+    // Also check trimmed - error_responses have leading space
+    if ( in_array( ' ' . $string, $kognetiks_ai_summaries_error_responses, true ) ) {
+        return true;
+    }
+    $error_patterns = array(
+        'An API error occurred',
+        'An error occurred',
+        'Error:',
+        'Please check Settings',
+        'No valid response',
+        'No response received',
+        "I'm sorry",
+        'temporary issue with the API',
+        'try your request again',
+        'try again later',
+        'give it another shot',
+        'error from the API side',
+        'retry in a bit',
+        "Let's try again",
+        "Let's give it",
+        "there's an error",
+    );
+    foreach ( $error_patterns as $pattern ) {
+        if ( stripos( $string, $pattern ) !== false ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Per-request limit for API generations to prevent timeout (524) on search/archive pages.
+if ( ! function_exists( 'kognetiks_ai_summaries_can_generate_this_request' ) ) {
+    function kognetiks_ai_summaries_can_generate_this_request() {
+        static $count = 0;
+        $limit = (int) apply_filters( 'kognetiks_ai_summaries_generations_per_request', 2 );
+        if ( $limit <= 0 ) {
+            return true;
+        }
+        return ( $count++ < $limit );
+    }
 }
 
 // Return an AI summary for the page or post
@@ -204,6 +272,15 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
     // Check that the table exists, if not create it
     kognetiks_ai_summaries_create_ai_summary_table();
+
+    // Early return: if excerpt, categories, and tags are current, skip regeneration
+    $existing_summary = kognetiks_ai_summaries_ai_summary_exists( $pid );
+    if ( ! empty( $existing_summary ) && kognetiks_ai_summaries_validate_ai_summary( $existing_summary ) ) {
+        if ( ! kognetiks_ai_summaries_ai_summary_is_stale( $pid ) ) {
+            kognetiks_ai_summaries_prod_trace( 'NOTICE', 'Summary current, skipping regeneration pid=' . (int) $pid );
+            return $existing_summary;
+        }
+    }
 
     // Add a lock to prevent concurrent execution for the same post ID
     $lock_key = 'kognetiks_ai_summaries_lock_' . $pid;
@@ -340,6 +417,13 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary does not exist' );
 
+            // Limit generations per request to prevent timeout (524) on search/archive pages
+            if ( ! kognetiks_ai_summaries_can_generate_this_request() ) {
+                kognetiks_ai_summaries_prod_trace( 'NOTICE', 'Skipping generation (per-request limit) pid=' . (int) $pid );
+                delete_transient( $lock_key );
+                return null;
+            }
+
             $ai_summary = kognetiks_ai_summaries_generate_ai_summary_api($model, $content);
 
             // Validate the AI summary response
@@ -373,6 +457,13 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary exists' );
 
             if ( kognetiks_ai_summaries_ai_summary_is_stale($pid) ) {
+
+                // Limit generations per request to prevent timeout (524) on search/archive pages
+                if ( ! kognetiks_ai_summaries_can_generate_this_request() ) {
+                    kognetiks_ai_summaries_prod_trace( 'NOTICE', 'Skipping stale refresh (per-request limit) pid=' . (int) $pid );
+                    delete_transient( $lock_key );
+                    return $ai_summary; // Return existing (stale) summary rather than null
+                }
 
                 // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summary is stale' );
                 $ai_summary = kognetiks_ai_summaries_generate_ai_summary_api($model, $content);
@@ -710,6 +801,12 @@ function kognetiks_ai_summaries_maybe_upgrade_db() {
 // Helper function to update post_excerpt based on setting
 function kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary ) {
 
+    // Never write API errors or invalid content to the excerpt
+    if ( empty( $ai_summary ) || ! kognetiks_ai_summaries_validate_ai_summary( $ai_summary ) ) {
+        kognetiks_ai_summaries_prod_trace( 'NOTICE', 'Excerpt update skipped (invalid or error content) pid=' . (int) $pid );
+        return;
+    }
+
     $replacement_setting = esc_attr(get_option('kognetiks_ai_summaries_post_excerpt_replacement', 'Do Not Replace'));
 
     if ( $replacement_setting === 'Do Not Replace' ) {
@@ -765,10 +862,17 @@ function kognetiks_ai_summaries_update_post_excerpt( $pid, $ai_summary ) {
             $trimmed_summary .= '...';
         }
 
-        wp_update_post( array(
-            'ID' => $pid,
-            'post_excerpt' => $trimmed_summary
-        ) );
+        // Update only post_excerpt via $wpdb to avoid changing post_modified.
+        // wp_update_post would set post_modified to now, causing our stale check to trigger unnecessary regeneration.
+        global $wpdb;
+        $wpdb->update(
+            $wpdb->posts,
+            array( 'post_excerpt' => $trimmed_summary ),
+            array( 'ID' => $pid ),
+            array( '%s' ),
+            array( '%d' )
+        );
+        clean_post_cache( $pid );
     }
 
 }
@@ -904,6 +1008,24 @@ function kognetiks_ai_summaries_delete_ai_summary( $pid ) {
 
     }
 
+}
+
+/**
+ * Clear plugin caches for a post when it is saved.
+ * Ensures the stale check and content fetch use fresh data on the next excerpt request.
+ * Important when using persistent object cache (Redis, Memcached).
+ *
+ * @param int $post_id Post ID.
+ */
+function kognetiks_ai_summaries_clear_post_caches_on_save( $post_id ) {
+	$pid = (int) $post_id;
+	if ( $pid <= 0 ) {
+		return;
+	}
+	wp_cache_delete( 'kognetiks_ai_summaries_ai_modified_' . $pid );
+	wp_cache_delete( 'kognetiks_ai_summaries_post_modified_' . $pid );
+	wp_cache_delete( 'kognetiks_ai_summaries_' . $pid );
+	wp_cache_delete( 'kognetiks_ai_summaries_post_' . $pid );
 }
 
 // Check if an AI summary is stale
@@ -1056,9 +1178,12 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
 
     } else {
 
-        // AI summary not available or invalid, proceed with default excerpt generation
-
+        // AI summary not available or invalid - use post_excerpt only if it's not an error message
         $excerpt = $post->post_excerpt;
+        if ( ! empty( $excerpt ) && ! kognetiks_ai_summaries_validate_ai_summary( $excerpt ) ) {
+            // Current excerpt looks like an API error - discard it and use content-based default
+            $excerpt = '';
+        }
 
         if ( empty( $excerpt ) ) {
             $content = $post->post_content;

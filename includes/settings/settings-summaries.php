@@ -52,8 +52,20 @@ function kognetiks_ai_summaries_sanitize_enabled_post_types( $input ) {
 
 // Section A: Summaries intro.
 function kognetiks_ai_summaries_summaries_intro_section_callback( $args ) {
+	$nonce = wp_create_nonce( 'kognetiks_ai_summaries_support_nonce' );
+	$url   = add_query_arg(
+		array(
+			'page'     => 'kognetiks-ai-summaries',
+			'tab'      => 'support',
+			'dir'      => 'summaries',
+			'file'     => 'summaries.md',
+			'_wpnonce' => $nonce,
+		),
+		admin_url( 'admin.php' )
+	);
 	?>
 	<p>Configure which content types receive AI summaries, and optionally generate categories and tags for those items.</p>
+	<p style="background-color: #e0f7fa; padding: 10px;"><b>For an explanation of the Summaries settings and additional documentation please click <a href="<?php echo esc_url( $url ); ?>">here</a>.</b></p>
 	<?php
 }
 

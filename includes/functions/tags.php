@@ -42,8 +42,12 @@ function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'Adding tags to post ID: ' . $post_id );
 
     // Validate input
-    if (empty($post_id) || empty($tags_string)) {
-        // kognetiks_ai_summaries_back_trace('ERROR', 'Invalid input: Post ID or tags are missing');
+    if (empty($post_id) || empty($tags_string) || !is_string($tags_string)) {
+        return;
+    }
+
+    // Never add API error messages as tags
+    if ( function_exists( 'kognetiks_ai_summaries_is_api_error_response' ) && kognetiks_ai_summaries_is_api_error_response( $tags_string ) ) {
         return;
     }
 
@@ -59,15 +63,17 @@ function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
         $tags = array_map('ucwords', $tags);
     }
 
-    // Filter out em dash "—" and other invalid tag values - Ver 1.0.3
+    // Filter out em dash "—", invalid values, and any items that look like API errors - Ver 1.0.3
     $tags = array_filter($tags, function($tag) {
         $tag = trim($tag);
         // Remove em dash (—), en dash (–), regular dash (-), and empty strings
-        return !empty($tag) && 
-               $tag !== '—' && 
-               $tag !== '–' && 
-               $tag !== '-' &&
-               mb_strlen($tag) > 0;
+        if ( empty($tag) || $tag === '—' || $tag === '–' || $tag === '-' || mb_strlen($tag) === 0 ) {
+            return false;
+        }
+        if ( function_exists( 'kognetiks_ai_summaries_is_api_error_response' ) && kognetiks_ai_summaries_is_api_error_response( $tag ) ) {
+            return false;
+        }
+        return true;
     });
     
     // Re-index array after filtering

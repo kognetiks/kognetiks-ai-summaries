@@ -34,24 +34,16 @@ function kognetiks_ai_summaries_openai_api_call($api_key, $message) {
     // Get the saved model from the settings or default to "chatgpt-4o-latest"
     $model = esc_attr(get_option('kognetiks_ai_summaries_openai_model_choice', 'chatgpt-4o-latest'));
  
-    // Max tokens - Ver 1.4.2
-    $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_openai_max_tokens_setting', '500')));
+    // Max completion tokens - Ver 1.4.2 (OpenAI now uses max_completion_tokens for newer models)
+    $max_completion_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_openai_max_tokens', '500')));
 
     // Conversation Context - Ver 1.6.1
     $context = esc_attr(get_option('kognetiks_ai_summaries_openai_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
 
-    // Temperature - Ver 2.1.8
-    $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_openai_temperature', '0.5')));
-
-    // Top P - Ver 2.1.8
-    $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_openai_top_p', '1.0')));
- 
-    // Added Role, System, Content Static Variable
+    // Build request body - omit temperature/top_p as newer models (e.g. reasoning models) only support defaults
     $body = array(
         'model' => $model,
-        'max_tokens' => $max_tokens,
-        'temperature' => $temperature,
-        'top_p' => $top_p,
+        'max_completion_tokens' => $max_completion_tokens,
         'messages' => array(
             array('role' => 'system', 'content' => $context),
             array('role' => 'user', 'content' => $message)
