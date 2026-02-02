@@ -273,6 +273,16 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
     // Check that the table exists, if not create it
     kognetiks_ai_summaries_create_ai_summary_table();
 
+    // On list views (search, archives, home): never generate - only use cached summaries.
+    // Prevents regeneration and DB updates when refreshing search/archive pages.
+    if ( ! is_singular() ) {
+        $cached = kognetiks_ai_summaries_ai_summary_exists( $pid );
+        if ( ! empty( $cached ) && kognetiks_ai_summaries_validate_ai_summary( $cached ) ) {
+            return $cached;
+        }
+        return null;
+    }
+
     // Early return: if excerpt, categories, and tags are current, skip regeneration
     $existing_summary = kognetiks_ai_summaries_ai_summary_exists( $pid );
     if ( ! empty( $existing_summary ) && kognetiks_ai_summaries_validate_ai_summary( $existing_summary ) ) {
