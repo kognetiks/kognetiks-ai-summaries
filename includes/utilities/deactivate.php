@@ -138,8 +138,9 @@ function kognetiks_ai_summaries_uninstall(){
 
         // Verify the table name matches the expected value
         if ($table_name === $wpdb->prefix . 'kognetiks_ai_summaries') {
-            // Drop the table
-            $wpdb->query("DROP TABLE IF EXISTS {$table_name}");
+            // Drop the table (uses %i placeholder for identifier escaping - WP 6.2+)
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name validated above and escaped via prepare() %i
+            $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
 
             // Clear the cache
             wp_cache_flush();

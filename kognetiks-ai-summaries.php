@@ -788,15 +788,15 @@ function kognetiks_ai_summaries_insert_ai_summary( $pid, $ai_summary, $post_modi
     kognetiks_ai_summaries_create_ai_summary_table();
     
     // Prepare SQL to handle existing rows
-    $result = $wpdb->query($wpdb->prepare(
-        "INSERT INTO {$wpdb->prefix}kognetiks_ai_summaries (post_id, ai_summary, post_modified)
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $result = $wpdb->query( $wpdb->prepare(
+        'INSERT INTO %i (post_id, ai_summary, post_modified)
          VALUES (%d, %s, %s)
          ON DUPLICATE KEY UPDATE
          ai_summary = VALUES(ai_summary),
-         post_modified = VALUES(post_modified)",
-        $pid, $ai_summary, $post_modified
-        )
-    );
+         post_modified = VALUES(post_modified)',
+        $table_name, $pid, $ai_summary, $post_modified
+    ) );
 
 
     // Handle any errors
@@ -836,13 +836,14 @@ function kognetiks_ai_summaries_ai_summary_exists( $pid ) {
     // Fetch ai_summary and post_modified from ai_summaries table
     $cache_key = 'kognetiks_ai_summaries_' . $pid;
     $row = wp_cache_get($cache_key);
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
     
     if ($row === false) {
 
         $row = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT ai_summary, post_modified FROM {$wpdb->prefix}kognetiks_ai_summaries WHERE post_id = %d", 
-                $pid
+                'SELECT ai_summary, post_modified FROM %i WHERE post_id = %d',
+                $table_name, $pid
             )
         );
     
@@ -882,8 +883,10 @@ function kognetiks_ai_summaries_delete_ai_summary( $pid ) {
 
     global $wpdb;
 
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
+
     $wpdb->delete(
-        "{$wpdb->prefix}kognetiks_ai_summaries",
+        "{$table_name}",
         array( 'post_id' => $pid )
     );
 
@@ -915,13 +918,14 @@ function kognetiks_ai_summaries_ai_summary_is_stale( $pid ) {
 	// Cache keys must be distinct.
 	$cache_key_ai   = 'kognetiks_ai_summaries_ai_modified_' . $pid;
 	$cache_key_post = 'kognetiks_ai_summaries_post_modified_' . $pid;
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
 
 	// 1) AI summary modified (from summaries table)
 	$ai_modified = wp_cache_get( $cache_key_ai );
 	if ( false === $ai_modified ) {
-		$table = $wpdb->prefix . 'kognetiks_ai_summaries';
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name from wpdb prefix, escaped via prepare() %i
 		$ai_modified = $wpdb->get_var(
-			$wpdb->prepare( "SELECT post_modified FROM {$table} WHERE post_id = %d LIMIT 1", $pid )
+			$wpdb->prepare( 'SELECT post_modified FROM %i WHERE post_id = %d LIMIT 1', $table_name, $pid )
 		);
 		// Cache with short TTL (~60s) to avoid repeated queries.
 		wp_cache_set( $cache_key_ai, (string) $ai_modified, '', 60 );
@@ -936,7 +940,7 @@ function kognetiks_ai_summaries_ai_summary_is_stale( $pid ) {
 	$post_modified = wp_cache_get( $cache_key_post );
 	if ( false === $post_modified ) {
 		$post_modified = $wpdb->get_var(
-			$wpdb->prepare( "SELECT post_modified FROM {$wpdb->posts} WHERE ID = %d LIMIT 1", $pid )
+			$wpdb->prepare( 'SELECT post_modified FROM %i WHERE ID = %d LIMIT 1', $wpdb->posts, $pid )
 		);
 		// Cache with short TTL (~60s).
 		wp_cache_set( $cache_key_post, (string) $post_modified, '', 60 );
@@ -964,18 +968,18 @@ function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modi
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_update_ai_summary' );
 
     global $wpdb;
+
+    $table_name = $wpdb->prefix . 'kognetiks_ai_summaries';
     
     // Prepare and execute the query
-    $wpdb->query(
-        $wpdb->prepare(
-            "INSERT INTO {$wpdb->prefix}kognetiks_ai_summaries (post_id, ai_summary, post_modified) 
-            VALUES (%d, %s, %s) 
-            ON DUPLICATE KEY UPDATE 
-            ai_summary = VALUES(ai_summary), 
-            post_modified = VALUES(post_modified)",
-            $pid, $ai_summary, $post_modified
-        )
-    );
+    $wpdb->query( $wpdb->prepare(
+        'INSERT INTO %i (post_id, ai_summary, post_modified)
+         VALUES (%d, %s, %s)
+         ON DUPLICATE KEY UPDATE
+         ai_summary = VALUES(ai_summary),
+         post_modified = VALUES(post_modified)',
+        $table_name, $pid, $ai_summary, $post_modified
+    ) );
     
     // Handle any errors
     if ( $wpdb->last_error ) {
