@@ -46,6 +46,12 @@ function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
         return;
     }
 
+    // Only add when author left tags blank
+    $existing = get_the_tags( $post_id );
+    if ( ! empty( $existing ) ) {
+        return;
+    }
+
     // Never add API error messages as tags
     if ( function_exists( 'kognetiks_ai_summaries_is_api_error_response' ) && kognetiks_ai_summaries_is_api_error_response( $tags_string ) ) {
         return;

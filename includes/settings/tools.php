@@ -419,7 +419,7 @@ function kognetiks_ai_summaries_refresh_all_summaries() {
 
         $post = get_post($post_id);
         if ($post) {
-            kognetiks_ai_summaries_generate_ai_summary($post_id);
+            kognetiks_ai_summaries_generate_ai_summary($post_id, true);
 
             $full_ai_summary = kognetiks_ai_summaries_ai_summary_exists($post_id);
             if ( ! empty( $full_ai_summary ) && kognetiks_ai_summaries_validate_ai_summary( $full_ai_summary ) ) {

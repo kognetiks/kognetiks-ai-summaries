@@ -120,6 +120,12 @@ add_action('admin_init', 'kognetiks_ai_summaries_maybe_upgrade_db');
 // Clear caches when a post is saved so stale check and content use fresh data on next excerpt request
 add_action('save_post', 'kognetiks_ai_summaries_clear_post_caches_on_save', 10, 1);
 
+// Trigger AI generation when a post is published (so excerpt, categories, tags are ready for home/search)
+add_action('transition_post_status', 'kognetiks_ai_summaries_maybe_generate_on_publish', 10, 3);
+
+// Proactively trigger generation when viewing a single post that has no summary (many themes don't call get_the_excerpt on single posts)
+add_action('template_redirect', 'kognetiks_ai_summaries_maybe_generate_on_singular_view', 5);
+
 function kognetiks_ai_summaries_enqueue_admin_scripts() {
 
     // DiAG - Diagnostics
@@ -250,7 +256,12 @@ if ( ! function_exists( 'kognetiks_ai_summaries_can_generate_this_request' ) ) {
 }
 
 // Return an AI summary for the page or post
-function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
+//
+// @param int  $pid               Post ID.
+// @param bool $force_generation  When true, bypass is_singular() check so generation runs
+//                                on publish, in admin Tools, etc. Default false.
+// @return string|null AI summary text or null.
+function kognetiks_ai_summaries_generate_ai_summary( $pid, $force_generation = false )  {
 
     global $wpdb;
     global $kognetiks_ai_summaries_error_responses;
@@ -275,7 +286,8 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid )  {
 
     // On list views (search, archives, home): never generate - only use cached summaries.
     // Prevents regeneration and DB updates when refreshing search/archive pages.
-    if ( ! is_singular() ) {
+    // Bypass when $force_generation is true (e.g. on publish, from Tools).
+    if ( ! $force_generation && ! is_singular() ) {
         $cached = kognetiks_ai_summaries_ai_summary_exists( $pid );
         if ( ! empty( $cached ) && kognetiks_ai_summaries_validate_ai_summary( $cached ) ) {
             return $cached;
@@ -1036,6 +1048,88 @@ function kognetiks_ai_summaries_clear_post_caches_on_save( $post_id ) {
 	wp_cache_delete( 'kognetiks_ai_summaries_post_modified_' . $pid );
 	wp_cache_delete( 'kognetiks_ai_summaries_' . $pid );
 	wp_cache_delete( 'kognetiks_ai_summaries_post_' . $pid );
+}
+
+/**
+ * Trigger AI generation when a post transitions to 'publish'.
+ * Ensures excerpt, categories, and tags are populated for home/search before first view.
+ * Only runs when AI summaries are enabled and metadata is left blank by the author.
+ *
+ * @param string  $new_status New post status.
+ * @param string  $old_status Old post status.
+ * @param WP_Post $post       Post object.
+ */
+function kognetiks_ai_summaries_maybe_generate_on_publish( $new_status, $old_status, $post ) {
+	if ( $new_status !== 'publish' || ! $post instanceof WP_Post ) {
+		return;
+	}
+	$pid = (int) $post->ID;
+	if ( $pid <= 0 ) {
+		return;
+	}
+	// Skip revisions and autosaves
+	if ( wp_is_post_revision( $pid ) || wp_is_post_autosave( $pid ) ) {
+		return;
+	}
+	// Only run when AI summaries are enabled
+	$enabled = esc_attr( get_option( 'kognetiks_ai_summaries_enabled', 'Off' ) );
+	if ( $enabled === 'Off' ) {
+		return;
+	}
+	// Check if we should generate: no AI summary yet, or excerpt/categories/tags are blank
+	$has_summary = kognetiks_ai_summaries_ai_summary_exists( $pid );
+	$valid_summary = ! empty( $has_summary ) && kognetiks_ai_summaries_validate_ai_summary( $has_summary );
+	$excerpt_blank = empty( trim( (string) $post->post_excerpt ) );
+	$categories    = get_the_category( $pid );
+	$cats_blank    = empty( $categories ) || ( count( $categories ) === 1 && strcasecmp( $categories[0]->name, 'Uncategorized' ) === 0 );
+	$tags          = get_the_tags( $pid );
+	$tags_blank    = empty( $tags );
+	$should_run    = ! $valid_summary || $excerpt_blank || $cats_blank || $tags_blank;
+	if ( ! $should_run ) {
+		return;
+	}
+	// Bypass per-request limit for publish-triggered generation
+	add_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
+	kognetiks_ai_summaries_generate_ai_summary( $pid, true );
+	remove_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
+}
+
+/**
+ * Trigger AI generation when viewing a single post that has no summary.
+ * Many themes don't call get_the_excerpt on single post pages (they show full content),
+ * so generation would never run. This ensures we generate when the user visits the post.
+ */
+function kognetiks_ai_summaries_maybe_generate_on_singular_view() {
+	if ( ! is_singular() ) {
+		return;
+	}
+	$post = get_queried_object();
+	if ( ! $post instanceof WP_Post ) {
+		return;
+	}
+	$pid = (int) $post->ID;
+	if ( $pid <= 0 ) {
+		return;
+	}
+	$enabled = esc_attr( get_option( 'kognetiks_ai_summaries_enabled', 'Off' ) );
+	if ( $enabled === 'Off' ) {
+		return;
+	}
+	$enabled_types = get_option( 'kognetiks_ai_summaries_enabled_post_types', null );
+	if ( null === $enabled_types || ! is_array( $enabled_types ) ) {
+		$enabled_types = function_exists( 'kognetiks_ai_summaries_default_enabled_post_types' ) ? kognetiks_ai_summaries_default_enabled_post_types() : array( 'post' => 1, 'page' => 1 );
+	}
+	if ( 1 !== (int) ( $enabled_types[ $post->post_type ] ?? 0 ) ) {
+		return;
+	}
+	$has_summary = kognetiks_ai_summaries_ai_summary_exists( $pid );
+	$valid_summary = ! empty( $has_summary ) && kognetiks_ai_summaries_validate_ai_summary( $has_summary );
+	if ( $valid_summary ) {
+		return;
+	}
+	add_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
+	kognetiks_ai_summaries_generate_ai_summary( $pid, true );
+	remove_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
 }
 
 // Check if an AI summary is stale

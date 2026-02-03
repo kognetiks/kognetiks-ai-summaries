@@ -38,6 +38,17 @@ function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
         return;
     }
 
+    // Only add when author left categories blank (no categories or only Uncategorized)
+    $existing = get_the_category( $post_id );
+    if ( ! empty( $existing ) ) {
+        $non_uncat = array_filter( $existing, function ( $c ) {
+            return strcasecmp( $c->name, 'Uncategorized' ) !== 0;
+        } );
+        if ( ! empty( $non_uncat ) ) {
+            return;
+        }
+    }
+
     // Never add API error messages as categories
     if ( function_exists( 'kognetiks_ai_summaries_is_api_error_response' ) && kognetiks_ai_summaries_is_api_error_response( $categories_string ) ) {
         return;
