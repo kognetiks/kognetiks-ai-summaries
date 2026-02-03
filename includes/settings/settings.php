@@ -315,6 +315,10 @@ function kognetiks_ai_summaries_settings_page() {
                 echo '</div>';
 
                 echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
+                do_settings_sections('kognetiks_ai_summaries_summaries_prompt_settings');
+                echo '</div>';
+
+                echo '<div style="background-color: #f9f9f9; padding: 20px; margin-top: 10px; border: 1px solid #ccc;">';
                 do_settings_sections('kognetiks_ai_summaries_summaries_taxonomy_settings');
                 echo '</div>';
 

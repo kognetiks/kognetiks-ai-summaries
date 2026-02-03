@@ -28,6 +28,66 @@ function kognetiks_ai_summaries_default_enabled_post_types() {
 }
 
 /**
+ * Sanitize prompt instructions: reject blank, show warning, return default.
+ *
+ * @param mixed $input Raw option value.
+ * @return string Sanitized value or default if blank.
+ */
+function kognetiks_ai_summaries_sanitize_prompt_instructions_summary( $input ) {
+	$sanitized = sanitize_textarea_field( (string) $input );
+	if ( trim( $sanitized ) === '' ) {
+		add_settings_error(
+			'kognetiks_ai_summaries_messages',
+			'prompt_instructions_summary_blank',
+			__( 'Summary Instructions cannot be blank. Default instructions have been restored.', 'kognetiks-ai-summaries' ),
+			'warning'
+		);
+		return kognetiks_ai_summaries_get_prompt_instruction_default( 'summary' );
+	}
+	return $sanitized;
+}
+
+/**
+ * Sanitize prompt instructions: reject blank, show warning, return default.
+ *
+ * @param mixed $input Raw option value.
+ * @return string Sanitized value or default if blank.
+ */
+function kognetiks_ai_summaries_sanitize_prompt_instructions_categories( $input ) {
+	$sanitized = sanitize_textarea_field( (string) $input );
+	if ( trim( $sanitized ) === '' ) {
+		add_settings_error(
+			'kognetiks_ai_summaries_messages',
+			'prompt_instructions_categories_blank',
+			__( 'Categories Instructions cannot be blank. Default instructions have been restored.', 'kognetiks-ai-summaries' ),
+			'warning'
+		);
+		return kognetiks_ai_summaries_get_prompt_instruction_default( 'categories' );
+	}
+	return $sanitized;
+}
+
+/**
+ * Sanitize prompt instructions: reject blank, show warning, return default.
+ *
+ * @param mixed $input Raw option value.
+ * @return string Sanitized value or default if blank.
+ */
+function kognetiks_ai_summaries_sanitize_prompt_instructions_tags( $input ) {
+	$sanitized = sanitize_textarea_field( (string) $input );
+	if ( trim( $sanitized ) === '' ) {
+		add_settings_error(
+			'kognetiks_ai_summaries_messages',
+			'prompt_instructions_tags_blank',
+			__( 'Tags Instructions cannot be blank. Default instructions have been restored.', 'kognetiks-ai-summaries' ),
+			'warning'
+		);
+		return kognetiks_ai_summaries_get_prompt_instruction_default( 'tags' );
+	}
+	return $sanitized;
+}
+
+/**
  * Sanitize enabled post types: only allow keys from get_post_types(), values 0 or 1.
  *
  * @param mixed $input Raw option value.
@@ -69,7 +129,44 @@ function kognetiks_ai_summaries_summaries_intro_section_callback( $args ) {
 	<?php
 }
 
-// Section B: Taxonomy generation.
+// Section B: LLM Prompt Instructions.
+function kognetiks_ai_summaries_llm_prompt_instructions_section_callback( $args ) {
+	?>
+	<p>Customize the instructions sent to the LLM for generating summaries, categories, and tags. The word/category/tag count from your settings will be automatically appended to these instructions.</p>
+	<?php
+}
+
+// Summary prompt instructions field.
+function kognetiks_ai_summaries_prompt_instructions_summary_callback( $args ) {
+	$default = kognetiks_ai_summaries_get_prompt_instruction_default( 'summary' );
+	$value   = get_option( 'kognetiks_ai_summaries_prompt_instructions_summary', $default );
+	?>
+	<textarea id="kognetiks_ai_summaries_prompt_instructions_summary" name="kognetiks_ai_summaries_prompt_instructions_summary" rows="4" cols="80" class="large-text"><?php echo esc_textarea( $value ); ?></textarea>
+	<p class="description"><?php esc_html_e( 'Instructions for summary generation. The word count will be appended automatically.', 'kognetiks-ai-summaries' ); ?></p>
+	<?php
+}
+
+// Categories prompt instructions field.
+function kognetiks_ai_summaries_prompt_instructions_categories_callback( $args ) {
+	$default = kognetiks_ai_summaries_get_prompt_instruction_default( 'categories' );
+	$value   = get_option( 'kognetiks_ai_summaries_prompt_instructions_categories', $default );
+	?>
+	<textarea id="kognetiks_ai_summaries_prompt_instructions_categories" name="kognetiks_ai_summaries_prompt_instructions_categories" rows="4" cols="80" class="large-text"><?php echo esc_textarea( $value ); ?></textarea>
+	<p class="description"><?php esc_html_e( 'Instructions for category generation. The category count will be appended automatically.', 'kognetiks-ai-summaries' ); ?></p>
+	<?php
+}
+
+// Tags prompt instructions field.
+function kognetiks_ai_summaries_prompt_instructions_tags_callback( $args ) {
+	$default = kognetiks_ai_summaries_get_prompt_instruction_default( 'tags' );
+	$value   = get_option( 'kognetiks_ai_summaries_prompt_instructions_tags', $default );
+	?>
+	<textarea id="kognetiks_ai_summaries_prompt_instructions_tags" name="kognetiks_ai_summaries_prompt_instructions_tags" rows="4" cols="80" class="large-text"><?php echo esc_textarea( $value ); ?></textarea>
+	<p class="description"><?php esc_html_e( 'Instructions for tag generation. The tag count will be appended automatically.', 'kognetiks-ai-summaries' ); ?></p>
+	<?php
+}
+
+// Section C: Taxonomy generation.
 function kognetiks_ai_summaries_taxonomy_generation_section_callback( $args ) {
 	?>
 	<p>When generating metadata for eligible post types, you can enable or disable automatic category and tag generation.</p>
@@ -142,7 +239,39 @@ function kognetiks_ai_summaries_summaries_settings_init() {
 		'kognetiks_ai_summaries_summaries_settings'
 	);
 
-	// Section B: Taxonomy generation.
+	// Section B: LLM Prompt Instructions.
+	add_settings_section(
+		'kognetiks_ai_summaries_llm_prompt_instructions_section',
+		'LLM Prompt Instructions',
+		'kognetiks_ai_summaries_llm_prompt_instructions_section_callback',
+		'kognetiks_ai_summaries_summaries_prompt_settings'
+	);
+
+	add_settings_field(
+		'kognetiks_ai_summaries_prompt_instructions_summary',
+		__( 'Summary Instructions', 'kognetiks-ai-summaries' ),
+		'kognetiks_ai_summaries_prompt_instructions_summary_callback',
+		'kognetiks_ai_summaries_summaries_prompt_settings',
+		'kognetiks_ai_summaries_llm_prompt_instructions_section'
+	);
+
+	add_settings_field(
+		'kognetiks_ai_summaries_prompt_instructions_categories',
+		__( 'Categories Instructions', 'kognetiks-ai-summaries' ),
+		'kognetiks_ai_summaries_prompt_instructions_categories_callback',
+		'kognetiks_ai_summaries_summaries_prompt_settings',
+		'kognetiks_ai_summaries_llm_prompt_instructions_section'
+	);
+
+	add_settings_field(
+		'kognetiks_ai_summaries_prompt_instructions_tags',
+		__( 'Tags Instructions', 'kognetiks-ai-summaries' ),
+		'kognetiks_ai_summaries_prompt_instructions_tags_callback',
+		'kognetiks_ai_summaries_summaries_prompt_settings',
+		'kognetiks_ai_summaries_llm_prompt_instructions_section'
+	);
+
+	// Section C: Taxonomy generation.
 	add_settings_section(
 		'kognetiks_ai_summaries_taxonomy_generation_section',
 		'Taxonomy Generation',
@@ -166,7 +295,35 @@ function kognetiks_ai_summaries_summaries_settings_init() {
 		'kognetiks_ai_summaries_taxonomy_generation_section'
 	);
 
-	// Section C: Post types.
+	// Register LLM prompt instructions settings.
+	register_setting(
+		'kognetiks_ai_summaries_summaries_settings',
+		'kognetiks_ai_summaries_prompt_instructions_summary',
+		array(
+			'type'              => 'string',
+			'sanitize_callback' => 'kognetiks_ai_summaries_sanitize_prompt_instructions_summary',
+		)
+	);
+
+	register_setting(
+		'kognetiks_ai_summaries_summaries_settings',
+		'kognetiks_ai_summaries_prompt_instructions_categories',
+		array(
+			'type'              => 'string',
+			'sanitize_callback' => 'kognetiks_ai_summaries_sanitize_prompt_instructions_categories',
+		)
+	);
+
+	register_setting(
+		'kognetiks_ai_summaries_summaries_settings',
+		'kognetiks_ai_summaries_prompt_instructions_tags',
+		array(
+			'type'              => 'string',
+			'sanitize_callback' => 'kognetiks_ai_summaries_sanitize_prompt_instructions_tags',
+		)
+	);
+
+	// Section D: Post types.
 	add_settings_section(
 		'kognetiks_ai_summaries_post_types_section',
 		'Post Types',

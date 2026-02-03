@@ -573,6 +573,22 @@ function kognetiks_ai_summaries_generate_ai_summary( $pid, $force_generation = f
 
 }
 
+/**
+ * Returns the default LLM prompt instruction prefix for a given type.
+ * Used when options are blank and for validation on the settings page.
+ *
+ * @param string $type One of 'summary', 'categories', 'tags'.
+ * @return string Default instruction prefix.
+ */
+function kognetiks_ai_summaries_get_prompt_instruction_default( $type ) {
+	$defaults = array(
+		'summary'    => "Here are some special instructions for the content that follows - please summarize this content in ",
+		'categories' => "Here are some special instructions for the content that follows - please suggest ",
+		'tags'       => "Here are some special instructions for the content that follows - please suggest ",
+	);
+	return isset( $defaults[ $type ] ) ? $defaults[ $type ] : '';
+}
+
 // Generate an AI summary using the appropriate API
 function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type = 'summary' ) {
 
@@ -589,8 +605,19 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
             // Get the desired word count from options
             $word_count = esc_attr(get_option('kognetiks_ai_summaries_length', 55));
 
-            // Prepare special instructions if needed
-            $special_instructions = "Here are some special instructions for the content that follows - please summarize this content in " . $word_count . " or fewer words and just return the summary text without stating that it is a summary: ";
+            // Prepare special instructions: user instructions + appended word count
+            // $prompt_base = get_option( 'kognetiks_ai_summaries_prompt_instructions_summary', "Here are some special instructions for the content that follows - please summarize this content in " );
+            // $special_instructions = $prompt_base . $word_count . " or fewer words and just return the summary text without stating that it is a summary: ";
+
+            $default_summary = kognetiks_ai_summaries_get_prompt_instruction_default( 'summary' );
+            $prompt_base = get_option( 'kognetiks_ai_summaries_prompt_instructions_summary', $default_summary );
+            if ( trim( (string) $prompt_base ) === '' ) {
+                $prompt_base = $default_summary;
+            }
+            $special_instructions =
+                $prompt_base .
+                $word_count .
+                " or fewer words and just return the summary text without stating that it is a summary. Never use an em dash. Rewrite sentences to avoid it: ";
 
             break;
 
@@ -599,8 +626,13 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
             // Get the desired category count from options
             $category_count = esc_attr(get_option('kognetiks_ai_summaries_category_count', 3));
 
-            // Prepare special instructions if needed
-            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $category_count . " one-word (no compound words) categories or fewer and just return the categories separated by commas without stating that these are the categories: ";
+            // Prepare special instructions: user instructions + appended category count
+            $default_categories = kognetiks_ai_summaries_get_prompt_instruction_default( 'categories' );
+            $prompt_base = get_option( 'kognetiks_ai_summaries_prompt_instructions_categories', $default_categories );
+            if ( trim( (string) $prompt_base ) === '' ) {
+                $prompt_base = $default_categories;
+            }
+            $special_instructions = $prompt_base . $category_count . " one-word (no compound words) categories or fewer and just return the categories separated by commas without stating that these are the categories: ";
 
             break;
 
@@ -609,8 +641,13 @@ function kognetiks_ai_summaries_generate_ai_summary_api( $model, $content, $type
             // Get the desired tag count from options
             $tag_count = esc_attr(get_option('kognetiks_ai_summaries_tag_count', 3));
 
-            // Prepare special instructions if needed
-            $special_instructions = "Here are some special instructions for the content that follows - please suggest " . $tag_count . " one-word (no compound words) tags or fewer and just return the tags separated by commas without stating that these are the tags: ";
+            // Prepare special instructions: user instructions + appended tag count
+            $default_tags = kognetiks_ai_summaries_get_prompt_instruction_default( 'tags' );
+            $prompt_base = get_option( 'kognetiks_ai_summaries_prompt_instructions_tags', $default_tags );
+            if ( trim( (string) $prompt_base ) === '' ) {
+                $prompt_base = $default_tags;
+            }
+            $special_instructions = $prompt_base . $tag_count . " one-word (no compound words) tags or fewer and just return the tags separated by commas without stating that these are the tags: ";
 
             break;
 
