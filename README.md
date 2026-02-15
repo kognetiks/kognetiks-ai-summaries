@@ -10,7 +10,6 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic, DeepSee
 
 ## What's new in Version 1.0.4
 
-
 ### New Features
 * **Post Excerpt Replacement**: Added support for replacing the `post_excerpt` field in the posts table with AI-generated summaries, so WordPress uses your AI summary wherever the theme displays the built-in excerpt.
 * **Editable LLM Instructions**: Exposed configurable instruction prompts for summary generation, category generation, and tag generation in settings (Summaries tab), so you can tune how the AI produces excerpts and metadata.

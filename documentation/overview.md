@@ -50,6 +50,8 @@ This plugin relies on external AI services for generating summaries of your page
 
 **NOTE**: If no API key is provided, or if communication with the selected service fails, the plugin will not generate summaries.
 
+---
+
 ## What's New in Version 1.0.4
 
 * **Post Excerpt Replacement**: Added support for replacing the post_excerpt field in the posts table with AI generated summaries.
@@ -70,6 +72,8 @@ This plugin relies on external AI services for generating summaries of your page
 
 * **DeepSeek API Integration**: Added support for DeepSeek's API to provide advanced conversational capabilities for summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.0.
+
+---
 
 ## Quick Start
 
@@ -111,13 +115,25 @@ This plugin relies on external AI services for generating summaries of your page
 
 - [API Key Safety and Security](support/api-key-safety-and-security.md)
 
+---
+
 ## Updates
 
 - Information about past updates can be found [here](updates/updates.md)
 
+---
+
 ## Demos
 
 - Coming Soon
+
+---
+
+## Functional Details
+
+- [Functional Details](specs/functional-details.md)
+
+--- 
 
 ## Notice
 
@@ -125,7 +141,7 @@ While AI-powered applications strive for accuracy, they can sometimes make mista
 
 ## Disclaimer
 
-WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT, and related trademarks are the property of OpenAI. NVIDIA, NIM, and related trademarks are the property of NVIDIA. Anthropic, Claude, and related trademarks are the property of Anthropic. DeepSeek and related trademarks are the property of DeepSeek. Mistral and related trademarks are the property of Mistral. Google Gemini and related trademarks are the property of Google. JAN.AI and related trademarks are the property of JAN.AI. Kognetiks is an independent entity and is not affiliated with, endorsed by, or sponsored by WordPress Foundation, OpenAI, NVIDIA, Anthropic, DeepSeek, Mistral, Google, JAN.AI.
+WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Google, Mistral, Azure, JAN.AI and related trademarks are the property of their respective owners. Kognetiks is an independent entity and is not affiliated with, endorsed by, or sponsored by WordPress Foundation, OpenAI, NVIDIA, Anthropic, DeepSeek, Google or Mistral or other AI vendor or platform.
 
 ---
 

@@ -15,9 +15,9 @@ Kognetiks AI Summaries - Effortless Excerpts, Power by Intelligence.
 
 Elevate your website with **Kognetiks AI Summaries**, the ultimate plugin for crafting compelling, AI-generated excerpts that engage and inform. Seamlessly integrate cutting-edge artificial intelligence into your WordPress site to produce concise, insightful summaries for pages, posts, and other content — effortlessly enhancing user experience and site navigation.
 
-Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic and DeepSeek, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
+Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic, Mistral, Google and DeepSeek, Kognetiks AI Summaries leverages advanced algorithms through robust APIs to deliver polished, impactful excerpts. Whether for your homepage, archive pages, or search results, these AI-crafted summaries ensure your visitors encounter clear, captivating content at every turn. Stay ahead with innovation that makes your content shine.
 
-**Important Note:** This plugin requires an API key from OpenAI, NVIDIA or other AI platform vendors, to function correctly.
+**Important Note:** This plugin requires an API key from your AI platform vendor of choice to function to its fullest potential.
 
 == External Services ==
 
@@ -126,7 +126,7 @@ With the **Kognetiks AI Summaries** installed, you're now equipped to offer a mo
 
 == Disclaimer ==
 
-WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT, and related trademarks are the property of OpenAI. NVIDIA, NIM, and related trademarks are the property of NVIDIA. Anthropic, Claude, and related trademarks are the property of Anthropic. DeepSeek and related trademarks are the property of DeepSeek. Mistral and related trademarks are the property of Mistral. Google Gemini and related trademarks are the property of Google. JAN.AI and related trademarks are the property of JAN.AI. Kognetiks is an independent entity and is not affiliated with, endorsed by, or sponsored by WordPress Foundation, OpenAI, NVIDIA, Anthropic, DeepSeek, Mistral, Google, JAN.AI.
+WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, Azure, JAN.AI and related trademarks are the property of their respective owners. Kognetiks is an independent entity and is not affiliated with, endorsed by, or sponsored by WordPress Foundation, OpenAI, NVIDIA, Anthropic, DeepSeek, or Mistral or other AI vendor or platform.
 
 == Screenshots ==
 
@@ -138,7 +138,7 @@ WordPress is a registered trademark of the WordPress Foundation. OpenAI, ChatGPT
 
 == Changelog ==
 
-= 1.0.4 - Released TBD =
+= 1.0.4 - Released 2025-02-15 =
 
 * **Post Excerpt Replacement**: Added support for replacing the post_excerpt field in the posts table with AI generated summaries.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.3.
