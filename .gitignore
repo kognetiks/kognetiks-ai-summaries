@@ -10,12 +10,14 @@
 /dataSources/
 /dataSources.local.xml
 .idea/
+.vscode
 package.json
 composer.json
 
 # Ignore all files in the results folder
 debug/*
 logs/*
+z-internal/*
 
 # Allow tracking of only the index.php file in the results folder
 !debug/index.php

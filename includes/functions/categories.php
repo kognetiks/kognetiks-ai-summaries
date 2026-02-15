@@ -35,7 +35,22 @@ function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_add_categories');
 
     if (empty($post_id) || empty($categories_string) || !is_string($categories_string)) {
-        // kognetiks_ai_summaries_back_trace('ERROR', 'Invalid input: Post ID or categories string is missing/incorrect');
+        return;
+    }
+
+    // Only add when author left categories blank (no categories or only Uncategorized)
+    $existing = get_the_category( $post_id );
+    if ( ! empty( $existing ) ) {
+        $non_uncat = array_filter( $existing, function ( $c ) {
+            return strcasecmp( $c->name, 'Uncategorized' ) !== 0;
+        } );
+        if ( ! empty( $non_uncat ) ) {
+            return;
+        }
+    }
+
+    // Never add API error messages as categories
+    if ( function_exists( 'kognetiks_ai_summaries_is_api_error_response' ) && kognetiks_ai_summaries_is_api_error_response( $categories_string ) ) {
         return;
     }
 
@@ -60,9 +75,16 @@ function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
         $categories = array_map('ucwords', $categories);
     }
     
-    // Filter out "Uncategorized" category - Ver 1.0.3
+    // Filter out "Uncategorized" and any items that look like API errors - Ver 1.0.3
     $categories = array_filter($categories, function($category) {
-        return strcasecmp(trim($category), 'Uncategorized') !== 0;
+        $category = trim($category);
+        if ( strcasecmp($category, 'Uncategorized') === 0 ) {
+            return false;
+        }
+        if ( function_exists( 'kognetiks_ai_summaries_is_api_error_response' ) && kognetiks_ai_summaries_is_api_error_response( $category ) ) {
+            return false;
+        }
+        return true;
     });
     
     // Re-index array after filtering

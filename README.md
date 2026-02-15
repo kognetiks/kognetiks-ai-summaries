@@ -8,6 +8,17 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic, DeepSee
 
 ## Documentation
 
+## What's new in Version 1.0.4
+
+### New Features
+* **Post Excerpt Replacement**: Added support for replacing the `post_excerpt` field in the posts table with AI-generated summaries, so WordPress uses your AI summary wherever the theme displays the built-in excerpt.
+* **Editable LLM Instructions**: Exposed configurable instruction prompts for summary generation, category generation, and tag generation in settings (Summaries tab), so you can tune how the AI produces excerpts and metadata.
+
+### Improvements
+* **Summaries tab**: New settings tab for summary/category/tag instructions and options.
+* **Refresh All Summaries**: When you run "Refresh all summaries" from Tools, the plugin now also updates the `post_excerpt` field for affected posts so excerpts stay in sync.
+* **Category, tag, and excerpt generation**: Refined behavior when a post is first published or touched so category, tag, and excerpt generation run as intended without unnecessary repeated refresh.
+
 ## What's new in Version 1.0.3
 
 * **Google Gemini API Integration**: Added support for Google Gemini's API to provide advanced conversational capabilities for summaries.
