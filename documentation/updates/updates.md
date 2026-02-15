@@ -1,6 +1,10 @@
 # Past Updates
 
-## What's new in Version 1.0.4 - Release 2026-02-15
+## What's new in Version 1.0.5 - Released TBD
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.4.
+
+## What's new in Version 1.0.4 - Released 2026-02-15
 
 ### New Features
 * **Post Excerpt Replacement**: Added support for replacing the `post_excerpt` field in the posts table with AI-generated summaries, so WordPress uses your AI summary wherever the theme displays the built-in excerpt.

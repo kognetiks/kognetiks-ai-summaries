@@ -3,7 +3,7 @@ Contributors: Kognetiks
 Tags: AI, Excerpts, Search, SEO, AEO
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
 Tested up to: 6.9.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -137,6 +137,10 @@ WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, A
 5. Support
 
 == Changelog ==
+
+= 1.0.5 - Released TBD =
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.4.
 
 = 1.0.4 - Released 2025-02-15 =
 

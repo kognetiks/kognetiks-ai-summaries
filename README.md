@@ -8,6 +8,10 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic, DeepSee
 
 ## Documentation
 
+## What's new in Version 1.0.5
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.4.
+
 ## What's new in Version 1.0.4
 
 ### New Features
