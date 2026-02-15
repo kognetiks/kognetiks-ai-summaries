@@ -67,7 +67,7 @@ function kognetiks_ai_summaries_dismiss_notice() {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_dismiss_notice' );
 
     if (isset($_GET['kognetiks_ai_summaries_dismiss_notice']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'kognetiks_ai_summaries_dismiss_notice')) {
-        delete_option('kognetiks_ai_summaries_status');
+        delete_option('kognetiks_ai_summaries_results');
     }
 
 }

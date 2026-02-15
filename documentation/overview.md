@@ -111,6 +111,10 @@ This plugin relies on external AI services for generating summaries of your page
 
 - [API Key Safety and Security](support/api-key-safety-and-security.md)
 
+## Updates
+
+- Information about past updates can be found [here](updates/updates.md)
+
 ## Demos
 
 - Coming Soon

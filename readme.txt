@@ -2,7 +2,7 @@
 Contributors: Kognetiks
 Tags: AI, Excerpts, Search, SEO, AEO
 Donate link: https://kognetiks.com/wordpress-plugins/donate/
-Tested up to: 6.9
+Tested up to: 6.9.1
 Stable tag: 1.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -62,7 +62,7 @@ This plugin relies on external AI services for generating summaries of your page
 2. Before you can `Turn AI Summaries` to `On`, you'll need to set up an account with the AI Platform vendor of your choice.  The plugin is very efficient when it comes to generating AI excerpts of your content.
 
     - The plugin will only generate a summary of a page, post or other published content once.  But, it will check to see if the content has been updated or modified.  If the page or post has changed since the last time the summary was generated, a new summary will be created.  This makes incorporating AI generated excerpts very cost affordable.
-    - AI generated excerpts appear where ever WordPress would present an excerpt on your site.  It **does not** replace any hand-crafted excepts you might have added to posts, pages or other content.  AI summaries are in addition to these excerpts and are stored in a separate table on your site.  Once generated, they won't be regenerated unless the content has been updated.
+    - AI generated excerpts appear where ever WordPress would present an excerpt on your site.  It **does not** replace any hand-crafted excerpts you might have added to posts, pages or other content.  AI summaries are in addition to these excerpts and are stored in a separate table on your site.  Once generated, they won't be regenerated unless the content has been updated.
 
 3. From the `API/OpenAI`, `API/NVIDIA`, `API/Anthropic`, `API/DeepSeek`, `API/Mistral`, `API/Google` or `API/Local` tab (depending on the `AI Platform Choice` you made on the `General` tab), enter your `API Key`, then click the `Save Settings` button at the bottom of the page.
 

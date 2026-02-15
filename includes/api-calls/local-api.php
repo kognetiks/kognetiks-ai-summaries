@@ -37,7 +37,7 @@ function kognetiks_ai_summaries_local_api_call($api_key, $message) {
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', '$model: ' . $model);
     $max_tokens = intval(get_option('kognetiks_ai_summaries_local_max_tokens_setting', 10000));
-    $temperature = floatval(get_option('ckognetiks_ai_summaries_local_temperature', 0.8));
+    $temperature = floatval(get_option('kognetiks_ai_summaries_local_temperature', 0.8));
     $top_p = floatval(get_option('kognetiks_ai_summaries_local_top_p', 0.95));
     $context = esc_attr(get_option('kognetiks_ai_summaries_local_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
     $timeout = intval(get_option('kognetiks_ai_summaries_local_timeout_setting', 360));
