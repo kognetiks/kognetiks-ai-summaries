@@ -1258,6 +1258,56 @@ function kognetiks_ai_summaries_update_ai_summary( $pid, $ai_summary, $post_modi
 
 }
 
+/**
+ * Value that makes core skip empty-excerpt generation.
+ *
+ * wp_trim_excerpt() generates from post content only when trim() of the
+ * excerpt is ''. This character is not removed by trim(), and empty() is
+ * false for it. Priority 10 discards it and returns the real excerpt.
+ *
+ * @return string
+ */
+function kognetiks_ai_summaries_excerpt_placeholder() {
+    return "\u{00A0}";
+}
+
+/**
+ * Whether the value is the priority 9 placeholder.
+ *
+ * @param mixed $excerpt Excerpt text.
+ * @return bool
+ */
+function kognetiks_ai_summaries_is_excerpt_placeholder( $excerpt ) {
+    return is_string( $excerpt ) && kognetiks_ai_summaries_excerpt_placeholder() === $excerpt;
+}
+
+/**
+ * Give core a non-empty excerpt so it does not run shortcodes.
+ *
+ * Runs at priority 9, before wp_trim_excerpt() at priority 10. When summaries
+ * are off, or the post already has an excerpt, the incoming value is returned
+ * and core behaves as usual. This callback does not call wp_trim_excerpt()
+ * and does not change any other hook.
+ *
+ * @param string       $excerpt Incoming excerpt.
+ * @param WP_Post|null $post    Post being excerpted. Unused. Core still receives it.
+ * @return string
+ */
+function kognetiks_ai_summaries_placeholder_empty_excerpt( $excerpt, $post = null ) {
+    unset( $post );
+
+    $enabled = esc_attr( get_option( 'kognetiks_ai_summaries_enabled', 'Off' ) );
+    if ( 'Off' === $enabled ) {
+        return $excerpt;
+    }
+
+    if ( ! is_string( $excerpt ) || '' !== trim( $excerpt ) ) {
+        return $excerpt;
+    }
+
+    return kognetiks_ai_summaries_excerpt_placeholder();
+}
+
 // Function to replace the excerpt with AI summary
 function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post = null ) {
 
@@ -1278,6 +1328,12 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
         // DIAG - Diagnostics
         // kognetiks_ai_summaries_back_trace( 'NOTICE', 'AI summaries are ENABLED');
 
+    }
+
+    // Priority 9 may pass a placeholder so core skips shortcode execution.
+    // Drop it before any return so it cannot become the public excerpt.
+    if ( kognetiks_ai_summaries_is_excerpt_placeholder( $excerpt ) ) {
+        $excerpt = '';
     }
 
     // Get the global post if not provided
@@ -1328,11 +1384,24 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
 
         if ( empty( $excerpt ) ) {
             $content = $post->post_content;
+
+            // Plain text only. Do not apply the_content: it runs do_shortcode and other
+            // plugin callbacks (including Chatbot assistant-name lookups).
+            // Priority 9 already kept core from running that pass. Escaped tags are
+            // still removed here. The first pass turns [[shortcode]] into a live tag;
+            // the second pass removes it.
+            $content = strip_shortcodes( $content );
             $content = strip_shortcodes( $content );
 
-            // Apply 'the_content' filters
-            $content = apply_filters( 'the_content', $content );
-            $content = str_replace( ']]>', ']]&gt;', $content );
+            if ( function_exists( 'excerpt_remove_blocks' ) ) {
+                $content = excerpt_remove_blocks( $content );
+            }
+
+            if ( function_exists( 'excerpt_remove_footnotes' ) ) {
+                $content = excerpt_remove_footnotes( $content );
+            }
+
+            $content = wp_strip_all_tags( $content );
 
             // Get the default excerpt length and more string
             $excerpt_length = apply_filters( 'excerpt_length', 55 );
@@ -1344,9 +1413,17 @@ function kognetiks_ai_summaries_replace_excerpt_with_ai_summary( $excerpt, $post
     
     }
 
+    // The placeholder is not a real excerpt. A stored excerpt that is only that
+    // character is treated as empty so the public result cannot be the placeholder.
+    if ( kognetiks_ai_summaries_is_excerpt_placeholder( $excerpt ) ) {
+        return '';
+    }
+
     // Return the final excerpt without re-applying 'get_the_excerpt' filter to avoid recursion
     return $excerpt;
 
 }
-// Hook the function into 'get_the_excerpt' filter
+// Priority 9 fills an empty excerpt before core wp_trim_excerpt() at priority 10.
+// Priority 10 replaces that filler with the summary, manual excerpt, or plain text.
+add_filter( 'get_the_excerpt', 'kognetiks_ai_summaries_placeholder_empty_excerpt', 9, 2 );
 add_filter( 'get_the_excerpt', 'kognetiks_ai_summaries_replace_excerpt_with_ai_summary', 10, 2 );
