@@ -28,6 +28,31 @@ function kognetiks_ai_summaries_get_categories($post_id) {
 
 }
 
+/**
+ * Whether category suggestions should be requested for a post.
+ *
+ * Matches the fill rule in kognetiks_ai_summaries_add_categories(): only when
+ * generation is enabled and the post has no category other than Uncategorized.
+ *
+ * @param int $post_id Post ID.
+ * @return bool
+ */
+function kognetiks_ai_summaries_post_needs_generated_categories( $post_id ) {
+    if ( 1 !== (int) get_option( 'kognetiks_ai_summaries_generate_categories', 1 ) ) {
+        return false;
+    }
+    $existing = get_the_category( $post_id );
+    if ( empty( $existing ) ) {
+        return true;
+    }
+    foreach ( $existing as $category ) {
+        if ( isset( $category->name ) && strcasecmp( $category->name, 'Uncategorized' ) !== 0 ) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // Add the categories to the post
 function kognetiks_ai_summaries_add_categories($post_id, $categories_string) {
 

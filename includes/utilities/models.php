@@ -169,48 +169,293 @@ function kognetiks_ai_summaries_nvidia_get_models() {
 
 }
 
+// Fallback when no Anthropic model has been saved. Sonnet is the balanced default.
+function kognetiks_ai_summaries_anthropic_default_model() {
+
+    return 'claude-sonnet-5-5';
+
+}
+
+// Shown until an API key can load the live list from GET /v1/models.
+function kognetiks_ai_summaries_anthropic_fallback_models() {
+
+    $ids = array(
+        'claude-opus-5-5',
+        'claude-sonnet-5-5',
+        'claude-haiku-5-5',
+        'claude-fable-5-1',
+    );
+    $models = array();
+
+    foreach ( $ids as $id ) {
+        $models[] = array(
+            'id'       => $id,
+            'object'   => 'model',
+            'created'  => null,
+            'owned_by' => 'anthropic',
+        );
+    }
+
+    return $models;
+
+}
+
+// Model ids returned by the Anthropic Models API.
+function kognetiks_ai_summaries_anthropic_model_id_is_valid( $model_id ) {
+
+    return is_string( $model_id ) && preg_match( '/^[A-Za-z0-9._:-]+$/', $model_id );
+
+}
+
+// True after kognetiks_ai_summaries_anthropic_get_models() loaded ids from the Models API.
+function kognetiks_ai_summaries_anthropic_models_are_live( $set = null ) {
+
+    static $live = false;
+    if ( null !== $set ) {
+        $live = (bool) $set;
+    }
+    return $live;
+
+}
+
+// Standard base input price, USD per million tokens. Longer names match first.
+function kognetiks_ai_summaries_anthropic_model_base_input_price( $model_id ) {
+
+    if ( ! kognetiks_ai_summaries_anthropic_model_id_is_valid( $model_id ) ) {
+        return null;
+    }
+
+    $id = strtolower( $model_id );
+    $prices = array(
+        'haiku-3-5'  => 0.80,
+        'haiku-4-5'  => 1.00,
+        'haiku-5-5'  => 0.10,
+        'haiku-3'    => 0.25,
+        'sonnet-4-5' => 3.00,
+        'sonnet-4-6' => 3.00,
+        'sonnet-5-5' => 2.00,
+        'sonnet-5'   => 2.00,
+        'opus-4-5'   => 5.00,
+        'opus-4-6'   => 5.00,
+        'opus-4-7'   => 5.00,
+        'opus-4-8'   => 5.00,
+        'opus-5-5'   => 4.00,
+        'opus-5'     => 5.00,
+        'fable-5-1'  => 10.00,
+        'fable-5'    => 10.00,
+    );
+
+    uksort(
+        $prices,
+        function( $a, $b ) {
+            return strlen( $b ) <=> strlen( $a );
+        }
+    );
+
+    foreach ( $prices as $needle => $price ) {
+        if ( false !== strpos( $id, $needle ) ) {
+            return $price;
+        }
+    }
+
+    return null;
+
+}
+
+// Cheapest model in a live list. Haiku is the cheap tier; the lowest base input price wins.
+function kognetiks_ai_summaries_anthropic_cheapest_model_id( $models ) {
+
+    if ( ! is_array( $models ) ) {
+        return '';
+    }
+
+    $chosen = '';
+    $best   = null;
+
+    foreach ( array_values( $models ) as $index => $model ) {
+        if ( ! is_array( $model ) || empty( $model['id'] ) || ! kognetiks_ai_summaries_anthropic_model_id_is_valid( $model['id'] ) ) {
+            continue;
+        }
+
+        $id       = $model['id'];
+        $is_haiku = false !== stripos( $id, 'haiku' );
+        $price    = kognetiks_ai_summaries_anthropic_model_base_input_price( $id );
+
+        if ( $is_haiku && null !== $price ) {
+            $rank = array( 0, $price );
+        } elseif ( $is_haiku ) {
+            $rank = array( 1, -1 * $index );
+        } elseif ( null !== $price ) {
+            $rank = array( 2, $price );
+        } else {
+            $rank = array( 3, -1 * $index );
+        }
+
+        if ( null === $best || $rank < $best ) {
+            $best   = $rank;
+            $chosen = $id;
+        }
+    }
+
+    return $chosen;
+
+}
+
+// Use the requested id when the live list includes it. Otherwise use the cheapest model.
+function kognetiks_ai_summaries_anthropic_resolve_model( $model ) {
+
+    if ( ! is_string( $model ) || '' === $model || ! kognetiks_ai_summaries_anthropic_model_id_is_valid( $model ) ) {
+        $model = kognetiks_ai_summaries_anthropic_default_model();
+    }
+
+    $models = kognetiks_ai_summaries_anthropic_get_models();
+    if ( ! kognetiks_ai_summaries_anthropic_models_are_live() || ! is_array( $models ) ) {
+        return $model;
+    }
+
+    foreach ( $models as $entry ) {
+        if ( is_array( $entry ) && isset( $entry['id'] ) && $entry['id'] === $model ) {
+            return $model;
+        }
+    }
+
+    $replacement = kognetiks_ai_summaries_anthropic_cheapest_model_id( $models );
+    if ( kognetiks_ai_summaries_anthropic_model_id_is_valid( $replacement ) ) {
+        return $replacement;
+    }
+
+    return $model;
+
+}
+
 // Function to get the Model names from Anthropic API
-function kognetiks_ai_summaries_anthropic_get_models() {
+// https://platform.claude.com/docs/en/api/models/list
+function kognetiks_ai_summaries_anthropic_get_models( $refresh = false ) {
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_get_models');
 
-    // Default model list
-    $default_model_list = array(
-        array(
-            'id' => 'claude-3-5-sonnet-latest',
-            'object' => 'model',
-            'created' => 20241022,
-            'owned_by' => 'anthropic'
-        ),
-        array(
-            'id' => 'claude-3-5-haiku-latest',
-            'object' => 'model',
-            'created' => 20241022,
-            'owned_by' => 'anthropic'
-        ),
-        array(
-            'id' => 'claude-3-opus-latest',
-            'object' => 'model',
-            'created' => 20240229,
-            'owned_by' => 'anthropic'
-        ),
-        // array(
-        //     'id' => 'claude-3-sonnet-20240229',
-        //     'object' => 'model',
-        //     'created' => 20240229,
-        //     'owned_by' => 'anthropic'
-        // ),
-        // array(
-        //     'id' => 'claude-3-haiku-20240307',
-        //     'object' => 'model',
-        //     'created' => 20240307,
-        //     'owned_by' => 'anthropic'
-        // ),
-    );
+    kognetiks_ai_summaries_anthropic_models_are_live( false );
+    $fallback = kognetiks_ai_summaries_anthropic_fallback_models();
 
-    // Anthropic API does not have an endpoint for models
-    return $default_model_list;
+    $api_key = get_option( 'kognetiks_ai_summaries_anthropic_api_key', '' );
+    if ( ! is_string( $api_key ) || '' === $api_key ) {
+        return $fallback;
+    }
+
+    $api_key = kognetiks_ai_summaries_decrypt_api_key( esc_attr( $api_key ) );
+    if ( ! is_string( $api_key ) || '' === $api_key ) {
+        return $fallback;
+    }
+
+    $base_url = get_option( 'kognetiks_ai_summaries_anthropic_base_url', 'https://api.anthropic.com/v1' );
+    if ( ! is_string( $base_url ) || '' === $base_url ) {
+        $base_url = 'https://api.anthropic.com/v1';
+    }
+    $base_url = esc_url_raw( untrailingslashit( $base_url ) );
+    if ( '' === $base_url || ! wp_http_validate_url( $base_url ) ) {
+        $base_url = 'https://api.anthropic.com/v1';
+    }
+
+    $cache_key = 'kognetiks_ai_sum_anth_' . substr( hash( 'sha256', $api_key ), 0, 16 );
+    if ( ! $refresh ) {
+        $cached = get_transient( $cache_key );
+        if ( is_array( $cached ) && ! empty( $cached ) ) {
+            kognetiks_ai_summaries_anthropic_models_are_live( true );
+            return $cached;
+        }
+    }
+
+    $models   = array();
+    $seen     = array();
+    $after_id = '';
+    $pages    = 0;
+
+    do {
+        $url = $base_url . '/models?limit=1000';
+        if ( '' !== $after_id ) {
+            $url .= '&after_id=' . rawurlencode( $after_id );
+        }
+
+        $response = wp_remote_get(
+            $url,
+            array(
+                'headers' => array(
+                    'x-api-key'         => $api_key,
+                    'anthropic-version' => '2023-06-01',
+                    'content-type'      => 'application/json',
+                ),
+                'timeout' => 15,
+            )
+        );
+
+        if ( is_wp_error( $response ) ) {
+            kognetiks_ai_summaries_prod_trace( 'ERROR', 'Error fetching Anthropic models: ' . $response->get_error_message() );
+            if ( empty( $models ) ) {
+                return $fallback;
+            }
+            set_transient( $cache_key, $models, 5 * MINUTE_IN_SECONDS );
+            kognetiks_ai_summaries_anthropic_models_are_live( true );
+            return $models;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code( $response );
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+        if ( $code < 200 || $code >= 300 || ! is_array( $data ) || isset( $data['error'] ) || empty( $data['data'] ) || ! is_array( $data['data'] ) ) {
+            $message = ( is_array( $data ) && isset( $data['error']['message'] ) ) ? $data['error']['message'] : 'HTTP ' . $code;
+            kognetiks_ai_summaries_prod_trace( 'ERROR', 'Anthropic models request failed: ' . $message );
+            if ( empty( $models ) ) {
+                return $fallback;
+            }
+            set_transient( $cache_key, $models, 5 * MINUTE_IN_SECONDS );
+            kognetiks_ai_summaries_anthropic_models_are_live( true );
+            return $models;
+        }
+
+        foreach ( $data['data'] as $model ) {
+            if ( ! is_array( $model ) || empty( $model['id'] ) || ! kognetiks_ai_summaries_anthropic_model_id_is_valid( $model['id'] ) ) {
+                continue;
+            }
+            if ( isset( $seen[ $model['id'] ] ) ) {
+                continue;
+            }
+            $seen[ $model['id'] ] = true;
+
+            $created = null;
+            if ( ! empty( $model['created_at'] ) && is_string( $model['created_at'] ) ) {
+                $timestamp = strtotime( $model['created_at'] );
+                if ( false !== $timestamp ) {
+                    $created = $timestamp;
+                }
+            }
+
+            // The Models API does not return owned_by. Set it here so callers do not filter the payload on that field.
+            $models[] = array(
+                'id'       => $model['id'],
+                'object'   => 'model',
+                'created'  => $created,
+                'owned_by' => 'anthropic',
+            );
+        }
+
+        $has_more = ! empty( $data['has_more'] );
+        $next_id  = ( isset( $data['last_id'] ) && is_string( $data['last_id'] ) ) ? $data['last_id'] : '';
+        if ( '' === $next_id || $next_id === $after_id || ! kognetiks_ai_summaries_anthropic_model_id_is_valid( $next_id ) ) {
+            $has_more = false;
+        }
+        $after_id = $next_id;
+        $pages++;
+    } while ( $has_more && $pages < 10 );
+
+    if ( empty( $models ) ) {
+        return $fallback;
+    }
+
+    // The API already returns the most recently released model first.
+    set_transient( $cache_key, $models, 5 * MINUTE_IN_SECONDS );
+    kognetiks_ai_summaries_anthropic_models_are_live( true );
+    return $models;
 
 }
 
@@ -518,48 +763,76 @@ function kognetiks_ai_summaries_google_gemini_get_models() {
 
 }
 
-// Fetch the local models
+// Fetch model ids from the JAN.AI OpenAI-compatible /v1/models endpoint.
 function kognetiks_ai_summaries_local_get_models() {
-    
-    // DiAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', 'chatbot_local_get_models');
 
-    // Set the API URL
-    $api_url = esc_attr(get_option('chatbot_local_base_url','http://127.0.0.1:1337/v1')) . '/models';
-
-    // Send the request
-    $response = wp_remote_get($api_url, array(
-        'headers' => array(
-            'Content-Type' => 'application/json',
-        ),
-    ));
-
-    // Check for errors
-    if (is_wp_error($response)) {
-        $error_message = $response->get_error_message();
-        // Log the error
-        prod_trace( 'ERROR', $error_message);
-        // Return a default model in teh $models array
-        $models = array('llama3.2-3b-instruct');
-        return $models;
+    $base = get_option( 'kognetiks_ai_summaries_local_base_url', 'http://127.0.0.1:1337/v1' );
+    if ( ! is_string( $base ) || '' === $base ) {
+        $base = 'http://127.0.0.1:1337/v1';
+    }
+    $base = esc_url_raw( untrailingslashit( $base ) );
+    if ( '' === $base || ! wp_http_validate_url( $base ) ) {
+        $base = 'http://127.0.0.1:1337/v1';
     }
 
-    // Get the response body
-    $response_body = json_decode(wp_remote_retrieve_body($response), true);
+    $headers = array(
+        'Accept'       => 'application/json',
+        'Content-Type' => 'application/json',
+    );
+    $api_key = get_option( 'kognetiks_ai_summaries_local_api_key', '' );
+    if ( is_string( $api_key ) && '' !== $api_key && function_exists( 'kognetiks_ai_summaries_decrypt_api_key' ) ) {
+        $api_key = kognetiks_ai_summaries_decrypt_api_key( $api_key );
+    }
+    if ( is_string( $api_key ) && '' !== $api_key ) {
+        $headers['Authorization'] = 'Bearer ' . $api_key;
+    }
 
-    // DiAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response_body: ' . print_r($response_body, true));
+    $response = wp_remote_get(
+        $base . '/models',
+        array(
+            'headers' => $headers,
+            'timeout' => 15,
+        )
+    );
 
-    // For each model in the $response_body, add the model to return array
+    if ( is_wp_error( $response ) ) {
+        kognetiks_ai_summaries_prod_trace( 'ERROR', 'Local model list request failed: ' . $response->get_error_message() );
+        return array( 'llama3.2-3b-instruct' );
+    }
+
+    $code = (int) wp_remote_retrieve_response_code( $response );
+    $data = json_decode( wp_remote_retrieve_body( $response ), true );
+    if ( $code < 200 || $code >= 300 || ! is_array( $data ) ) {
+        kognetiks_ai_summaries_prod_trace( 'ERROR', 'Local model list request failed: HTTP ' . $code );
+        return array( 'llama3.2-3b-instruct' );
+    }
+
+    $list = ( isset( $data['data'] ) && is_array( $data['data'] ) ) ? $data['data'] : $data;
     $models = array();
-    foreach ($response_body['data'] as $model) {
-        if (isset($model['status']) && $model['status'] == 'downloaded') {
+    if ( is_array( $list ) ) {
+        foreach ( $list as $model ) {
+            if ( is_string( $model ) && '' !== $model ) {
+                $models[] = $model;
+                continue;
+            }
+            if ( ! is_array( $model ) || empty( $model['id'] ) || ! is_string( $model['id'] ) ) {
+                continue;
+            }
+            // Older JAN lists include a status. The current /v1/models list does not.
+            if ( isset( $model['status'] ) && is_string( $model['status'] ) && 'downloaded' !== $model['status'] ) {
+                continue;
+            }
             $models[] = $model['id'];
         }
     }
 
+    $models = array_values( array_unique( $models ) );
+    sort( $models, SORT_STRING );
+    if ( empty( $models ) ) {
+        return array( 'llama3.2-3b-instruct' );
+    }
     return $models;
-    
+
 }
 
 // Base URL for API Calls

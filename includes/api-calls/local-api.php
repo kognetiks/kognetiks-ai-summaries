@@ -19,73 +19,64 @@ function kognetiks_ai_summaries_local_api_call($api_key, $message) {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_local_api_call');
 
     // Get the base URL
-    $base_url = esc_attr(get_option('kognetiks_ai_summaries_local_base_url', 'http://127.0.0.1:1337/v1'));
+    $base_url = get_option( 'kognetiks_ai_summaries_local_base_url', 'http://127.0.0.1:1337/v1' );
+    if ( ! is_string( $base_url ) || '' === $base_url ) {
+        $base_url = 'http://127.0.0.1:1337/v1';
+    }
+    $base_url = esc_url_raw( untrailingslashit( $base_url ) );
+    if ( '' === $base_url || ! wp_http_validate_url( $base_url ) ) {
+        $base_url = 'http://127.0.0.1:1337/v1';
+    }
 
-    // Set the API URL
-    $api_url = rtrim($base_url, '/') . '/chat/completions';
-
-    // Start the model
-    kognetiks_ai_summaries_local_start_model();
+    // Current JAN.AI serves POST /v1/chat/completions and starts the model there.
+    // /v1/models/start is not provided by this server.
+    $api_url = $base_url . '/chat/completions';
 
     $headers = array(
-        'Authorization' => 'Bearer ' . $api_key,
-        'Content-Type'  => 'application/json',
+        'Content-Type' => 'application/json',
+        'Accept'       => 'application/json',
     );
+    if ( is_string( $api_key ) && '' !== $api_key && 'NOT SET' !== $api_key ) {
+        $headers['Authorization'] = 'Bearer ' . $api_key;
+    }
 
-    // Retrieve model settings
-    $model = esc_attr(get_option('kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct'));
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$model: ' . $model);
-    $max_tokens = intval(get_option('kognetiks_ai_summaries_local_max_tokens_setting', 10000));
-    $temperature = floatval(get_option('kognetiks_ai_summaries_local_temperature', 0.8));
-    $top_p = floatval(get_option('kognetiks_ai_summaries_local_top_p', 0.95));
-    $context = esc_attr(get_option('kognetiks_ai_summaries_local_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
-    $timeout = intval(get_option('kognetiks_ai_summaries_local_timeout_setting', 360));
-    
-    // Construct request body to match the expected schema
+    // Retrieve model settings. Max tokens is the value saved by the Local settings screen.
+    $model = get_option( 'kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct' );
+    if ( ! is_string( $model ) || '' === $model ) {
+        $model = 'llama3.2-3b-instruct';
+    }
+    $max_tokens = (int) get_option( 'kognetiks_ai_summaries_local_max_tokens', 1000 );
+    if ( $max_tokens < 1 ) {
+        $max_tokens = 1000;
+    }
+    $temperature = (float) get_option( 'kognetiks_ai_summaries_local_temperature', 0.5 );
+    $top_p       = (float) get_option( 'kognetiks_ai_summaries_local_top_p', 1 );
+    $context     = get_option( 'kognetiks_ai_summaries_local_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.' );
+    if ( ! is_string( $context ) || '' === $context ) {
+        $context = 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.';
+    }
+    $timeout = (int) get_option( 'kognetiks_ai_summaries_local_timeout_setting', 360 );
+    if ( $timeout < 1 ) {
+        $timeout = 360;
+    }
+
     $body = array(
-        'model' => $model,
-        'stream' => null,
-        'max_tokens' => $max_tokens,
-        'stop' => array("End"),
-        'frequency_penalty' => 0.2,
-        'presence_penalty' => 0.6,
+        'model'       => $model,
+        'messages'    => array(
+            array(
+                'role'    => 'system',
+                'content' => $context,
+            ),
+            array(
+                'role'    => 'user',
+                'content' => $message,
+            ),
+        ),
+        'max_tokens'  => $max_tokens,
         'temperature' => $temperature,
-        'top_p' => $top_p,
-        'modalities' => array("text"),
-        'audio' => array(
-            'voice' => 'default',
-            'format' => 'mp3'
-        ),
-        'store' => null,
-        'metadata' => array(
-            'type' => 'conversation'
-        ),
-        'logit_bias' => array(
-            "15496" => -100,
-            "51561" => -100
-        ),
-        'logprobs' => null,
-        'n' => 1,
-        'response_format' => array('type' => 'text'),
-        'seed' => 123,
-        'stream_options' => null,
-        // 'tools' => array(
-        //     array(
-        //         'type' => 'function',
-        //         'function' => array(
-        //             'name' => '',
-        //             'parameters' => array(),
-        //             'strict' => null
-        //         )
-        //     )
-        // ),
-        'tools' => null,
-        'parallel_tool_calls' => null,
-        'messages' => array(
-            array('role' => 'system', 'content' => $context),
-            array('role' => 'user', 'content' => $message)
-        )
+        'top_p'       => $top_p,
+        'stream'      => false,
+        'n'           => 1,
     );
 
     // API request arguments
@@ -120,15 +111,28 @@ function kognetiks_ai_summaries_local_api_call($api_key, $message) {
         // kognetiks_ai_summaries_back_trace( 'WARNING', 'API Response: ' . print_r($response, true));
     }
 
-    if (isset($response_body['choices'][0]['message']['content']) && !empty($response_body['choices'][0]['message']['content'])) {
-        $response_text = $response_body['choices'][0]['message']['content'];
-        // DiAG - Diagnostics - Ver 1.0.2
-        // kognetiks_ai_summaries_back_trace( 'NOTICE', '$response_text: ' . $response_text);
-        return $response_text;
-    } else {
-        prod_trace('WARNING', 'No valid response text found in API response.');
-        return 'No valid response text found in API response.';
+    if ( $response_code < 200 || $response_code >= 300 ) {
+        $detail = '';
+        if ( is_array( $response_body ) && isset( $response_body['error']['message'] ) && is_string( $response_body['error']['message'] ) ) {
+            $detail = $response_body['error']['message'];
+        }
+        if ( '' === $detail ) {
+            $detail = 'HTTP ' . $response_code;
+        }
+        kognetiks_ai_summaries_prod_trace( 'WARNING', 'Local API request failed: ' . $detail );
+        return 'Error: ' . $detail;
     }
+
+    $response_text = '';
+    if ( isset( $response_body['choices'][0]['message']['content'] ) && is_string( $response_body['choices'][0]['message']['content'] ) ) {
+        $response_text = trim( $response_body['choices'][0]['message']['content'] );
+    }
+    if ( '' !== $response_text ) {
+        return $response_text;
+    }
+
+    kognetiks_ai_summaries_prod_trace( 'WARNING', 'No valid response text found in the Local API response.' );
+    return 'Error: No valid response text found in API response.';
 
 }
 
@@ -140,14 +144,21 @@ function kognetiks_ai_summaries_local_start_model() {
 
     global $kognetiks_ai_summaries_local_model_status;
 
-    // Get the model choice
-    $model = esc_attr(get_option('chatbot_local_model_choice', 'llama3.2-3b-instruct'));
+    // Get the model choice from this plugin, not the chatbot settings.
+    $model = get_option( 'kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct' );
+    if ( ! is_string( $model ) || '' === $model ) {
+        $model = 'llama3.2-3b-instruct';
+    }
 
-    // DiAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$model: ' . $model);
-
-    // Set the API URL
-    $api_url = esc_attr(get_option('chatbot_local_base_url','http://127.0.0.1:1337/v1')) . '/models/start';
+    $base_url = get_option( 'kognetiks_ai_summaries_local_base_url', 'http://127.0.0.1:1337/v1' );
+    if ( ! is_string( $base_url ) || '' === $base_url ) {
+        $base_url = 'http://127.0.0.1:1337/v1';
+    }
+    $base_url = esc_url_raw( untrailingslashit( $base_url ) );
+    if ( '' === $base_url || ! wp_http_validate_url( $base_url ) ) {
+        $base_url = 'http://127.0.0.1:1337/v1';
+    }
+    $api_url = $base_url . '/models/start';
 
     // Prepare the data
     $data = array(
@@ -168,7 +179,7 @@ function kognetiks_ai_summaries_local_start_model() {
     if (is_wp_error($response)) {
         $error_message = $response->get_error_message();
         // Log the error
-        prod_trace( 'ERROR', $error_message);
+        kognetiks_ai_summaries_prod_trace( 'ERROR', $error_message );
         // Set the model status
         $kognetiks_ai_summaries_local_model_status = 'error';
         return $response;
