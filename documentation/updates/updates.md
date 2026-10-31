@@ -1,8 +1,16 @@
 # Past Updates
 
-## What's new in Version 1.0.5 - Released TBD
+## What's new in Version 1.0.5 - Released 2026-10-31
 
-* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.4.
+* **Refresh All Summaries**: Refresh All now runs in the background, one post at a time. You can leave the Tools page. The same queue continues on a later visit. Progress shows the total, successful, skipped, failed, and remaining counts.
+* **Pauses and retries**: Invalid API credentials or an invalid model pause the run until you correct the settings and resume. Temporary provider errors are retried. A failed regeneration keeps the existing summary and excerpt.
+* **Refresh scope**: The queue includes published posts of enabled types that already have a summary. Refresh All does not generate or change categories or tags. Excerpt updates still follow the Do Not Replace, Replace if Blank, or Replace setting.
+* **Skipped posts**: A queued post is counted as skipped, not failed, when it is no longer published, its post type is no longer enabled, the post has been deleted, or its summary record has been removed. A temporary database read failure leaves that post in the queue.
+* **New and updated posts**: A newly published post is summarized once. Editing the content of a published post regenerates that summary. Changing only the title does not. Category and tag suggestions are requested only when the post does not already have them.
+* **Excerpt display**: Building an empty excerpt no longer runs the post content, shortcodes, or prompt lookups. Manual excerpts and stored summaries are left unchanged.
+* **Local AI server**: The model list is loaded from the configured JAN.AI server. Diagnostics reports whether that connection succeeded.
+* **Anthropic models**: The model list uses the current Anthropic models. A saved model that is no longer offered is replaced before the next request.
+* **Translations**: Added a translation template. The text domain now matches the plugin slug, `kognetiks-ai-summaries`.
 
 ## What's new in Version 1.0.4 - Released 2026-02-15
 

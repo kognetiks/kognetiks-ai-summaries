@@ -101,22 +101,22 @@ msgstr ""
 msgid "Enabled post types"
 msgstr ""
 
-#: includes/settings/tools.php:1903
-#: includes/settings/tools.php:1926
-#: includes/settings/tools.php:1949
-#: includes/settings/tools.php:2051
-#: includes/settings/tools.php:2076
-#: includes/settings/tools.php:2144
+#: includes/settings/tools.php:2358
+#: includes/settings/tools.php:2381
+#: includes/settings/tools.php:2404
+#: includes/settings/tools.php:2506
+#: includes/settings/tools.php:2531
+#: includes/settings/tools.php:2599
 #: includes/tools/options-exporter.php:23
 msgid "Security check failed."
 msgstr ""
 
-#: includes/settings/tools.php:1907
-#: includes/settings/tools.php:1930
-#: includes/settings/tools.php:1953
-#: includes/settings/tools.php:2055
-#: includes/settings/tools.php:2080
-#: includes/settings/tools.php:2148
+#: includes/settings/tools.php:2362
+#: includes/settings/tools.php:2385
+#: includes/settings/tools.php:2408
+#: includes/settings/tools.php:2510
+#: includes/settings/tools.php:2535
+#: includes/settings/tools.php:2603
 msgid "You do not have permission to perform this action."
 msgstr ""
 

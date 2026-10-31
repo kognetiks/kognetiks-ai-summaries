@@ -6,10 +6,10 @@
  * Version:     1.0.5
  * Author:      Kognetiks.com
  * Author URI:  https://www.kognetiks.com
- * Text Domain: chatbot-chatgpt
+ * Text Domain: kognetiks-ai-summaries
  * Domain Path: /languages
  * Network:     true
- * Requires at least: 6.0
+ * Requires at least: 6.2
  * Requires PHP: 8.0
  * License:     GPLv3 or later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
