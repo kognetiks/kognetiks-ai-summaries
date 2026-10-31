@@ -1,0 +1,176 @@
+# Copyright (C) 2026 Kognetiks.com
+# This file is distributed under the GPLv3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Kognetiks AI Summaries 1.0.5\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/kognetiks-ai-summaries\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-31T00:27:46+01:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: kognetiks-ai-summaries\n"
+
+#. Plugin Name of the plugin
+#: kognetiks-ai-summaries.php
+msgid "Kognetiks AI Summaries"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: kognetiks-ai-summaries.php
+msgid "https://github.com/kognetiks/kognetiks-ai-summaries"
+msgstr ""
+
+#. Description of the plugin
+#: kognetiks-ai-summaries.php
+msgid "This simple plugin adds AI-powered summaries of posts and page excerpts."
+msgstr ""
+
+#. Author of the plugin
+#: kognetiks-ai-summaries.php
+msgid "Kognetiks.com"
+msgstr ""
+
+#. Author URI of the plugin
+#: kognetiks-ai-summaries.php
+msgid "https://www.kognetiks.com"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:42
+msgid "Summary Instructions cannot be blank. Default instructions have been restored."
+msgstr ""
+
+#: includes/settings/settings-summaries.php:62
+msgid "Categories Instructions cannot be blank. Default instructions have been restored."
+msgstr ""
+
+#: includes/settings/settings-summaries.php:82
+msgid "Tags Instructions cannot be blank. Default instructions have been restored."
+msgstr ""
+
+#: includes/settings/settings-summaries.php:145
+msgid "Instructions for summary generation. The word count will be appended automatically."
+msgstr ""
+
+#: includes/settings/settings-summaries.php:155
+msgid "Instructions for category generation. The category count will be appended automatically."
+msgstr ""
+
+#: includes/settings/settings-summaries.php:165
+msgid "Instructions for tag generation. The tag count will be appended automatically."
+msgstr ""
+
+#: includes/settings/settings-summaries.php:181
+#: includes/settings/settings-summaries.php:192
+msgid "Yes"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:182
+#: includes/settings/settings-summaries.php:193
+msgid "No"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:195
+msgid "These settings apply when generating metadata for eligible post types."
+msgstr ""
+
+#: includes/settings/settings-summaries.php:252
+msgid "Summary Instructions"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:260
+msgid "Categories Instructions"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:268
+msgid "Tags Instructions"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:284
+msgid "Generate Categories"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:292
+msgid "Generate Tags"
+msgstr ""
+
+#: includes/settings/settings-summaries.php:336
+msgid "Enabled post types"
+msgstr ""
+
+#: includes/settings/tools.php:1903
+#: includes/settings/tools.php:1926
+#: includes/settings/tools.php:1949
+#: includes/settings/tools.php:2051
+#: includes/settings/tools.php:2076
+#: includes/settings/tools.php:2144
+#: includes/tools/options-exporter.php:23
+msgid "Security check failed."
+msgstr ""
+
+#: includes/settings/tools.php:1907
+#: includes/settings/tools.php:1930
+#: includes/settings/tools.php:1953
+#: includes/settings/tools.php:2055
+#: includes/settings/tools.php:2080
+#: includes/settings/tools.php:2148
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: includes/tools/manage-error-logs.php:112
+#: includes/utilities/diagnostics.php:148
+msgid "Unauthorized access."
+msgstr ""
+
+#: includes/tools/manage-error-logs.php:139
+#: includes/tools/manage-error-logs.php:199
+msgid "Invalid nonce specified."
+msgstr ""
+
+#: includes/tools/manage-error-logs.php:145
+msgid "No file specified."
+msgstr ""
+
+#: includes/tools/manage-error-logs.php:159
+#: includes/tools/manage-error-logs.php:213
+msgid "Invalid file path."
+msgstr ""
+
+#: includes/tools/manage-error-logs.php:251
+msgid "Invalid logs directory."
+msgstr ""
+
+#: includes/tools/options-exporter.php:30
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: includes/tools/options-exporter.php:70
+msgid "Failed to write options to file."
+msgstr ""
+
+#: includes/tools/options-exporter.php:88
+msgid "Failed to write CSV content to file"
+msgstr ""
+
+#: includes/tools/options-exporter.php:96
+msgid "Invalid output choice."
+msgstr ""
+
+#: includes/utilities/links.php:23
+msgid "Settings"
+msgstr ""
+
+#: includes/utilities/links.php:24
+msgid "Support"
+msgstr ""
+
+#: includes/utilities/links.php:39
+msgid "Deactivate"
+msgstr ""
+
+#: includes/utilities/utilities.php:28
+msgid "Failed to create directory."
+msgstr ""

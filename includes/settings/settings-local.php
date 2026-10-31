@@ -98,38 +98,31 @@ function kognetiks_ai_summaries_local_model_choice_callback($args) {
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_local_model_choice_callback');
   
     // Get the saved kognetiks_ai_summaries_local_model_choice value or default to "llama3.2-3b-instruct"
-    $model_choice = esc_attr(get_option('kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct'));
-
-    // Fetch models from the API
-    $models = kognetiks_ai_summaries_local_get_models();
-
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
-
-    // No need to filter the models as we want to show all available models
-    // $models = array_filter($models, function($model) {
-    //     return strpos($model, 'llama3.2-3b-instruct') !== false;
-    // });
-
-    // Check for errors
-    if (is_string($models) && strpos($models, 'Error:') === 0) {
-        // If there's an error, display the hardcoded list
-        $model_choice = esc_attr(get_option('kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct'));
-        ?>
-        <select id="kognetiks_ai_summaries_local_model_choice" name="kognetiks_ai_summaries_local_model_choice">
-            <option value="<?php echo esc_attr( 'llama3.2-3b-instruct' ); ?>" <?php selected( $model_choice, 'llama3.2-3b-instruct' ); ?>><?php echo esc_html( 'llama3.2-3b-instruct' ); ?></option>
-        </select>
-        <?php
-    } else {
-        // If models are fetched successfully, display them dynamically
-        ?>
-        <select id="kognetiks_ai_summaries_local_model_choice" name="kognetiks_ai_summaries_local_model_choice">
-            <?php foreach ($models as $model): ?>
-                <option value="<?php echo esc_attr($model); ?>" <?php selected(esc_attr(get_option('kognetiks_ai_summaries_local_model_choice')), $model); ?>><?php echo esc_html($model); ?></option>
-            <?php endforeach; ?>
-        </select>
-        <?php
+    $model_choice = get_option( 'kognetiks_ai_summaries_local_model_choice', 'llama3.2-3b-instruct' );
+    if ( ! is_string( $model_choice ) || '' === $model_choice ) {
+        $model_choice = 'llama3.2-3b-instruct';
     }
+
+    // JAN.AI serves model ids from its OpenAI-compatible /v1/models endpoint.
+    $models = kognetiks_ai_summaries_local_get_models();
+    if ( ! is_array( $models ) ) {
+        $models = array( 'llama3.2-3b-instruct' );
+    }
+    $models = array_values( array_filter( $models, 'is_string' ) );
+    if ( empty( $models ) ) {
+        $models = array( 'llama3.2-3b-instruct' );
+    }
+    if ( ! in_array( $model_choice, $models, true ) ) {
+        array_unshift( $models, $model_choice );
+    }
+
+    ?>
+    <select id="kognetiks_ai_summaries_local_model_choice" name="kognetiks_ai_summaries_local_model_choice">
+        <?php foreach ( $models as $model ) : ?>
+            <option value="<?php echo esc_attr( $model ); ?>" <?php selected( $model_choice, $model ); ?>><?php echo esc_html( $model ); ?></option>
+        <?php endforeach; ?>
+    </select>
+    <?php
 
 }
 

@@ -105,7 +105,7 @@ function kognetiks_ai_summaries_test_api_status() {
             $api_key = kognetiks_ai_summaries_decrypt_api_key($api_key);
 
             // Model and message for testing
-            $model = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
+            $model = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', kognetiks_ai_summaries_anthropic_default_model()));
             
             // Call the API to test the connection
             $updated_status = kognetiks_ai_summaries_anthropic_api_call($api_key, $test_message);
@@ -261,12 +261,21 @@ function kognetiks_ai_summaries_test_api_status() {
             // DIAG - Diagnostics
             // kognetiks_ai_summaries_back_trace( 'NOTICE', 'API Response: ' . print_r($updated_status, true)); 
 
-            // Check for API-specific errors
-            // if $updated_status start  with "Error" then it is an error
-            if (strpos($updated_status, 'An error occurred.') === 0) {
-
-                $updated_status = 'Error: Unexpected response format from the ' . $kognetiks_ai_summaries_ai_platform_choice . ' API. Please check Settings for a valid API key or your ' . $kognetiks_ai_summaries_ai_platform_choice . ' account for additional information.';
-
+            $local_failed = ! is_string( $updated_status ) || '' === $updated_status;
+            if ( ! $local_failed ) {
+                $local_failed = 0 === strpos( $updated_status, 'Error:' )
+                    || 0 === strpos( $updated_status, 'An error occurred.' )
+                    || 0 === strpos( $updated_status, 'No valid response' );
+            }
+            if ( $local_failed ) {
+                $detail = is_string( $updated_status ) ? trim( (string) preg_replace( '/^(Error:|An error occurred\.)\s*/', '', $updated_status ) ) : '';
+                if ( '' !== $detail && 'No valid response text found in API response.' !== $detail ) {
+                    $updated_status = 'Error: ' . $detail;
+                } else {
+                    $updated_status = 'Error: Unexpected response format from the Local API. Choose a model from the Local AI Server list and save settings.';
+                }
+            } else {
+                $updated_status = 'Success: Connection to the Local API was successful!';
             }
 
             update_option('kognetiks_ai_summaries_api_status', $updated_status);

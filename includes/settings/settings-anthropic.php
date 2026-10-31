@@ -92,41 +92,51 @@ function kognetiks_ai_summaries_anthropic_model_choice_callback($args) {
 
     // DIAG - Diagnostics
     // kognetiks_ai_summaries_back_trace( 'NOTICE', 'kognetiks_ai_summaries_anthropic_model_choice_callback');
-  
-    // Get the saved kognetiks_ai_summaries_anthropic_model_choice value or default to "claude-3-5-sonnet-latest"
-    $model_choice = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
 
-    // Fetch models from the API
-    $models = kognetiks_ai_summaries_anthropic_get_models();
-
-    // DIAG - Diagnostics
-    // kognetiks_ai_summaries_back_trace( 'NOTICE', '$models: ' . print_r($models, true) );
-
-    // // Limit the models to chat models
-    // $models = array_filter($models, function($model) {
-    //     return strpos($model['id'], 'anthropic') !== false;
-    // });
-
-    // Check for errors
-    if (is_string($models) && strpos($models, 'Error:') === 0) {
-        // If there's an error, display the hardcoded list
-        $model_choice = esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice', 'claude-3-5-sonnet-latest'));
-        ?>
-        <select id="kognetiks_ai_summaries_anthropic_model_choice" name="kognetiks_ai_summaries_anthropic_model_choice">
-            <option value="<?php echo esc_attr( 'claude-3-5-sonnet-latest' ); ?>" <?php selected( $model_choice, 'claude-3-5-sonnet-latest' ); ?>><?php echo esc_html( 'claude-3-5-sonnet-latest' ); ?></option>
-        </select>
-        <?php
-    } else {
-        // If models are fetched successfully, display them dynamically
-        ?>
-        <select id="kognetiks_ai_summaries_anthropic_model_choice" name="kognetiks_ai_summaries_anthropic_model_choice">
-            <?php foreach ($models as $model): ?>
-                <option value="<?php echo esc_attr($model['id']); ?>" <?php selected(esc_attr(get_option('kognetiks_ai_summaries_anthropic_model_choice')), $model['id']); ?>><?php echo esc_html($model['id']); ?></option>
-            <?php endforeach; ?>
-            ?>
-        </select>
-        <?php
+    $model_choice = get_option( 'kognetiks_ai_summaries_anthropic_model_choice', kognetiks_ai_summaries_anthropic_default_model() );
+    if ( ! is_string( $model_choice ) || '' === $model_choice ) {
+        $model_choice = kognetiks_ai_summaries_anthropic_default_model();
     }
+
+    // Settings always refresh. Summary requests may use the short-lived cache.
+    $models = kognetiks_ai_summaries_anthropic_get_models( true );
+    if ( ! is_array( $models ) ) {
+        $models = array();
+    }
+
+    $models = array_values( array_filter( $models, function( $model ) {
+        return is_array( $model )
+            && ! empty( $model['id'] )
+            && kognetiks_ai_summaries_anthropic_model_id_is_valid( $model['id'] )
+            && ( empty( $model['owned_by'] ) || 'anthropic' === $model['owned_by'] );
+    } ) );
+
+    $ids = array();
+    foreach ( $models as $model ) {
+        $ids[] = $model['id'];
+    }
+    if ( kognetiks_ai_summaries_anthropic_model_id_is_valid( $model_choice ) && ! in_array( $model_choice, $ids, true ) ) {
+        if ( kognetiks_ai_summaries_anthropic_models_are_live() ) {
+            $replacement = sanitize_text_field( kognetiks_ai_summaries_anthropic_cheapest_model_id( $models ) );
+            if ( kognetiks_ai_summaries_anthropic_model_id_is_valid( $replacement ) ) {
+                $model_choice = $replacement;
+                update_option( 'kognetiks_ai_summaries_anthropic_model_choice', $replacement );
+            }
+        } else {
+            array_unshift( $models, array(
+                'id'       => $model_choice,
+                'owned_by' => 'anthropic',
+            ) );
+        }
+    }
+
+    ?>
+    <select id="kognetiks_ai_summaries_anthropic_model_choice" name="kognetiks_ai_summaries_anthropic_model_choice">
+        <?php foreach ( $models as $model ) : ?>
+            <option value="<?php echo esc_attr( $model['id'] ); ?>" <?php selected( $model_choice, $model['id'] ); ?>><?php echo esc_html( $model['id'] ); ?></option>
+        <?php endforeach; ?>
+    </select>
+    <?php
 
 }
 

@@ -34,6 +34,23 @@ function kognetiks_ai_summaries_get_tags( $post_id ) {
 
 }
 
+/**
+ * Whether tag suggestions should be requested for a post.
+ *
+ * Matches the fill rule in kognetiks_ai_summaries_add_tags(): only when
+ * generation is enabled and the post has no tags.
+ *
+ * @param int $post_id Post ID.
+ * @return bool
+ */
+function kognetiks_ai_summaries_post_needs_generated_tags( $post_id ) {
+    if ( 1 !== (int) get_option( 'kognetiks_ai_summaries_generate_tags', 1 ) ) {
+        return false;
+    }
+    $existing = get_the_tags( $post_id );
+    return empty( $existing );
+}
+
 // Function to add tags to the post
 function kognetiks_ai_summaries_add_tags($post_id, $tags_string) {
 
