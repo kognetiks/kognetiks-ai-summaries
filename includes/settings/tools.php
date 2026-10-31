@@ -701,7 +701,7 @@ function kognetiks_ai_summaries_refresh_clear_events( $workers_only ) {
  *
  * The stored ID list is not included.
  *
- * @return array{status: string, total: int, success: int, failed: int, remaining: int, reason: string}
+ * @return array{status: string, total: int, success: int, skipped: int, failed: int, remaining: int, reason: string}
  */
 function kognetiks_ai_summaries_refresh_public_state() {
     $run = kognetiks_ai_summaries_refresh_read_run_state();
@@ -711,6 +711,7 @@ function kognetiks_ai_summaries_refresh_public_state() {
                 'status'    => 'unknown',
                 'total'     => 0,
                 'success'   => 0,
+                'skipped'   => 0,
                 'failed'    => 0,
                 'remaining' => 0,
                 'reason'    => '',
@@ -724,6 +725,7 @@ function kognetiks_ai_summaries_refresh_public_state() {
                 'status'    => (string) $run['status'],
                 'total'     => (int) ( $run['total'] ?? 0 ),
                 'success'   => (int) ( $run['success'] ?? 0 ),
+                'skipped'   => (int) ( $run['skipped'] ?? 0 ),
                 'failed'    => (int) ( $run['failed'] ?? 0 ),
                 'remaining' => $remaining,
                 'reason'    => isset( $run['pause_reason'] ) ? (string) $run['pause_reason'] : '',
@@ -738,6 +740,7 @@ function kognetiks_ai_summaries_refresh_public_state() {
                 'status'    => 'complete',
                 'total'     => (int) ( $result['total'] ?? 0 ),
                 'success'   => (int) ( $result['success'] ?? 0 ),
+                'skipped'   => (int) ( $result['skipped'] ?? 0 ),
                 'failed'    => (int) ( $result['failed'] ?? 0 ),
                 'remaining' => 0,
                 'reason'    => '',
@@ -750,6 +753,7 @@ function kognetiks_ai_summaries_refresh_public_state() {
             'status'    => 'idle',
             'total'     => 0,
             'success'   => 0,
+            'skipped'   => 0,
             'failed'    => 0,
             'remaining' => 0,
             'reason'    => '',
@@ -779,12 +783,13 @@ function kognetiks_ai_summaries_refresh_status_text( $state ) {
     $status    = isset( $state['status'] ) ? (string) $state['status'] : 'idle';
     $total     = (int) ( $state['total'] ?? 0 );
     $success   = (int) ( $state['success'] ?? 0 );
+    $skipped   = (int) ( $state['skipped'] ?? 0 );
     $failed    = (int) ( $state['failed'] ?? 0 );
     $remaining = (int) ( $state['remaining'] ?? 0 );
     if ( ! empty( $state['start_error'] ) ) {
         return (string) $state['start_error'];
     }
-    $counts    = sprintf( 'Total: %1$d, successful: %2$d, failed: %3$d, remaining: %4$d.', $total, $success, $failed, $remaining );
+    $counts    = sprintf( 'Total: %1$d, successful: %2$d, skipped: %3$d, failed: %4$d, remaining: %5$d.', $total, $success, $skipped, $failed, $remaining );
     $error     = isset( $state['schedule_error'] ) ? (string) $state['schedule_error'] : '';
     $suffix    = ( '' !== $error ) ? ' Scheduling failed: ' . $error : '';
     if ( 'running' === $status ) {
@@ -801,9 +806,96 @@ function kognetiks_ai_summaries_refresh_status_text( $state ) {
 }
 
 /**
- * Post IDs that already have a stored summary, in a stable order.
+ * Post types currently enabled for summaries on this site.
  *
- * Captured once at the start of a run. Later batches do not query again.
+ * Uses the saved settings map. A missing map uses the plugin default, which
+ * enables posts and pages only.
+ *
+ * @return string[]
+ */
+function kognetiks_ai_summaries_refresh_enabled_post_types() {
+    $enabled = get_option( 'kognetiks_ai_summaries_enabled_post_types', null );
+    if ( null === $enabled || ! is_array( $enabled ) ) {
+        $enabled = function_exists( 'kognetiks_ai_summaries_default_enabled_post_types' )
+            ? kognetiks_ai_summaries_default_enabled_post_types()
+            : array( 'post' => 1, 'page' => 1 );
+    }
+    $types = array();
+    foreach ( $enabled as $type => $on ) {
+        $type = sanitize_key( (string) $type );
+        if ( '' !== $type && 1 === (int) $on ) {
+            $types[] = $type;
+        }
+    }
+    return array_values( array_unique( $types ) );
+}
+
+/**
+ * Read whether a summary row exists without treating a failed SELECT as absence.
+ *
+ * @param int $post_id Post ID.
+ * @return string|WP_Error present, absent, or WP_Error when the SELECT fails.
+ */
+function kognetiks_ai_summaries_refresh_summary_row_state( $post_id ) {
+    global $wpdb;
+
+    $post_id = (int) $post_id;
+    if ( $post_id < 1 ) {
+        return 'absent';
+    }
+    $table_name      = $wpdb->prefix . 'kognetiks_ai_summaries';
+    $validated_table = kognetiks_ai_summaries_validate_table_name( $table_name );
+    if ( false === $validated_table ) {
+        return new WP_Error( 'refresh_summary_read_failed', 'The summary row could not be read.' );
+    }
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is whitelist-validated above.
+    $found = $wpdb->query( $wpdb->prepare( 'SELECT post_id FROM `' . esc_sql( $validated_table ) . '` WHERE post_id = %d LIMIT 1', $post_id ) );
+    if ( false === $found || '' !== (string) $wpdb->last_error || ! ( $wpdb->dbh instanceof mysqli ) ) {
+        return new WP_Error( 'refresh_summary_read_failed', 'The summary row could not be read.' );
+    }
+    if ( (int) $found < 1 || empty( $wpdb->last_result[0] ) || ! isset( $wpdb->last_result[0]->post_id ) ) {
+        return 'absent';
+    }
+    if ( (int) $wpdb->last_result[0]->post_id !== $post_id ) {
+        return 'absent';
+    }
+    return 'present';
+}
+
+/**
+ * Whether a post may be regenerated by Refresh All.
+ *
+ * The post must be published, its type must be enabled, and this site must
+ * already have a summary row for it. A failed summary SELECT is not absence.
+ *
+ * @param int $post_id Post ID.
+ * @return bool|WP_Error True when eligible, false when confirmed ineligible, or WP_Error when the summary row cannot be read.
+ */
+function kognetiks_ai_summaries_refresh_post_is_eligible( $post_id ) {
+    $post_id = (int) $post_id;
+    if ( $post_id < 1 ) {
+        return false;
+    }
+    $post = get_post( $post_id );
+    if ( ! $post || 'publish' !== $post->post_status ) {
+        return false;
+    }
+    if ( ! in_array( (string) $post->post_type, kognetiks_ai_summaries_refresh_enabled_post_types(), true ) ) {
+        return false;
+    }
+    $summary = kognetiks_ai_summaries_refresh_summary_row_state( $post_id );
+    if ( is_wp_error( $summary ) ) {
+        return $summary;
+    }
+    return 'present' === $summary;
+}
+
+/**
+ * Post IDs that already have a stored summary and are eligible to refresh.
+ *
+ * Captured once at the start of a run. The list is published posts of enabled
+ * types, ordered by post ID. The filter may remove IDs. It cannot add an ID
+ * the query rejected.
  *
  * @return int[]
  */
@@ -815,24 +907,44 @@ function kognetiks_ai_summaries_refresh_collect_post_ids() {
     if ( false === $validated_table ) {
         return array();
     }
-
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is whitelist-validated above.
-    $post_ids = $wpdb->get_col( 'SELECT post_id FROM `' . esc_sql( $validated_table ) . '` ORDER BY post_id ASC' );
-    if ( ! is_array( $post_ids ) ) {
+    $types = kognetiks_ai_summaries_refresh_enabled_post_types();
+    if ( empty( $types ) ) {
         $post_ids = array();
+    } else {
+        $placeholders = implode( ', ', array_fill( 0, count( $types ), '%s' ) );
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is whitelist-validated; placeholders match the type list.
+        $sql      = 'SELECT DISTINCT s.post_id FROM `' . esc_sql( $validated_table ) . '` s INNER JOIN ' . $wpdb->posts . ' p ON p.ID = s.post_id WHERE p.post_status = %s AND p.post_type IN (' . $placeholders . ') ORDER BY s.post_id ASC';
+        $prepared = $wpdb->prepare( $sql, array_merge( array( 'publish' ), $types ) );
+        $post_ids = $wpdb->get_col( $prepared );
+        if ( ! is_array( $post_ids ) ) {
+            $post_ids = array();
+        }
     }
     $post_ids = array_values( array_unique( array_filter( array_map( 'intval', $post_ids ) ) ) );
+    $allowed  = array_fill_keys( $post_ids, true );
 
     /**
      * Filters the fixed ID list captured when a refresh run starts.
      *
-     * @param int[] $post_ids Post IDs that already have a stored summary.
+     * IDs that are not in the eligible set are discarded.
+     *
+     * @param int[] $post_ids Eligible post IDs, in ascending post ID order.
      */
     $filtered = apply_filters( 'kognetiks_ai_summaries_refresh_post_ids', $post_ids );
     if ( ! is_array( $filtered ) ) {
         return array();
     }
-    return array_values( array_unique( array_filter( array_map( 'intval', $filtered ) ) ) );
+    $kept = array();
+    $seen = array();
+    foreach ( $filtered as $post_id ) {
+        $post_id = (int) $post_id;
+        if ( $post_id < 1 || isset( $seen[ $post_id ] ) || ! isset( $allowed[ $post_id ] ) ) {
+            continue;
+        }
+        $seen[ $post_id ] = true;
+        $kept[]           = $post_id;
+    }
+    return $kept;
 }
 
 /**
@@ -857,6 +969,7 @@ function kognetiks_ai_summaries_refresh_complete_run( $run, $token = '' ) {
             'status'   => 'complete',
             'total'    => (int) ( $run['total'] ?? 0 ),
             'success'  => (int) ( $run['success'] ?? 0 ),
+            'skipped'  => (int) ( $run['skipped'] ?? 0 ),
             'failed'   => (int) ( $run['failed'] ?? 0 ),
             'finished' => time(),
         ),
@@ -965,6 +1078,7 @@ function kognetiks_ai_summaries_refresh_start() {
             array(
                 'total'   => 0,
                 'success' => 0,
+                'skipped' => 0,
                 'failed'  => 0,
             )
         );
@@ -978,6 +1092,7 @@ function kognetiks_ai_summaries_refresh_start() {
         'ids'     => $post_ids,
         'total'   => count( $post_ids ),
         'success'        => 0,
+        'skipped'        => 0,
         'failed'         => 0,
         'started'        => time(),
         'head_attempts'  => 0,
@@ -1329,6 +1444,7 @@ function kognetiks_ai_summaries_refresh_run_signature( $run ) {
         'ids'             => $ids,
         'total'           => (int) ( $run['total'] ?? 0 ),
         'success'         => (int) ( $run['success'] ?? 0 ),
+        'skipped'         => (int) ( $run['skipped'] ?? 0 ),
         'failed'          => (int) ( $run['failed'] ?? 0 ),
         'head_attempts'   => (int) ( $run['head_attempts'] ?? 0 ),
         'head_invalid'    => (int) ( $run['head_invalid'] ?? 0 ),
@@ -1664,6 +1780,19 @@ function kognetiks_ai_summaries_refresh_decide( $run, $class, $summary, $retry_a
         );
     }
 
+    if ( 'skipped' === $class ) {
+        array_shift( $run['ids'] );
+        $run['skipped']         = (int) ( $run['skipped'] ?? 0 ) + 1;
+        $run['head_attempts']   = 0;
+        $run['head_invalid']    = 0;
+        $run['next_attempt_at'] = 0;
+        return array(
+            'run'        => $run,
+            'write_post' => 0,
+            'summary'    => null,
+        );
+    }
+
     if ( 'credentials' === $class || 'configuration' === $class ) {
         $run['head_attempts']   = max( 0, $attempts - 1 );
         $run['status']          = 'paused';
@@ -1744,8 +1873,45 @@ function kognetiks_ai_summaries_refresh_worker() {
         return kognetiks_ai_summaries_refresh_public_state();
     }
 
-    $post_id              = (int) $run['ids'][0];
-    $read_run             = $run;
+    $post_id  = (int) $run['ids'][0];
+    $read_run = $run;
+    $eligible = kognetiks_ai_summaries_refresh_post_is_eligible( $post_id );
+    if ( is_wp_error( $eligible ) ) {
+        // A failed summary read is not a skip. Wait on the existing retry
+        // schedule without consuming an attempt or advancing the queue.
+        $deferred                     = $run;
+        $deferred['next_attempt_at']  = time() + kognetiks_ai_summaries_refresh_retry_delay( 1, 0 );
+        if ( ! kognetiks_ai_summaries_refresh_commit_locked( $token, $deferred, 0, null, $read_run ) ) {
+            kognetiks_ai_summaries_refresh_release_lock( $token );
+            return kognetiks_ai_summaries_refresh_public_state();
+        }
+        if ( (int) $deferred['next_attempt_at'] > time() ) {
+            kognetiks_ai_summaries_refresh_replace_worker_event( (int) $deferred['next_attempt_at'], true );
+        } else {
+            kognetiks_ai_summaries_refresh_ensure_watchdog();
+        }
+        kognetiks_ai_summaries_refresh_release_lock( $token );
+        return kognetiks_ai_summaries_refresh_public_state();
+    }
+    if ( ! $eligible ) {
+        $decision = kognetiks_ai_summaries_refresh_decide( $run, 'skipped', null, 0 );
+        if ( ! kognetiks_ai_summaries_refresh_commit_locked( $token, $decision['run'], 0, null, $read_run ) ) {
+            kognetiks_ai_summaries_refresh_release_lock( $token );
+            return kognetiks_ai_summaries_refresh_public_state();
+        }
+        if ( 'after_commit' === apply_filters( 'kognetiks_ai_summaries_refresh_interrupt', '' ) ) {
+            return kognetiks_ai_summaries_refresh_public_state();
+        }
+        if ( empty( $decision['run']['ids'] ) ) {
+            kognetiks_ai_summaries_refresh_complete_run( $decision['run'], $token );
+            return kognetiks_ai_summaries_refresh_public_state();
+        }
+        $when = ! empty( $decision['run']['next_attempt_at'] ) ? (int) $decision['run']['next_attempt_at'] : time() + 1;
+        kognetiks_ai_summaries_refresh_replace_worker_event( $when, true );
+        kognetiks_ai_summaries_refresh_release_lock( $token );
+        return kognetiks_ai_summaries_refresh_public_state();
+    }
+
     $run['head_attempts'] = (int) ( $run['head_attempts'] ?? 0 ) + 1;
     if ( ! kognetiks_ai_summaries_refresh_commit_locked( $token, $run, 0, null, $read_run ) ) {
         kognetiks_ai_summaries_refresh_release_lock( $token );
@@ -1762,19 +1928,15 @@ function kognetiks_ai_summaries_refresh_worker() {
         return kognetiks_ai_summaries_refresh_public_state();
     }
 
-    if ( ! get_post( $post_id ) ) {
-        $decision = kognetiks_ai_summaries_refresh_decide( $run, 'permanent', null, 0 );
-    } else {
-        kognetiks_ai_summaries_refresh_set_report( 'permanent', null, 0 );
-        add_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
-        kognetiks_ai_summaries_generate_ai_summary( $post_id, true, true, array( 'refresh_run' => true ) );
-        remove_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
-        if ( 'after_api' === apply_filters( 'kognetiks_ai_summaries_refresh_interrupt', '' ) ) {
-            return kognetiks_ai_summaries_refresh_public_state();
-        }
-        $report   = kognetiks_ai_summaries_refresh_get_report();
-        $decision = kognetiks_ai_summaries_refresh_decide( $run, $report['class'], $report['summary'], $report['retry_after'] );
+    kognetiks_ai_summaries_refresh_set_report( 'permanent', null, 0 );
+    add_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
+    kognetiks_ai_summaries_generate_ai_summary( $post_id, true, true, array( 'refresh_run' => true ) );
+    remove_filter( 'kognetiks_ai_summaries_generations_per_request', '__return_zero' );
+    if ( 'after_api' === apply_filters( 'kognetiks_ai_summaries_refresh_interrupt', '' ) ) {
+        return kognetiks_ai_summaries_refresh_public_state();
     }
+    $report   = kognetiks_ai_summaries_refresh_get_report();
+    $decision = kognetiks_ai_summaries_refresh_decide( $run, $report['class'], $report['summary'], $report['retry_after'] );
 
     if ( ! kognetiks_ai_summaries_refresh_commit_locked( $token, $decision['run'], $decision['write_post'], $decision['summary'], $run ) ) {
         kognetiks_ai_summaries_refresh_release_lock( $token );
@@ -1809,8 +1971,29 @@ add_action( KOGNETIKS_AI_SUMMARIES_REFRESH_WORKER, 'kognetiks_ai_summaries_refre
  * invoke the watchdog or the worker until some later request can spawn cron.
  */
 function kognetiks_ai_summaries_refresh_watchdog() {
-    $run = kognetiks_ai_summaries_refresh_read_stored_option( 'kognetiks_ai_summaries_refresh_run' );
+    $run = kognetiks_ai_summaries_refresh_read_run_state();
+    if ( is_wp_error( $run ) ) {
+        return;
+    }
+    if ( is_array( $run ) && 'paused' === ( $run['status'] ?? '' ) ) {
+        return;
+    }
     if ( ! is_array( $run ) || 'running' !== ( $run['status'] ?? '' ) ) {
+        // WordPress inserts the next recurring watchdog before this callback.
+        // Remove that successor only. Leave any worker event in place.
+        $cleared = wp_clear_scheduled_hook( KOGNETIKS_AI_SUMMARIES_REFRESH_WATCHDOG, array(), true );
+        if ( is_wp_error( $cleared ) || false === $cleared ) {
+            kognetiks_ai_summaries_refresh_record_schedule_failure( $cleared, 'watchdog' );
+        } else {
+            kognetiks_ai_summaries_refresh_clear_schedule_failure();
+        }
+        $again = kognetiks_ai_summaries_refresh_read_run_state();
+        if ( is_wp_error( $again ) ) {
+            return;
+        }
+        if ( is_array( $again ) && in_array( ( $again['status'] ?? '' ), array( 'running', 'paused' ), true ) ) {
+            kognetiks_ai_summaries_refresh_ensure_watchdog();
+        }
         return;
     }
     $lock = kognetiks_ai_summaries_refresh_read_stored_option( 'kognetiks_ai_summaries_refresh_lock' );

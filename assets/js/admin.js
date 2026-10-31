@@ -21,10 +21,11 @@ jQuery(document).ready(function($) {
             return;
         }
         var success = state.success || 0;
+        var skipped = state.skipped || 0;
         var failed = state.failed || 0;
         var remaining = state.remaining || 0;
         var total = state.total || 0;
-        var counts = 'Total: ' + total + ', successful: ' + success + ', failed: ' + failed + ', remaining: ' + remaining + '.';
+        var counts = 'Total: ' + total + ', successful: ' + success + ', skipped: ' + skipped + ', failed: ' + failed + ', remaining: ' + remaining + '.';
         var text = '';
         if (state.start_error) {
             text = state.start_error;
