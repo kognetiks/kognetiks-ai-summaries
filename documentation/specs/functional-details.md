@@ -4,7 +4,7 @@
 
 **Kognetiks AI Summaries** is a WordPress plugin that generates concise, AI-powered excerpts (summaries) for posts, pages, and other content. It integrates with multiple AI platforms so you can replace or supplement WordPress’s default excerpts with LLM-generated summaries. Summaries are stored locally and only regenerated when content changes, keeping API usage and cost low.
 
-**Version:** 1.0.4  
+**Version:** 1.0.6
 **License:** GPLv3 or later  
 **WordPress Compatibility:** Tested up to WordPress 6.9
 

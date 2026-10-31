@@ -3,7 +3,7 @@
  * Plugin Name: Kognetiks AI Summaries
  * Plugin URI:  https://github.com/kognetiks/kognetiks-ai-summaries
  * Description: This simple plugin adds AI-powered summaries of posts and page excerpts.
- * Version:     1.0.5
+ * Version:     1.0.6
  * Author:      Kognetiks.com
  * Author URI:  https://www.kognetiks.com
  * Text Domain: kognetiks-ai-summaries
@@ -27,7 +27,7 @@
  * along with Kognetiks AI Summaries. If not, see https://www.gnu.org/licenses/gpl-3.0.html.
  * 
  * @package kognetiks-ai-summaries
- * @version 1.0.5
+ * @version 1.0.6
  * @author Kognetiks.com
  */
 
@@ -40,7 +40,7 @@ $kognetiks_ai_summaries_plugin_name = 'kognetiks-ai-summaries';
 
 // Globals for plugin version
 global $kognetiks_ai_summaries_plugin_version;
-$kognetiks_ai_summaries_plugin_version = '1.0.5';
+$kognetiks_ai_summaries_plugin_version = '1.0.6';
 
 // DB schema version for upgrade routine (bump when table/index/column changes)
 if ( ! defined( 'KOGNETIKS_AI_SUMMARIES_DB_VERSION' ) ) {

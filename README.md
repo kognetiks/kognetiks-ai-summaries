@@ -8,6 +8,9 @@ Powered by industry-leading AI platforms like OpenAI, NVIDIA, Anthropic, DeepSee
 
 ## Documentation
 
+## What's new in Version 1.0.6
+* **TBD**: **
+
 ## What's new in Version 1.0.5
 
 * **Refresh All Summaries**: Refresh All now runs in the background, one post at a time. You can leave the Tools page. The same queue continues on a later visit. Progress shows the total, successful, skipped, failed, and remaining counts.

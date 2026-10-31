@@ -1,5 +1,8 @@
 # Past Updates
 
+## What's new in Version 1.0.6 - Release TBD
+* **TBD**: TBD
+
 ## What's new in Version 1.0.5 - Released 2026-10-31
 
 * **Refresh All Summaries**: Refresh All now runs in the background, one post at a time. You can leave the Tools page. The same queue continues on a later visit. Progress shows the total, successful, skipped, failed, and remaining counts.
