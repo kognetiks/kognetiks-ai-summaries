@@ -139,6 +139,7 @@ WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, A
 == Changelog ==
 
 = 1.0.6 - Released TBD =
+* **Summaries Cutoff**: Anthropic models that think before they answer, including Claude Haiku 5.5, no longer fail or stop mid-sentence. The plugin reads the summary from the text block, turns off up-front thinking where the model allows it, and discards a reply that runs out of tokens before the sentence is finished.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.5.
 
 = 1.0.5 - Released 2026-10-31 =
