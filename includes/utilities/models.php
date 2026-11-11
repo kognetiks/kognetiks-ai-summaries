@@ -835,6 +835,67 @@ function kognetiks_ai_summaries_local_get_models() {
 
 }
 
+// GPT-5 and later, and the o-series, reject max_tokens on Chat Completions.
+// GPT-4, GPT-4.1, and GPT-4o still accept it. The check is case-insensitive and
+// ignores a provider prefix (openai/gpt-6-luna) or a fine-tune prefix (ft:gpt-6-luna:...).
+function kognetiks_ai_summaries_chat_model_uses_max_completion_tokens( $model ) {
+
+    $id = strtolower( trim( (string) $model ) );
+    if ( '' === $id ) {
+        return false;
+    }
+
+    if ( 0 === strpos( $id, 'ft:' ) ) {
+        $parts = explode( ':', $id, 3 );
+        $id = isset( $parts[1] ) ? $parts[1] : '';
+    }
+
+    $slash = strrpos( $id, '/' );
+    if ( false !== $slash ) {
+        $id = substr( $id, $slash + 1 );
+    }
+
+    if ( preg_match( '/^(?:chat)?gpt-(\d+)/', $id, $matches ) ) {
+        return ( (int) $matches[1] ) >= 5;
+    }
+
+    // o1, o3, o4-mini, and later o-series ids. gpt-4o does not match.
+    return 1 === preg_match( '/^o\d+(?:$|[-.])/', $id );
+
+}
+
+// Choose max_completion_tokens or max_tokens for an OpenAI-compatible Chat Completions body.
+// max_completion_tokens counts visible output plus reasoning tokens, so a small budget can
+// return little or no visible text. When reasoning_effort is omitted the API default is
+// medium, and temperature, top_p, and logprobs must be left out. They stay only when
+// reasoning_effort is explicitly none. Other model families keep max_tokens.
+function kognetiks_ai_summaries_assign_chat_completion_limit( $body, $model, $limit ) {
+
+    if ( ! is_array( $body ) ) {
+        $body = array();
+    }
+
+    unset( $body['max_tokens'], $body['max_completion_tokens'] );
+
+    if ( ! kognetiks_ai_summaries_chat_model_uses_max_completion_tokens( $model ) ) {
+        $body['max_tokens'] = (int) $limit;
+        return $body;
+    }
+
+    $body['max_completion_tokens'] = (int) $limit;
+
+    $effort = '';
+    if ( isset( $body['reasoning_effort'] ) && is_scalar( $body['reasoning_effort'] ) ) {
+        $effort = strtolower( trim( (string) $body['reasoning_effort'] ) );
+    }
+    if ( 'none' !== $effort ) {
+        unset( $body['temperature'], $body['top_p'], $body['logprobs'] );
+    }
+
+    return $body;
+
+}
+
 // Base URL for API Calls
 function kognetiks_ai_summaries_get_api_base_url() {
 

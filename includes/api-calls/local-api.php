@@ -60,6 +60,7 @@ function kognetiks_ai_summaries_local_api_call($api_key, $message) {
         $timeout = 360;
     }
 
+    // Local servers keep max_tokens. An OpenAI GPT-5, GPT-6, or o-series id served here does not.
     $body = array(
         'model'       => $model,
         'messages'    => array(
@@ -72,12 +73,12 @@ function kognetiks_ai_summaries_local_api_call($api_key, $message) {
                 'content' => $message,
             ),
         ),
-        'max_tokens'  => $max_tokens,
         'temperature' => $temperature,
         'top_p'       => $top_p,
         'stream'      => false,
         'n'           => 1,
     );
+    $body = kognetiks_ai_summaries_assign_chat_completion_limit( $body, $model, $max_tokens );
 
     // API request arguments
     $args = array(

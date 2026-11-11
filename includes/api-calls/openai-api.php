@@ -34,21 +34,26 @@ function kognetiks_ai_summaries_openai_api_call($api_key, $message) {
     // Get the saved model from the settings or default to "chatgpt-4o-latest"
     $model = esc_attr(get_option('kognetiks_ai_summaries_openai_model_choice', 'chatgpt-4o-latest'));
  
-    // Max completion tokens - Ver 1.4.2 (OpenAI now uses max_completion_tokens for newer models)
-    $max_completion_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_openai_max_tokens', '500')));
+    // Saved length. GPT-5, GPT-6, and o-series send it as max_completion_tokens.
+    $max_tokens = intval(esc_attr(get_option('kognetiks_ai_summaries_openai_max_tokens', '500')));
 
     // Conversation Context - Ver 1.6.1
     $context = esc_attr(get_option('kognetiks_ai_summaries_openai_conversation_context', 'You are a versatile, friendly, and helpful assistant designed to support me in a variety of tasks that responds in Markdown.'));
 
-    // Build request body - omit temperature/top_p as newer models (e.g. reasoning models) only support defaults
+    // GPT-4, GPT-4.1, and GPT-4o still accept these. Reasoning models drop them when effort is not none.
+    $temperature = floatval(esc_attr(get_option('kognetiks_ai_summaries_openai_temperature', '0.5')));
+    $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_openai_top_p', '1.0')));
+
     $body = array(
         'model' => $model,
-        'max_completion_tokens' => $max_completion_tokens,
+        'temperature' => $temperature,
+        'top_p' => $top_p,
         'messages' => array(
             array('role' => 'system', 'content' => $context),
             array('role' => 'user', 'content' => $message)
             ),
     );
+    $body = kognetiks_ai_summaries_assign_chat_completion_limit( $body, $model, $max_tokens );
 
     $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_openai_timeout_setting', '240')));
 

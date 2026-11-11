@@ -1,0 +1,38 @@
+# Files and folders excluded from the WordPress.org plugin zip.
+# Kept in git on purpose; do not copy this list into .gitignore.
+
+# VCS and local tooling
+.git
+.github
+.gitignore
+.gitattributes
+.distignore
+.idea
+.vscode
+.cursor
+.DS_Store
+Thumbs.db
+
+# Development tooling
+node_modules
+package.json
+package-lock.json
+composer.json
+composer.lock
+phpunit.xml
+phpunit.xml.dist
+phpcs.xml
+phpcs.xml.dist
+
+# Tests and internal notes
+tests
+z-internal
+GIT-COMMANDS.md
+RECOMMENDATIONS.md
+
+# Runtime and generated content
+debug
+logs
+*.log
+*.zip
+*.tar.gz
