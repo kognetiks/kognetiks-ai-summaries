@@ -5,7 +5,7 @@ Donate link: https://kognetiks.com/wordpress-plugins/donate/
 Requires at least: 6.2
 Tested up to: 7.1.4
 Requires PHP: 8.0
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -139,6 +139,10 @@ WordPress, OpenAI, ChatGPT, NVIDIA, NIM, Anthropic, Claude, DeepSeek, Mistral, A
 5. Support
 
 == Changelog ==
+
+= 1.0.7 - Release TBD =
+
+* **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.6.
 
 = 1.0.6 - Released 2026-11-11 =
 * **Summaries Cutoff**: Anthropic models that think before they answer, including Claude Haiku 5.5, no longer fail or stop mid-sentence. The plugin reads the summary from the text block, turns off up-front thinking where the model allows it, and discards a reply that runs out of tokens before the sentence is finished.
