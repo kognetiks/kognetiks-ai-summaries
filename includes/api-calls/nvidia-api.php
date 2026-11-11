@@ -47,9 +47,9 @@ function kognetiks_ai_summaries_nvidia_api_call($api_key, $message) {
     $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_nvidia_top_p', '1.0')));
  
     // Added Role, System, Content Static Variable - Ver 1.6.0
+    // NVIDIA's own models keep max_tokens. An OpenAI GPT-5, GPT-6, or o-series id does not.
     $body = array(
         'model' => $model,
-        'max_tokens' => $max_tokens,
         'temperature' => $temperature,
         'top_p' => $top_p,
         'messages' => array(
@@ -57,6 +57,7 @@ function kognetiks_ai_summaries_nvidia_api_call($api_key, $message) {
             array('role' => 'user', 'content' => $message)
             ),
     );
+    $body = kognetiks_ai_summaries_assign_chat_completion_limit( $body, $model, $max_tokens );
 
     $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_nvidia_timeout_setting', '240')));
 

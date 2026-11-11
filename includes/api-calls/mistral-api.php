@@ -49,10 +49,9 @@ function kognetiks_ai_summaries_mistral_api_call($api_key, $message) {
     // Top P - Ver 2.1.8
     $top_p = floatval(esc_attr(get_option('kognetiks_ai_summaries_mistral_top_p', '1.0')));
  
-    // Added Role, System, Content Static Variable - Ver 1.6.0
-    $body = wp_json_encode(array(
+    // Mistral models keep max_tokens. An OpenAI GPT-5, GPT-6, or o-series id does not.
+    $body = array(
         'model' => $model,
-        'max_tokens' => $max_tokens,
         'messages' => array(
             array(
                 'role' => 'system',
@@ -64,7 +63,9 @@ function kognetiks_ai_summaries_mistral_api_call($api_key, $message) {
             ),
         ),
         'stream' => false,
-    ));
+    );
+    $body = kognetiks_ai_summaries_assign_chat_completion_limit( $body, $model, $max_tokens );
+    $body = wp_json_encode($body);
 
     $timeout = intval(esc_attr(get_option('kognetiks_ai_summaries_mistral_timeout_setting', 240)));
 

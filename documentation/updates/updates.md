@@ -1,8 +1,9 @@
 # Past Updates
 
-## What's new in Version 1.0.6 - Release TBD
+## What's new in Version 1.0.6 - Release 2026-11-11
 
 * **Summaries Cutoff**: Anthropic models that think before they answer, including Claude Haiku 5.5, no longer fail or stop mid-sentence. The plugin reads the summary from the text block, turns off up-front thinking where the model allows it, and discards a reply that runs out of tokens before the sentence is finished.
+* **Reasoning Models**: GPT-5, GPT-6, and o-series requests send max_completion_tokens instead of max_tokens, omit temperature, top_p, and logprobs, and count reasoning tokens in that limit.
 * **Bug Fixes**: Resolved minor issues and bugs identified after release of version 1.0.5.
 
 ## What's new in Version 1.0.5 - Released 2026-10-31

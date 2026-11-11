@@ -912,10 +912,14 @@ function kognetiks_ai_summaries_refresh_collect_post_ids() {
         $post_ids = array();
     } else {
         $placeholders = implode( ', ', array_fill( 0, count( $types ), '%s' ) );
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is whitelist-validated; placeholders match the type list.
-        $sql      = 'SELECT DISTINCT s.post_id FROM `' . esc_sql( $validated_table ) . '` s INNER JOIN ' . $wpdb->posts . ' p ON p.ID = s.post_id WHERE p.post_status = %s AND p.post_type IN (' . $placeholders . ') ORDER BY s.post_id ASC';
-        $prepared = $wpdb->prepare( $sql, array_merge( array( 'publish' ), $types ) );
-        $post_ids = $wpdb->get_col( $prepared );
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Placeholder count matches the enabled post type list.
+        $sql      = 'SELECT DISTINCT s.post_id FROM %i s INNER JOIN %i p ON p.ID = s.post_id WHERE p.post_status = %s AND p.post_type IN (' . $placeholders . ') ORDER BY s.post_id ASC';
+        $post_ids = $wpdb->get_col(
+            $wpdb->prepare(
+                $sql,
+                array_merge( array( $validated_table, $wpdb->posts, 'publish' ), $types )
+            )
+        );
         if ( ! is_array( $post_ids ) ) {
             $post_ids = array();
         }
