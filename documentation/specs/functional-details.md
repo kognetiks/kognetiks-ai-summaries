@@ -6,7 +6,7 @@
 
 **Version:** 1.0.6
 **License:** GPLv3 or later  
-**WordPress Compatibility:** Tested up to WordPress 6.9
+**WordPress Compatibility:** Tested up to WordPress 7.1.4
 
 ---
 
